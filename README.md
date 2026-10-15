@@ -2,6 +2,8 @@
 
 玉川大学「データ処理」（2026年度 秋・金曜）の予習・復習ページです。
 
+このリポジトリは Claude Code（Anthropic）を使って作っています。
+
 公開ページ：https://brightwaltz.github.io/DataProcessing/
 
 - 予習ページは授業の1週間前、復習ページは授業の日に公開します。
