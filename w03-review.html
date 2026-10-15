@@ -506,7 +506,7 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
     <h2>仕上げの5問</h2>
     <p class="prose">項目1・2・3・5・6から1問ずつ出します。間違えたら、その項目に戻って確認問題と練習をもう一度。</p>
     <div id="fin"></div>
-    <div class="done-banner" id="banner" role="status">7項目すべての確認問題に正解しました。次回（10/23）は「データの可視化」です。<a href="w04-preview.html?v=202610151939">第4回 予習ページ</a>も見ておきましょう。</div>
+    <div class="done-banner" id="banner" role="status">7項目すべての確認問題に正解しました。次回（10/23）は「データの可視化」です。<a href="w04-preview.html?v=202610152046">第4回 予習ページ</a>も見ておきましょう。</div>
   </section>
 
   <footer>
@@ -1137,12 +1137,111 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
   var PYR = ["fuji", "tsubo", "bell", "univ", "hill40"];
   var PYR_DESC = { fuji: "子どもが多く、年齢が上がるほど少ない町", tsubo: "子どもが少なく、高齢者が多い町", bell: "どの年齢もだいたい同じくらいの町", univ: "大学があり、20 代前半だけが多い町", hill40: "40 代が多い町" };
 
+  /* 日本の人口ピラミッド（総人口に占める割合 %、男女・5歳ごと 0〜4歳 … 90歳以上）。出典：総務省統計局 国勢調査（1920・1965・2020）、国立社会保障・人口問題研究所 日本の将来推計人口（2050）。統計ダッシュボード経由（第5回の授業資料と同じデータ） */
+  var JP = {"1920": {"m": [6.71, 6.2, 5.52, 4.91, 4.14, 3.59, 3.28, 3.05, 2.93, 2.4, 2.01, 1.63, 1.43, 1.1, 0.71, 0.35, 0.12, 0.04, 0.01], "f": [6.62, 6.06, 5.38, 4.77, 4.1, 3.42, 3.17, 3.04, 2.87, 2.36, 1.99, 1.66, 1.52, 1.25, 0.89, 0.51, 0.19, 0.07, 0.02], "total": 5596}, "1965": {"m": [4.24, 4.09, 4.78, 5.57, 4.56, 4.22, 4.21, 3.8, 2.77, 2.26, 2.2, 1.96, 1.65, 1.24, 0.8, 0.46, 0.19, 0.06, 0.01], "f": [4.07, 3.95, 4.62, 5.46, 4.64, 4.28, 4.18, 3.81, 3.28, 2.74, 2.52, 2.1, 1.75, 1.37, 0.97, 0.66, 0.35, 0.14, 0.04], "total": 9921}, "2020": {"m": [1.88, 2.12, 2.23, 2.34, 2.45, 2.49, 2.68, 3.0, 3.4, 3.95, 3.47, 3.14, 2.92, 3.17, 3.45, 2.51, 1.78, 1.06, 0.48], "f": [1.79, 2.01, 2.12, 2.22, 2.36, 2.4, 2.59, 2.93, 3.33, 3.89, 3.46, 3.17, 3.01, 3.38, 3.87, 3.11, 2.52, 1.92, 1.43], "total": 12321}, "2050": {"m": [1.62, 1.75, 1.87, 1.97, 2.13, 2.29, 2.64, 2.94, 3.06, 3.15, 3.25, 3.14, 3.18, 3.39, 3.6, 3.79, 2.83, 1.89, 0.45], "f": [1.54, 1.67, 1.78, 1.89, 2.06, 2.19, 2.52, 2.8, 2.92, 3.0, 3.11, 3.03, 3.15, 3.47, 3.82, 4.28, 3.56, 2.8, 1.43], "total": 10176}};
+
+  /* ===== 第5回 社会におけるデータの重要性と利活用 ===== */
+  function bank(rng, key, q) {
+    return choice(rng, key + ":" + q.q, q.q, [{ text: q.ok, ok: true }].concat(q.ng.map(function (x) { return { text: x[0], msg: x[1] }; })), q.sol || "正しいのは「" + q.ok + "」。");
+  }
+  var CENSUS = [
+    { q: "国勢調査の対象は？", ok: "日本に住むすべての人と世帯", ng: [["選ばれた一部の人（標本）", "国勢調査は全員を数える調査です（全数調査）。一部を選ぶのはアンケートなどの標本調査です。"], ["日本国籍をもつ人だけ", "国籍にかかわらず、日本に住んでいる人が対象です。"]] },
+    { q: "国勢調査は、どれくらいの間隔で行われる？", ok: "5年に1度（直近は 2025 年）", ng: [["毎年", "毎年ではなく 5 年に 1 度です。"], ["10年に1度", "10 年ではなく 5 年に 1 度です（1920 年から続いている）。"]] },
+    { q: "オープンデータの説明として、当てはまらないのは？", ok: "使うには申し込みと料金が要る", ng: [["誰でも無料で使える", "それはオープンデータの条件に当てはまります。当てはまらないものを選びます。"], ["機械で読める形（CSV など）で公開され、加工してよい", "それはオープンデータの条件に当てはまります。当てはまらないものを選びます。"]] },
+    { q: "オープンデータを使ってグラフを作った。必ずすることは？", ok: "出典を書く", ng: [["作ったグラフを国に届け出る", "届け出は要りません。使ったら出典を書きます。"], ["数値を四捨五入してから使う", "四捨五入は必須ではありません。出典を書くことが必要です。"]] }
+  ];
+  G.census = function (rng, now) { return draw(rng, function (r) { return bank(r, "census", pick(r, CENSUS)); }, now); };
+  var ESTIM = [
+    { q: "EBPM の意味に近いのは？", ok: "証拠（データ）に基づいて政策を決める", ng: [["前の年と同じやり方で決める", "それは前例に頼る決め方です。EBPM は Evidence-Based Policy Making、データで確かめて決めることです。"], ["専門家の勘で決める", "勘ではなく、証拠（エビデンス）に基づいて決めるのが EBPM です。"]] },
+    { q: "将来推計人口は、どういう計算？", ok: "今の出生・死亡・転入出の傾向が続いた場合の計算", ng: [["必ず当たるように作られた予言", "推計は予言ではありません。傾向が変われば、実際の値はずれます。"], ["国や市が目指す目標の値", "目標ではなく、今の傾向が続いたらどうなるかの計算です。"]] },
+    { q: "町田市の 2025 年の人口は、推計では約 43.1 万人、国勢調査の速報では約 42.1 万人だった。言えることは？", ok: "推計のあとで傾向が変わり、実際は推計より少なかった", ng: [["推計の計算が間違っていた", "計算の間違いとは限りません。推計は「今の傾向が続けば」の値なので、傾向が変わればずれます。"], ["速報の値が間違っている", "速報は実際に数えた値です。ずれたのは推計のほうで、それは予言ではないからです。"]] }
+  ];
+  G.estimate = function (rng, now) { return draw(rng, function (r) { return bank(r, "estim", pick(r, ESTIM)); }, now); };
+
+  /* ピラミッドの山の移動：n 年たつと、山は n 歳ぶん上へ */
+  function ageLabel(i) { return i >= 18 ? "90歳以上" : (i * 5) + "〜" + (i * 5 + 4) + "歳"; }
+  G.pyrShift = function (rng, now) {
+    return draw(rng, function (r) {
+      var i = randInt(r, 1, 9), k = randInt(r, 2, 8), j = i + k, y = pick(r, [1990, 2000, 2010, 2020]);
+      if (j > 17) return null;
+      var wrongDown = i - k >= 0 ? ageLabel(i - k) : ageLabel(i + k + 2);
+      return choice(r, "shift:" + i + "+" + k, "ある町のピラミッドで、" + y + " 年に <b>" + ageLabel(i) + "</b> の段がふくらんでいる。" + (k * 5) + " 年後（" + (y + k * 5) + " 年）、このふくらみはどこにある？", [
+        { text: ageLabel(j), ok: true },
+        { text: ageLabel(i) + "のまま", msg: "年がたつと、その人たちも年をとります。" + (k * 5) + " 年後には " + (k * 5) + " 歳ぶん上の段へ動きます。" },
+        { text: wrongDown, msg: "ふくらみは、年をとる向き（上）へ " + (k * 5) + " 歳ぶん動きます。" }
+      ], ageLabel(i) + " の人は、" + (k * 5) + " 年後には " + ageLabel(j) + "。ふくらみは上へ動く。");
+    }, now);
+  };
+
+  /* やりたいこと → サイト */
+  var SITES = [
+    { q: "国の統計の表を探して、CSV でダウンロードしたい", a: "e-Stat" },
+    { q: "国勢調査の細かい表（市区町村別・年齢別など）を探したい", a: "e-Stat" },
+    { q: "主な指標の移り変わりをグラフで見て、API でも取りたい", a: "統計ダッシュボード" },
+    { q: "全国や都道府県の人口ピラミッドを、すぐグラフで見たい", a: "統計ダッシュボード" },
+    { q: "地域の人口や産業を、地図とグラフで見たい", a: "RESAS" },
+    { q: "観光客がどこから来ているかを、地図で見たい", a: "RESAS" },
+    { q: "自分の市と似た市町村を選んで、課題を比べたい", a: "RAIDA" },
+    { q: "建物の高さや浸水の想定を、3D の地図に重ねて見たい", a: "PLATEAU VIEW" }
+  ];
+  var SITE_WHAT = { "e-Stat": "国の統計の表を探して落とす", "統計ダッシュボード": "主な指標をグラフで見る・API", "RESAS": "地域の人口・産業を地図で見る", "RAIDA": "市町村どうしを比べる", "PLATEAU VIEW": "建物や災害の想定を 3D で見る" };
+  G.site = function (rng, now) {
+    return draw(rng, function (r) {
+      var q = pick(r, SITES), others = shuffle(r, Object.keys(SITE_WHAT).filter(function (s) { return s !== q.a; })).slice(0, 2);
+      return choice(r, "site:" + q.q, q.q + "。使うサイトは？", [{ text: q.a, ok: true }].concat(others.map(function (s) { return { text: s, msg: s + " は「" + SITE_WHAT[s] + "」ためのサイトです。" }; })), q.a + "：" + SITE_WHAT[q.a] + "。");
+    }, now);
+  };
+
+  /* 出典の書き方 */
+  var CITE = [
+    { q: "出典に書かなくてよいものは？", ok: "グラフを作った自分の名前", ng: [["サイト名と統計名（例：統計ダッシュボード、国勢調査）", "サイト名と統計名は必ず書きます。"], ["URL と見た日", "URL と見た日も書きます。サイトの中身は変わることがあるからです。"]] },
+    { q: "「町田市の人口　出典：インターネット」。足りないものは？", ok: "サイト名・統計名・いつの値か・URL と見た日", ng: [["何も足りない", "「インターネット」だけでは、どこのデータか確かめられません。"], ["作った人の名前", "名前ではなく、サイト名・統計名・時点・URL と見た日を書きます。"]] },
+    { q: "出典に「見た日」を書くのは、なぜ？", ok: "サイトの値や画面があとで変わることがあるから", ng: [["書く決まりがないので、書かなくてよい", "授業では見た日まで書きます。速報が確定値に変わるなど、値が変わることがあるからです。"], ["グラフの題に日付が必要だから", "題のためではなく、いつ見た値かを残すためです。"]] },
+    { q: "まとめサイトに載っていた人口の数を使いたい。どうする？", ok: "元の統計（一次サイト）を探して、そこで確かめて出典にする", ng: [["まとめサイトを出典に書けばよい", "まとめサイトは写し間違いや古い値のことがあります。元の統計で確かめます。"], ["数が合っていそうなら、出典は書かなくてよい", "どこのデータかが分からないと、読む人が確かめられません。"]] }
+  ];
+  G.cite = function (rng, now) { return draw(rng, function (r) { return bank(r, "cite", pick(r, CITE)); }, now); };
+
+  /* Excel でピラミッドを描く */
+  var PEX = [
+    { q: "シート「町田市」の D5 に、男の人数（B5）をマイナスにして入れる式は？（地域が見つからないときに #VALUE! を出さない形）", ok: "=IFERROR(-B5,\"\")", ng: [["=B5", "そのままだと男の棒も右へのびます。マイナスにします。"], ["=-B5", "マイナスにはなりますが、地域が見つからないと #VALUE! になります。IFERROR で包みます。"]] },
+    { q: "男と女の横棒を、同じ高さで背中合わせにするには？", ok: "データ系列の書式設定で、系列の重なり 100%・要素の間隔 0%", ng: [["グラフの種類を円グラフに変える", "ピラミッドは集合横棒で描きます。"], ["男の列を女の列の右に移す", "列の場所ではなく、系列の重なりと間隔で合わせます。"]] },
+    { q: "横軸の左側に「−」が付いて見える。消すには？", ok: "横軸の表示形式コードを #,##0;#,##0 にする", ng: [["男の人数をプラスに戻す", "プラスに戻すと、男の棒が右へのびてしまいます。表示だけを変えます。"], ["横軸を削除する", "目盛りが読めなくなります。表示形式で「−」だけを消します。"]] },
+    { q: "年齢のラベルが棒の真ん中に重なって読めない。どうする？", ok: "縦軸の書式設定 → ラベルの位置を「下端/左端」にする", ng: [["年齢の列を消す", "年齢が分からなくなります。ラベルの位置を変えます。"], ["文字を小さくする", "小さくしても重なります。ラベルの位置を「下端/左端」にします。"]] }
+  ];
+  G.pyrExcel = function (rng, now) { return draw(rng, function (r) { return bank(r, "pex", pick(r, PEX)); }, now); };
+
+  /* 地域の検索キー：都道府県名＋市区町村名（郡名・支庁名は入れない。政令市は区まで） */
+  var KEYS = [
+    { addr: "群馬県邑楽郡千代田町", key: "群馬県千代田町", ng: ["群馬県邑楽郡千代田町", "千代田町"] },
+    { addr: "北海道石狩郡当別町", key: "北海道当別町", ng: ["北海道石狩郡当別町", "石狩郡当別町"] },
+    { addr: "長野県北佐久郡軽井沢町", key: "長野県軽井沢町", ng: ["長野県北佐久郡軽井沢町", "軽井沢町"] },
+    { addr: "神奈川県横浜市青葉区", key: "神奈川県横浜市青葉区", ng: ["神奈川県横浜市", "神奈川県青葉区"] },
+    { addr: "北海道札幌市中央区", key: "北海道札幌市中央区", ng: ["北海道札幌市", "札幌市中央区"] },
+    { addr: "東京都町田市", key: "東京都町田市", ng: ["町田市", "東京都南多摩郡町田市"] },
+    { addr: "東京都千代田区", key: "東京都千代田区", ng: ["千代田区", "東京都特別区部千代田区"] }
+  ];
+  G.areaKey = function (rng, now) {
+    return draw(rng, function (r) {
+      var q = pick(r, KEYS);
+      function why(t) {
+        if (/特別区部/.test(t)) return "「特別区部」は入れません。東京 23 区は「東京都＋区名」です。";
+        if (/郡/.test(t)) return "郡名は入れません。都道府県名のすぐあとに市区町村名を書きます。";
+        if (!/^(北海道|東京都|.{2,3}県|.{2}府)/.test(t)) return "都道府県名から書きます。同じ名前の町が別の県にもあるからです（例：千代田町と千代田区）。";
+        if (/市$/.test(t) && /区$/.test(q.key)) return "政令指定都市は区まで書きます（データが区ごとに分かれている）。";
+        return "政令指定都市の区は「都道府県名＋市名＋区名」の形で書きます。";
+      }
+      return choice(r, "key:" + q.addr, "住所が「" + q.addr + "」の地域。必須課題1のシート「自分の地域」の B2 に入れる検索キーは？",
+        [{ text: q.key, ok: true }].concat(q.ng.map(function (t) { return { text: t, msg: why(t) }; })),
+        "検索キーは「都道府県名＋市区町村名」。郡名・支庁名は入れず、政令指定都市は区まで。→ " + q.key);
+    }, now);
+  };
+
   var api = {
     sum: sum, mean: mean, sorted: sorted, median: median, mode: mode, varP: varP, sdP: sdP, sdS: sdS, mad: mad, countRange: countRange,
     round: round, fmt: fmt, toNum: toNum, near: near, hash: hash, setBlock: setBlock, isBlocked: isBlocked,
     mulberry32: mulberry32, randInt: randInt, pick: pick, shuffle: shuffle, choice: choice,
     SHAPES: SHAPES, fromCounts: fromCounts, histSvg: histSvg, SD_PAIRS: SD_PAIRS, PS: PS, FUNCS: FUNCS, gen: G,
-    CHARTS: CHARTS, SEE: SEE, profile: profile, share65: share65, shareKids: shareKids, PYR: PYR, PYR_DESC: PYR_DESC
+    CHARTS: CHARTS, SEE: SEE, profile: profile, share65: share65, shareKids: shareKids, PYR: PYR, PYR_DESC: PYR_DESC, JP: JP, ageLabel: ageLabel
   };
   root.CA = root.CA || {};
   root.CA.stats = api;
@@ -2062,6 +2161,209 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
     load();
   };
 
+
+  /* ===================== 第5回 社会におけるデータの重要性と利活用 ===================== */
+  function tbl(head, rows) {
+    return html("<div class=\"tbl-wrap\"><table class=\"ref\"><tr>" + head.map(function (x) { return "<th>" + x + "</th>"; }).join("") + "</tr>" +
+      rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + c + "</td>"; }).join("") + "</tr>"; }).join("") + "</table></div>");
+  }
+  CA.steps.censusOpen = function (mount) {
+    CA.stepper(mount, { frames: [
+      { caption: "<b>国勢調査</b>：日本に住むすべての人と世帯を数える調査（全数調査）。5 年に 1 度、1920 年から続いています。", render: function (st) {
+        st.appendChild(tbl(["", "国勢調査"], [["対象", "日本に住むすべての人と世帯"], ["間隔", "5 年に 1 度（直近は 2025 年）"], ["始まり", "1920 年"], ["結果", "誰でも無料で見られる"]])); } },
+      { caption: "<b>オープンデータ</b>：国や自治体が、誰でも使える形で公開しているデータ。", render: function (st) {
+        st.appendChild(tbl(["オープンデータの条件"], [["無料で使える"], ["機械で読める形（CSV など）"], ["加工してよい（グラフにする、計算する）"]])); } },
+      { caption: "使うときの約束は 1 つ：<b>出典を書く</b>。どこの、何の、いつのデータかが分かれば、読んだ人が確かめられます。", render: function (st) {
+        st.appendChild(html("<p class=\"formula\">使ったら、出典を書く</p>")); } }
+    ] });
+  };
+  var MACHIDA = { census: [[1980, 29.5], [1985, 32.1], [1990, 34.9], [1995, 36.1], [2000, 37.7], [2005, 40.6], [2010, 42.7], [2015, 43.2], [2020, 43.1]],
+    est: [[2020, 43.1], [2025, 43.1], [2030, 42.7], [2035, 42.2], [2040, 41.7], [2045, 41.2], [2050, 40.6]], flash: [2025, 42.1] };
+  function machidaChart(stage) {
+    var W = 760, H = 300, x0 = 80, x1 = 720, y0 = 250, y1 = 30, s = "";
+    function X(y) { return x0 + (x1 - x0) * (y - 1980) / 70; }
+    function Y(v) { return y0 - (y0 - y1) * (v - 28) / 18; }
+    for (var v = 28; v <= 46; v += 4) s += L(x0, Y(v), x1, Y(v), "s-rule", 1) + T(x0 - 10, Y(v) + 6, v + "万", { size: 16, anchor: "end", cls: "k-mut" });
+    for (var y = 1980; y <= 2050; y += 10) s += T(X(y), y0 + 24, String(y), { size: 16, cls: "k-mut" });
+    s += "<polyline points=\"" + MACHIDA.census.map(function (p) { return X(p[0]) + "," + Y(p[1]); }).join(" ") + "\" fill=\"none\" class=\"s-acc\" stroke-width=\"4\"/>";
+    MACHIDA.census.forEach(function (p) { s += C(X(p[0]), Y(p[1]), 5, "k-acc s-acc"); });
+    s += T(X(2000), Y(41.5), "国勢調査", { size: 17, weight: 700, cls: "k-acc" });
+    if (stage >= 1) {
+      s += "<polyline points=\"" + MACHIDA.est.map(function (p) { return X(p[0]) + "," + Y(p[1]); }).join(" ") + "\" fill=\"none\" class=\"s-mut\" stroke-width=\"3\" stroke-dasharray=\"8 6\"/>";
+      s += T(X(2042), Y(43), "推計（2023年）", { size: 17, weight: 700, cls: "k-mut" });
+    }
+    if (stage >= 2) {
+      s += C(X(MACHIDA.flash[0]), Y(MACHIDA.flash[1]), 8, "k-lamp s-lamp") + T(X(2025) + 12, Y(42.1) + 26, "2025年 速報 約42.1万", { size: 17, weight: 700, anchor: "start", cls: "k-lampdark" });
+      s += T(X(2025) + 12, Y(43.1) - 12, "推計 約43.1万", { size: 17, anchor: "start", cls: "k-mut" });
+    }
+    return svg(W, H, s, "町田市の総人口（万人）");
+  }
+  CA.steps.estimate = function (mount) {
+    CA.stepper(mount, { frames: [
+      { caption: "<b>EBPM</b>（Evidence-Based Policy Making）＝証拠に基づく政策立案。前例や思いつきではなく、データで確かめて決めます。", render: function (st) { st.appendChild(html("<p class=\"formula\">前例・思いつき → データで確かめて決める</p>")); } },
+      { caption: "町田市の総人口（国勢調査）。2015 年ごろが山です。", render: function (st) { st.appendChild(html(machidaChart(0))); } },
+      { caption: "点線は将来推計（2023 年に作られたもの）。今の出生・死亡・転入出の傾向が続いた場合の計算です。", render: function (st) { st.appendChild(html(machidaChart(1))); } },
+      { caption: "2025 年の国勢調査の速報は約 42.1 万人。推計（約 43.1 万人）より約 1 万人少なかった。<b>推計は予言ではありません</b>。傾向が変われば、実際の値はずれます。", render: function (st) { st.appendChild(html(machidaChart(2))); } }
+    ] });
+  };
+  CA.steps.japanPyramid = function (mount) {
+    var J = S.JP;
+    function one(y, hl, note) {
+      return html(pyramidSvg(J[y].m, J[y].f, { max: 7, hl: hl, title: y + "年" + (y === "2050" ? "（推計）" : "") + "　年齢", label: "日本の人口ピラミッド " + y + "年" }));
+    }
+    CA.stepper(mount, { frames: [
+      { caption: "1920 年（第 1 回の国勢調査）。下が広い三角形。子どもが多く、高齢者が少ない。", render: function (st) { st.appendChild(one("1920")); } },
+      { caption: "1965 年。15〜19 歳がふくらんでいます。戦後すぐ（1947〜49 年）に生まれた人たちです。", render: function (st) { st.appendChild(one("1965", [3])); } },
+      { caption: "2020 年。その山は 55 年たって 70〜74 歳へ。その子どもの世代の山が 45〜49 歳にあります。<b>山は年とともに上へ動く</b>。", render: function (st) { st.appendChild(one("2020", [9, 14])); } },
+      { caption: "2050 年（推計）。上が重い形になります。ただし推計は「今の傾向が続けば」の計算です。", render: function (st) { st.appendChild(one("2050")); } }
+    ] });
+  };
+  CA.steps.sites = function (mount) {
+    var rows = [["国の統計の表を探して落とす", "e-Stat"], ["主な指標をグラフで見る・API", "統計ダッシュボード"], ["地域の人口・産業を地図で見る", "RESAS"], ["市町村どうしを比べる", "RAIDA"], ["建物や災害の想定を 3D で見る", "PLATEAU VIEW"]];
+    CA.stepper(mount, { frames: rows.map(function (r, i) {
+      return { caption: "<b>" + r[1] + "</b>：" + r[0] + "。", render: function (st) {
+        st.appendChild(html("<div class=\"tbl-wrap\"><table class=\"ref\"><tr><th>やりたいこと</th><th>サイト</th></tr>" + rows.map(function (x, k) {
+          return "<tr><td" + (k === i ? " class=\"hot\"" : "") + ">" + x[0] + "</td><td" + (k === i ? " class=\"hot\"" : "") + ">" + (k <= i ? x[1] : "？") + "</td></tr>"; }).join("") + "</table></div>")); } };
+    }).concat([{ caption: "迷ったら「やりたいこと」から選ぶ。今日のデータは統計ダッシュボードから取りました。", render: function (st) { st.appendChild(tbl(["やりたいこと", "サイト"], rows)); } }]) });
+  };
+  CA.steps.cite = function (mount) {
+    var parts = [["サイト名と統計名", "統計ダッシュボード、総務省統計局「令和2年国勢調査」"], ["何の値か・どこの・いつの", "日本の総人口（2020 年 10 月 1 日現在）"], ["単位", "人（1 億 2,321 万人）"], ["URL と見た日", "https://dashboard.e-stat.go.jp/ （2026 年 10 月 30 日に見た）"]];
+    CA.stepper(mount, { frames: parts.map(function (p, i) {
+      return { caption: (i + 1) + "　<b>" + p[0] + "</b>", render: function (st) { st.appendChild(tbl(["書くこと", "例"], parts.slice(0, i + 1))); } };
+    }).concat([{ caption: "4 つがそろうと、読んだ人が同じ値にたどり着けます。まとめサイトではなく、元の統計（一次サイト）を書きます。", render: function (st) { st.appendChild(tbl(["書くこと", "例"], parts)); } }]) });
+  };
+  CA.steps.pyrExcel = function (mount) {
+    var head = ["年齢", "男", "女", "男（マイナス）"];
+    CA.stepper(mount, { frames: [
+      { caption: "シート「町田市」。B 列が男、C 列が女の人数です。", render: function (st) { st.appendChild(sheet(4, [head, ["0〜4歳", "8,000", "7,700", ""], ["5〜9歳", "8,900", "8,500", ""]], null)); } },
+      { caption: "D5 に <span class=\"num\">=IFERROR(-B5,\"\")</span>。男をマイナスにします。IFERROR は、地域が見つからず B5 が空でも #VALUE! を出さないためです。", render: function (st) {
+        st.appendChild(sheet(4, [head, ["0〜4歳", "8,000", "7,700", "=IFERROR(-B5,\"\")"], ["5〜9歳", "8,900", "8,500", ""]], [[1, 3]])); } },
+      { caption: "D5 を下へコピー。A・C・D 列を選んで 挿入 → 集合横棒。棒を右クリック → データ系列の書式設定 → <b>系列の重なり 100%・要素の間隔 0%</b>。", render: function (st) { st.appendChild(html(pyramidSvg(prof("tsubo").m, prof("tsubo").f, { label: "背中合わせの横棒" }))); } },
+      { caption: "横軸の「−」は、軸の書式設定 → 表示形式コード <span class=\"num\">#,##0;#,##0</span> → 追加 で消えます。年齢のラベルは、縦軸のラベルの位置を「下端/左端」に。", render: function (st) { st.appendChild(html("<p class=\"formula\">#,##0;#,##0 ＝ プラスもマイナスも、符号なしで表示</p>")); } }
+    ] });
+  };
+  CA.steps.areaKey = function (mount) {
+    CA.stepper(mount, { frames: [
+      { caption: "自分の地域は、シート「自分の地域」の B2 に<b>「都道府県名＋市区町村名」</b>で入れます。", render: function (st) { st.appendChild(tbl(["住所", "検索キー"], [["東京都町田市", "東京都町田市"]])); } },
+      { caption: "郡や支庁の名前は<b>入れません</b>。", render: function (st) { st.appendChild(tbl(["住所", "検索キー"], [["群馬県<s>邑楽郡</s>千代田町", "群馬県千代田町"], ["北海道<s>石狩郡</s>当別町", "北海道当別町"]])); } },
+      { caption: "政令指定都市は<b>区まで</b>書きます。東京 23 区は「東京都＋区名」。", render: function (st) { st.appendChild(tbl(["住所", "検索キー"], [["北海道札幌市中央区", "北海道札幌市中央区"], ["東京都千代田区", "東京都千代田区"]])); } },
+      { caption: "それでも見つからないときは、シート「データ」で Ctrl+F を押して地域名で探し、D 列の検索キーを写します。", render: function (st) { st.appendChild(html("<p class=\"formula\">Ctrl+F → 地域名 → D 列の検索キーを B2 へ</p>")); } }
+    ] });
+  };
+
+  /* ===================== 第6回 予習：ピボットテーブル ===================== */
+  var PRICE = { "カレー": 450, "定食": 520, "麺類": 400 };
+  var ORDERS = (function () {
+    var spec = { "1年": { "カレー": 4, "定食": 2, "麺類": 2 }, "2年": { "カレー": 2, "定食": 3, "麺類": 4 }, "3年": { "カレー": 1, "定食": 4, "麺類": 2 } }, out = [], k = 0;
+    Object.keys(spec).forEach(function (g) { Object.keys(spec[g]).forEach(function (m) { for (var i = 0; i < spec[g][m]; i++) { out.push({ "学年": g, "メニュー": m, "時間帯": k % 3 === 2 ? "夕" : "昼", "金額": PRICE[m] }); k++; } }); });
+    return out;
+  })();
+  CA.ORDERS = ORDERS;
+  var FIELDS = { "学年": ["1年", "2年", "3年"], "メニュー": ["カレー", "定食", "麺類"], "時間帯": ["昼", "夕"] };
+  function pivot(rowF, colF, val) {
+    var R = FIELDS[rowF], Cc = FIELDS[colF], cell = {};
+    ORDERS.forEach(function (o) { var k = o[rowF] + "|" + o[colF]; cell[k] = (cell[k] || 0) + (val === "件数" ? 1 : o["金額"]); });
+    return { R: R, C: Cc, get: function (r, c) { return cell[r + "|" + c] || 0; } };
+  }
+  function pivotTable(p, val, hot) {
+    var t = "<div class=\"tbl-wrap\"><table class=\"ref pivot\"><tr><th>" + (val === "件数" ? "件数" : "金額の合計（円）") + "</th>" + p.C.map(function (c) { return "<th>" + c + "</th>"; }).join("") + "<th>総計</th></tr>";
+    var colT = p.C.map(function () { return 0; }), all = 0;
+    p.R.forEach(function (r) {
+      var rt = 0;
+      t += "<tr><th>" + r + "</th>" + p.C.map(function (c, j) { var v = p.get(r, c); rt += v; colT[j] += v; return "<td" + (hot && hot[0] === r && hot[1] === c ? " class=\"hot\"" : "") + ">" + S.fmt(v, 0) + "</td>"; }).join("") + "<td><b>" + S.fmt(rt, 0) + "</b></td></tr>";
+      all += rt;
+    });
+    t += "<tr><th>総計</th>" + colT.map(function (v) { return "<td><b>" + S.fmt(v, 0) + "</b></td>"; }).join("") + "<td><b>" + S.fmt(all, 0) + "</b></td></tr></table></div>";
+    return t;
+  }
+  CA.pivotLab = function (mount, onUse) {
+    var st = { row: "学年", col: "メニュー", val: "件数" }, tries = {};
+    var raw = h("details", { class: "raw" }, h("summary", { text: "元のデータ（1 行 1 件、" + ORDERS.length + " 件）を見る" }),
+      html("<div class=\"tbl-wrap\"><table class=\"ref\"><tr><th></th><th>学年</th><th>メニュー</th><th>時間帯</th><th>金額</th></tr>" + ORDERS.map(function (o, i) { return "<tr><th>" + (i + 1) + "</th><td>" + o["学年"] + "</td><td>" + o["メニュー"] + "</td><td>" + o["時間帯"] + "</td><td>" + o["金額"] + "</td></tr>"; }).join("") + "</table></div>"));
+    function seg(label, key, opts) {
+      var g = h("div", { class: "seg", role: "group", "aria-label": label });
+      opts.forEach(function (o) { g.appendChild(h("button", { type: "button", text: o, "data-k": key, "data-v": o, onclick: function () { set(key, o); } })); });
+      return h("div", { class: "row" }, h("span", { class: "small", text: label }), g);
+    }
+    var out = h("div", { class: "fig-wrap" }), note = h("p", { class: "caption", "aria-live": "polite" });
+    function set(k, v) {
+      if (k === "row" && v === st.col) st.col = st.row;
+      if (k === "col" && v === st.row) st.row = st.col;
+      st[k] = v; draw();
+    }
+    function draw() {
+      mount.querySelectorAll(".seg button").forEach(function (b) { b.setAttribute("aria-pressed", st[b.getAttribute("data-k")] === b.getAttribute("data-v") ? "true" : "false"); });
+      out.innerHTML = pivotTable(pivot(st.row, st.col, st.val), st.val);
+      note.innerHTML = "行＝<b>" + st.row + "</b>、列＝<b>" + st.col + "</b>、値＝<b>" + (st.val === "件数" ? "件数を数える" : "金額を足す") + "</b>。元のデータは 1 件も変わっていません。";
+      tries[st.row + st.col + st.val] = true;
+      if (onUse && Object.keys(tries).length >= 3) onUse();
+    }
+    mount.appendChild(raw);
+    mount.appendChild(seg("行", "row", ["学年", "メニュー", "時間帯"]));
+    mount.appendChild(seg("列", "col", ["学年", "メニュー", "時間帯"]));
+    mount.appendChild(seg("値", "val", ["件数", "金額の合計"]));
+    mount.appendChild(out); mount.appendChild(note);
+    draw();
+  };
+  CA.pivotGame = function (mount, opts) {
+    var Q = [
+      { q: "2年生がいちばん多く注文したメニューは？", val: "件数", ch: ["カレー", "定食", "麺類"], a: 2, why: "2年の行を横に見ると、麺類が 4 件でいちばん多い。" },
+      { q: "定食をいちばん多く注文した学年は？", val: "件数", ch: ["1年", "2年", "3年"], a: 2, why: "定食の列を縦に見ると、3年が 4 件でいちばん多い。" },
+      { q: "1年生の注文は全部で何件？", val: "件数", ch: ["4 件", "8 件", "24 件"], a: 1, why: "1年の行の「総計」が 8 件。4 件はカレーだけ、24 件は全員の総計。" },
+      { q: "カレーの売上（金額の合計）は？", val: "金額の合計", ch: ["7 件", "3,150 円", "450 円"], a: 1, why: "値を「金額の合計」にした表で、カレーの列の総計が 3,150 円（450 円 × 7 件）。" },
+      { q: "この表のセル「3年 × 麺類」の 2 は何を表す？", val: "件数", ch: ["3年生が麺類を注文した件数", "元のデータの 2 行目", "麺類の値段"], a: 0, why: "ピボットのセルは、条件に合う行を数えた（足した）結果。元のデータの 1 行ではない。" }
+    ];
+    var i = 0, ok = 0, tries = 0;
+    var head = h("div", { class: "kind" }), q = h("p", { class: "game-q" }), fig = h("div", { class: "fig-wrap" }), row = h("div", { class: "choices" }), fb = h("div", { class: "feedback", role: "status", "aria-live": "polite" });
+    var next = h("button", { type: "button", class: "primary", text: "次へ" });
+    var box = h("div", { class: "quiz" }, head, fig, q, row, fb, h("div", { class: "row" }, next));
+    function load() {
+      tries = 0; next.disabled = true; fb.className = "feedback"; fb.innerHTML = "";
+      var x = Q[i];
+      head.innerHTML = "<b>表を読む　" + (i + 1) + " / " + Q.length + "</b><span class=\"score\">1 回で正解 " + ok + "</span>";
+      fig.innerHTML = pivotTable(pivot("学年", "メニュー", x.val === "件数" ? "件数" : "金額"), x.val === "件数" ? "件数" : "金額", i === 4 ? ["3年", "麺類"] : null);
+      q.textContent = x.q; row.innerHTML = "";
+      x.ch.forEach(function (c, k) {
+        var b = h("button", { type: "button", text: c });
+        b.onclick = function () {
+          if (!next.disabled) return;
+          tries++;
+          if (k === x.a) {
+            if (tries === 1) ok++;
+            b.classList.add("picked-ok"); fb.className = "feedback ok"; fb.innerHTML = "<span class=\"head\">正解</span>　" + x.why;
+            next.disabled = false; next.textContent = i === Q.length - 1 ? "結果を見る" : "次へ"; next.focus();
+            head.querySelector(".score").textContent = "1 回で正解 " + ok;
+          } else { b.classList.add("picked-ng"); fb.className = "feedback ng"; fb.innerHTML = "<span class=\"head\">もう一度</span>　行（横）と列（縦）が交わるセルを見ましょう。「総計」は行や列の合計です。"; }
+        };
+        row.appendChild(b);
+      });
+    }
+    next.onclick = function () {
+      if (i === Q.length - 1) {
+        fig.innerHTML = ""; row.innerHTML = ""; q.textContent = "";
+        fb.className = "feedback ok"; fb.innerHTML = "<span class=\"head\">" + Q.length + " 問中 " + ok + " 問を 1 回で正解</span>　授業では、この表をピボットテーブルで作ります。";
+        next.textContent = "もう一度"; i = -1; ok = 0;
+        if (opts && opts.onFinish) opts.onFinish();
+        return;
+      }
+      i++; load();
+    };
+    mount.appendChild(box);
+    load();
+  };
+
+
+  /* 固定の選択問題：選択肢の順を、問題文から決まる順に並べ替える（毎回同じ順。正解がいつも1番目にならないように） */
+  CA.choiceQ = function (prompt, choices, answer, msgs, solution) {
+    var hv = parseInt(S.hash("cq|" + prompt), 16), rng = S.mulberry32(hv), ord = S.shuffle(rng, choices.map(function (_, i) { return i; }));
+    /* 正解の位置も問題文から決める（いつも同じ位置にならないように） */
+    var want = hv % choices.length, cur = ord.indexOf(answer), tmp = ord[want]; ord[want] = answer; ord[cur] = tmp;
+    return function () {
+      return { type: "choice", prompt: prompt, choices: ord.map(function (i) { return choices[i]; }), answer: ord.indexOf(answer), solution: solution,
+        check: function (k) { var i = ord[k]; return i === answer ? { ok: true } : { ok: false, msg: msgs[i] }; } };
+    };
+  };
+
 })(typeof window !== "undefined" ? window : globalThis);
 
 </script>
@@ -2469,10 +2771,7 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
       }
     };
   }
-  function choiceQ(prompt, choices, answer, msgs, solution) {
-    return function () { return { type: "choice", prompt: prompt, choices: choices, answer: answer, solution: solution,
-      check: function (i) { return i === answer ? { ok: true } : { ok: false, msg: msgs[i] }; } }; };
-  }
+  var choiceQ = CA.choiceQ;
   function endMsg(box, ok, n, good, bad, btn) {
     var again = h("button", { type: "button", class: btn ? "primary" : null, text: btn || "もう一度" });
     var msg = h("div", { class: "feedback " + (ok === n ? "ok" : "ng"), html: "<span class=\"head\">" + n + " 問中 " + ok + " 問正解</span>　" + (ok === n ? good : bad) });
