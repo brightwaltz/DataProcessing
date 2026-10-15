@@ -372,9 +372,57 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
 .us { font-family: Menlo, Consolas, "Courier New", monospace; font-weight: 700; color: var(--lamp); padding: 0 1px; }
 .seg button { white-space: nowrap; }
 
+/* 左のメニュー（2026-10-15 先生の依頼）。広い画面では左に固定し、狭い画面では見出しの「メニュー」ボタンで開く。
+   1080px は、13インチの Windows ノート（表示 125%）の幅に合わせた境目。 */
+.sidenav { display: none; }
+.nav-toggle { display: none; }
+.sidenav .side-sec { display: grid; gap: 4px; padding-block: 12px; border-bottom: 1px solid var(--rule); }
+.sidenav .side-sec:first-child { padding-top: 0; }
+.sidenav .side-sec:last-child { border-bottom: 0; }
+.sidenav .side-h { font-size: var(--fs-small); font-weight: 700; color: var(--muted); padding-inline: 10px; }
+.sidenav a { display: block; padding: 5px 10px; border-radius: 6px; color: var(--ink); text-decoration: none; font-size: var(--fs-small); line-height: 1.5; }
+.sidenav a:hover { background: var(--accent-soft); }
+.sidenav a[aria-current="page"] { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.sidenav a .n { font-family: var(--font-mono); color: var(--accent); margin-right: 6px; }
+.sidenav a.done::after { content: "✓"; color: var(--lamp); font-weight: 700; margin-left: 6px; }
+.sidenav .lv-btns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding-inline: 4px; }
+.sidenav .lv-btns button, .explain-tabs button {
+  font: 700 var(--fs-small)/1.4 var(--font-body); padding: 6px 12px; border-radius: 999px;
+  border: 1px solid var(--rule); background: var(--panel); color: var(--ink); cursor: pointer;
+}
+.sidenav .lv-btns button[aria-pressed="true"], .explain-tabs button[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.sidenav .side-note { font-size: var(--fs-small); color: var(--muted); line-height: 1.6; padding-inline: 10px; text-wrap: balance; }
+@media (min-width: 1080px) {
+  body.has-sidenav, body:has(> .sidenav) { padding-left: 272px; }
+  .sidenav {
+    display: block; position: fixed; top: 0; bottom: 0; left: 0; width: 248px; overflow-y: auto; z-index: 20;
+    background: var(--panel); border-right: 1px solid var(--rule); padding: 18px 12px 40px;
+  }
+  .has-sidenav .intro .toc, body:has(> .sidenav) .intro .toc { display: none; }
+  .nav-scrim { display: none !important; }
+}
+@media (max-width: 1079px) {
+  .nav-toggle {
+    display: inline-flex; align-items: center; gap: 6px; font: 700 var(--fs-small)/1.4 var(--font-body);
+    padding: 6px 12px; border-radius: 8px; border: 2px solid var(--accent); background: var(--panel); color: var(--accent); cursor: pointer;
+  }
+  .sidenav.open {
+    display: block; position: fixed; top: 0; bottom: 0; left: 0; width: min(300px, 86vw); overflow-y: auto; z-index: 40;
+    background: var(--panel); border-right: 1px solid var(--rule); padding: 18px 12px 40px; box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+  }
+  .nav-scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.35); z-index: 30; }
+}
+
+/* 解説の詳しさ（簡単・通常・詳細・発展）。「通常」は今までの要点の一文 */
+.explain { display: grid; gap: 8px; max-width: 40em; scroll-margin-top: 120px; }
+.explain-tabs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.explain-tabs .lbl { font-size: var(--fs-small); font-weight: 700; color: var(--muted); margin-right: 4px; }
+.explain .keyline:not([data-lv="normal"]) { font-weight: 400; }
+.to-explain { font-size: var(--fs-small); justify-self: start; }
+
 </style>
 <header class="mast">
-  <div class="mast-inner">
+  <div class="mast-inner"><button type="button" class="nav-toggle" aria-controls="sidenav" aria-expanded="false">☰ メニュー</button>
     <div>
       <div class="course"><a href="./">データ処理 2026 予習・復習ページ一覧</a></div>
       <div class="title">第3回 復習　データ集計の基本</div>
@@ -383,11 +431,12 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
   </div>
 </header>
 
+<aside class="sidenav" id="sidenav" aria-label="メニュー"><div class="side-sec"><div class="side-h">ページ</div><a href="./">トップ（日程と一覧）</a><a href="w03-review.html?v=202610152338" aria-current="page">第3回 復習</a><a href="w04-preview.html?v=202610152338">第4回 予習</a></div><div class="side-sec"><div class="side-h">このページ</div><a href="#i1" data-item="i1"><span class="n">1</span>平均・中央値・最頻値</a><a href="#i2" data-item="i2"><span class="n">2</span>外れ値</a><a href="#i3" data-item="i3"><span class="n">3</span>ヒストグラム</a><a href="#i4" data-item="i4"><span class="n">4</span>形と代表値</a><a href="#i5" data-item="i5"><span class="n">5</span>標準偏差</a><a href="#i6" data-item="i6"><span class="n">6</span>STDEV.P と S</a><a href="#i7" data-item="i7"><span class="n">7</span>Excel の関数</a><a href="#pit" data-item="pit">つまずき</a><a href="#final" data-item="final">仕上げ</a></div><div class="side-sec"><div class="side-h">解説の詳しさ</div><div class="lv-btns" role="group" aria-label="解説の詳しさ"><button type="button" data-set-level="easy" aria-pressed="false">簡単</button><button type="button" data-set-level="normal" aria-pressed="true">通常</button><button type="button" data-set-level="detail" aria-pressed="false">詳細</button><button type="button" data-set-level="adv" aria-pressed="false">発展</button></div><p class="side-note">各項目の「解説」が、選んだ詳しさで出ます。</p></div></aside>
 <main class="page">
   <section class="intro">
     <h1>第3回 復習<span class="sub">データ集計の基本（10/16 の授業）</span></h1>
     <p class="prose">「平均＝ふつう」ではない。今日の授業の「最低限これだけ」7項目を、自分の手で確かめられるようにするページです。各項目の<b>確認問題</b>に正解すると、上のランプが点きます。</p>
-    <div class="meta"><span>目安 35〜40分（動画 約1分20秒を含む）</span><span>問題の数は、課題とは別の練習用です</span><span>記録はこのブラウザの中だけに残ります</span></div>
+    <div class="meta"><span>目安 35〜40分（動画 約1分20秒を含む）</span><span>問題の数は、課題とは別の練習用です</span><span>記録はこのブラウザの中だけに残ります</span><span>各項目の解説は「簡単・通常・詳細・発展」から選べます</span></div>
     <a class="movie-link" href="#movie"><span class="tri" aria-hidden="true"></span><span><b>動画を見る</b>：平均は引っぱられ、中央値は動かない（約1分20秒）</span></a>
     <nav class="toc" aria-label="項目">
       <a href="#i1"><span class="n">1</span>平均・中央値・最頻値</a>
@@ -415,7 +464,12 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
       <h2>「真ん中」の決め方は3つ</h2>
       <span class="slides">授業スライド 8〜9</span>
     </div>
-    <p class="keyline">平均は「全部足して個数で割る」。中央値は「小さい順に並べた真ん中」（偶数個なら真ん中2つの平均）。最頻値は「いちばん多く出てくる値」。</p>
+    <div class="explain" data-explain>
+      <p class="keyline" data-lv="easy" hidden>平均は「みんなの分を集めて、同じに分け直したらいくつ」。中央値は「小さい順に並べた、ちょうど真ん中の人の値」。最頻値は「いちばん多く出てくる値」。</p>
+      <p class="keyline" data-lv="normal">平均は「全部足して個数で割る」。中央値は「小さい順に並べた真ん中」（偶数個なら真ん中2つの平均）。最頻値は「いちばん多く出てくる値」。</p>
+      <p class="keyline" data-lv="detail" hidden>平均は 合計 ÷ 個数 なので、平均 × 個数 で合計に戻せる。中央値は値の大きさではなく順番だけを使う。個数が偶数なら真ん中2つの平均なので、データにない値（たとえば 8.5）になることもある。最頻値は「何回出たか」ではなく「出てきた値」を答える。Excel では AVERAGE・MEDIAN・MODE.SNGL で、MEDIAN は並べ替えなくても正しく計算する。</p>
+      <p class="keyline" data-lv="adv" hidden>平均にはほかの種類もある。刈り込み平均は、上と下の端を何割か除いてから平均する（審査員の採点で、最高点と最低点を除くのと同じ考え）。幾何平均は、伸び率の平均に使う（2倍と8倍の平均は5倍ではなく4倍）。平均は「各値との差の2乗の合計」が、中央値は「各値との差の大きさの合計」が、それぞれいちばん小さくなる点、という見方もできる。</p>
+    </div>
     <div class="lab" id="s1"></div>
     <div id="c1"></div>
     <div id="d1"></div>
@@ -428,7 +482,12 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
       <h2>外れ値1つで、平均だけが動く</h2>
       <span class="slides">授業スライド 10〜11、17〜18</span>
     </div>
-    <p class="keyline">大きく外れた値（外れ値）があると、平均はそちらへ引っぱられる。中央値は順番しか使わないので、ほとんど動かない。</p>
+    <div class="explain" data-explain>
+      <p class="keyline" data-lv="easy" hidden>とても大きい（または小さい）値が1つまざると、平均はそちらに引っぱられる。中央値は真ん中の人の値なので、端の人が変わってもほとんど動かない。</p>
+      <p class="keyline" data-lv="normal">大きく外れた値（外れ値）があると、平均はそちらへ引っぱられる。中央値は順番しか使わないので、ほとんど動かない。</p>
+      <p class="keyline" data-lv="detail" hidden>平均は全員の値を足して割るので、1人の値が増えた分を、人数で分け合う形で平均が上がる（4人のうち1人が 40 増えると、平均は 10 上がる）。中央値が変わるのは、真ん中の順番の人が入れ替わるときだけ。外れ値を見つけたら、すぐ消さずに、入力ミスか本当の値かを確かめる。本当の値なら、平均と中央値を両方書いておく。</p>
+      <p class="keyline" data-lv="adv" hidden>外れ値の影響を受けにくい性質を「頑健（ロバスト）」という。中央値は、半分近くの値がでたらめになっても大きくは崩れないが、平均は1つの値を大きくすれば、いくらでも大きくなる。外れ値の目安には、四分位範囲（真ん中の半分の幅）の 1.5 倍より外側、という決め方があり、箱ひげ図で使われる。</p>
+    </div>
     <div class="stack" id="movie">
       <p class="prose">まず動画で確かめましょう。途中で止まったら、予想を選んでから続きを見てください。最低限4（形と代表値）の内容も含みます。</p>
       <div id="film"></div>
@@ -447,7 +506,12 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
       <h2>ヒストグラム：区切って数え、棒をくっつける</h2>
       <span class="slides">授業スライド 13〜14、34〜35</span>
     </div>
-    <p class="keyline">区切り（階級）は「○以上 △未満」。ちょうど境目の値は上の区切りに入る。度数を棒にして、すき間を 0 にするとヒストグラム。</p>
+    <div class="explain" data-explain>
+      <p class="keyline" data-lv="easy" hidden>数をいくつかの区切りに分けて、区切りごとに何個あるかを数え、その数を棒にしたもの。棒と棒はくっつけて描く。</p>
+      <p class="keyline" data-lv="normal">区切り（階級）は「○以上 △未満」。ちょうど境目の値は上の区切りに入る。度数を棒にして、すき間を 0 にするとヒストグラム。</p>
+      <p class="keyline" data-lv="detail" hidden>区切り（階級）は「○以上 △未満」で、ちょうど境目の値は上の区切りに入る。Excel では COUNTIFS(範囲,"&gt;="&amp;下限,範囲,"&lt;"&amp;上限) で数え、度数の合計がデータの個数と同じかを確かめる。棒の間隔を 0% にするのは、横軸がつながった量だから。項目を並べて比べる棒グラフとは、ここが違う。</p>
+      <p class="keyline" data-lv="adv" hidden>区切りの幅を変えると、同じデータでも形の見え方が変わる。区切りの数の目安には「スタージェスの公式」（区切りの数 ≒ 1 ＋ log₂（個数））などがある。区切りの幅がそろっていないときは、棒の高さを 度数 ÷ 幅 にして、棒の面積が度数を表すようにする。</p>
+    </div>
     <div class="lab" id="s3"></div>
     <div id="c3"></div>
     <div id="d3"></div>
@@ -460,7 +524,12 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
       <h2>形を見てから、代表値を選ぶ</h2>
       <span class="slides">授業スライド 15〜16、19〜21</span>
     </div>
-    <p class="keyline">右に裾が長い形（人口・貯蓄・年収など）では 平均 ＞ 中央値。左右がほぼ対称なら、平均と中央値は近い。裾が長いときは中央値も一緒に見る。</p>
+    <div class="explain" data-explain>
+      <p class="keyline" data-lv="easy" hidden>まずヒストグラムで山の形を見てから、「真ん中」の表し方を決める。右に長いしっぽがあるときは平均が大きく出やすいので、中央値も一緒に見る。</p>
+      <p class="keyline" data-lv="normal">右に裾が長い形（人口・貯蓄・年収など）では 平均 ＞ 中央値。左右がほぼ対称なら、平均と中央値は近い。裾が長いときは中央値も一緒に見る。</p>
+      <p class="keyline" data-lv="detail" hidden>右に裾が長い形（人口・貯蓄・年収など）では 平均 ＞ 中央値、左に裾が長い形（ほとんどの人が満点近くを取ったテストなど）では 平均 ＜ 中央値、左右がほぼ対称なら 平均 ≒ 中央値。山が2つある形では、平均も中央値も、どちらの山にもない値になることがあるので、グループに分けて見る。</p>
+      <p class="keyline" data-lv="adv" hidden>形の偏りを数で表したものを「歪度（わいど）」という。右に裾が長いと正、左に裾が長いと負になる。右に裾が長いデータは、値の対数をとると左右対称に近づくことが多く、所得などの分析で使われる。</p>
+    </div>
     <div class="lab" id="s4"></div>
     <div id="c4"></div>
     <div id="d4"></div>
@@ -473,7 +542,12 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
       <h2>標準偏差：差 → 2乗 → 平均 → √</h2>
       <span class="slides">授業スライド 22〜25</span>
     </div>
-    <p class="keyline">標準偏差は「平均から、だいたいどれくらい離れているか」。差を2乗して平均すると単位も2乗（点²）になるので、最後に √ をとって元の単位（点）に戻す。</p>
+    <div class="explain" data-explain>
+      <p class="keyline" data-lv="easy" hidden>標準偏差は「平均から、だいたいどれくらい離れているか」を表す数。みんなが平均の近くにいれば小さく、ばらばらなら大きい。全員が同じ値なら 0。</p>
+      <p class="keyline" data-lv="normal">標準偏差は「平均から、だいたいどれくらい離れているか」。差を2乗して平均すると単位も2乗（点²）になるので、最後に √ をとって元の単位（点）に戻す。</p>
+      <p class="keyline" data-lv="detail" hidden>計算は 差 → 2乗 → 平均 → √ の順。差をそのまま足すと、プラスとマイナスが打ち消し合って必ず 0 になるので、2乗してから平均する。2乗の平均（分散）は単位も2乗（点²）になるので、最後に √ をとって点に戻す。全員に同じ数を足しても標準偏差は変わらず、全員を2倍すると標準偏差も2倍になる。</p>
+      <p class="keyline" data-lv="adv" hidden>山が左右対称な釣鐘の形（正規分布）に近いときは、平均 ± 標準偏差1つ分におよそ 68%、± 2つ分におよそ 95% の人が入る。偏差値は、平均を 50、標準偏差を 10 にそろえた目盛りで、偏差値 ＝ 50 ＋ 10 ×（点 − 平均）÷ 標準偏差 で求める。</p>
+    </div>
     <div class="lab" id="s5"></div>
     <div id="c5"></div>
     <div id="d5a"></div>
@@ -487,7 +561,12 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
       <h2>全部そろっていれば STDEV.P</h2>
       <span class="slides">授業スライド 26</span>
     </div>
-    <p class="keyline">データが全部そろっている（47都道府県すべて、クラス全員）なら STDEV.P。一部から全体を推測する（アンケートの100人など）なら STDEV.S。</p>
+    <div class="explain" data-explain>
+      <p class="keyline" data-lv="easy" hidden>知りたい相手の全員分のデータがあるなら STDEV.P、一部の人のデータから全体を考えるなら STDEV.S。迷ったら「全員分そろっているか」を考える。</p>
+      <p class="keyline" data-lv="normal">データが全部そろっている（47都道府県すべて、クラス全員）なら STDEV.P。一部から全体を推測する（アンケートの100人など）なら STDEV.S。</p>
+      <p class="keyline" data-lv="detail" hidden>P は母集団（population、知りたい相手の全体）、S は標本（sample、全体から取り出した一部）の頭文字。STDEV.P は差の2乗の合計を「個数」で割り、STDEV.S は「個数 − 1」で割るので、S の方が少し大きくなる。個数が多いと2つの差は小さく、個数が少ないと差が目立つ。</p>
+      <p class="keyline" data-lv="adv" hidden>一部（標本）の値から全体のばらつきを見積もると、個数で割った値は、平均すると本当のばらつきより少し小さめに出る。差を測る基準の平均が、標本の値に合わせて決まっているためで、その分を補うために「個数 − 1」で割る（不偏分散）。この −1 は「自由度」という考え方につながる。</p>
+    </div>
     <div class="lab" id="s6"></div>
     <div id="c6"></div>
     <div id="d6"></div>
@@ -500,7 +579,12 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
       <h2>Excel：関数を選び、式は右へコピー</h2>
       <span class="slides">授業スライド 28、31〜34</span>
     </div>
-    <p class="keyline">件数 COUNT、平均 AVERAGE、中央値 MEDIAN、最頻値 MODE.SNGL、最大・最小 MAX・MIN、標準偏差 STDEV.P、区切りごとの個数 COUNTIFS。$ の付いていない参照は、コピーした方向へずれる。</p>
+    <div class="explain" data-explain>
+      <p class="keyline" data-lv="easy" hidden>やりたいこと（個数、平均、真ん中、ばらつき…）に合う関数を選ぶ。1つ作った式は、右や下へコピーして使い回す。</p>
+      <p class="keyline" data-lv="normal">件数 COUNT、平均 AVERAGE、中央値 MEDIAN、最頻値 MODE.SNGL、最大・最小 MAX・MIN、標準偏差 STDEV.P、区切りごとの個数 COUNTIFS。$ の付いていない参照は、コピーした方向へずれる。</p>
+      <p class="keyline" data-lv="detail" hidden>COUNT は数が入ったセルの個数で、文字のセルは数えない（空でないセルを数えるのは COUNTA）。$ の付いていない参照は、コピーした方向へずれる（右へ1つなら列が1つ、下へ1つなら行が1つ）。$E$2:$E$48 のように $ を付けると動かない。度数分布で、データの範囲は固定し、区切りのセルだけずらしたいときに使う。</p>
+      <p class="keyline" data-lv="adv" hidden>$ は列だけ（$E2）や行だけ（E$2）にも付けられる（複合参照）。Windows の Excel では、参照を選んで F4 キーを押すたびに $E$2 → E$2 → $E2 → E2 と切り替わる。データに「テーブル」の書式を付けると、行が増えても式の範囲が自動で広がる（構造化参照）。</p>
+    </div>
     <div class="lab" id="s7"></div>
     <div id="c7"></div>
     <div id="d7a"></div>
@@ -523,7 +607,7 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
     <h2>仕上げの5問</h2>
     <p class="prose">項目1・2・3・5・6から1問ずつ出します。間違えたら、その項目に戻って確認問題と練習をもう一度。</p>
     <div id="fin"></div>
-    <div class="done-banner" id="banner" role="status">7項目すべての確認問題に正解しました。次回（10/23）は「データの可視化」です。<a href="w04-preview.html?v=202610152231">第4回 予習ページ</a>も見ておきましょう。</div>
+    <div class="done-banner" id="banner" role="status">7項目すべての確認問題に正解しました。次回（10/23）は「データの可視化」です。<a href="w04-preview.html?v=202610152338">第4回 予習ページ</a>も見ておきましょう。</div>
   </section>
 
   <footer>
@@ -1562,6 +1646,10 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
         var id = el.getAttribute("data-item-state");
         el.textContent = progress.done[id] ? "確認問題に正解しました" : "";
       });
+      // 左のメニューの項目にも、正解済みの印を付ける
+      document.querySelectorAll(".sidenav a[data-item]").forEach(function (a) {
+        a.classList.toggle("done", !!progress.done[a.getAttribute("data-item")]);
+      });
       progress.listeners.forEach(function (fn) { fn(n, total); });
     }
   };
@@ -1628,10 +1716,14 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
     var area = h("div");
     var fb = h("div", { class: "feedback", role: "status", "aria-live": "polite" });
     var sol = h("details", { class: "solution" }, h("summary", { text: "解き方を見る" }), h("div"));
+    // 項目に解説（簡単・通常・詳細・発展）があれば、そこへ戻る案内を「解き方」の下に置く
+    var sec = mount.closest ? mount.closest("section.item") : null;
+    var ex = sec ? sec.querySelector("[data-explain]") : null;
+    var toEx = ex ? h("a", { class: "to-explain", href: "#" + ex.id, text: "この項目の解説を読む（簡単・通常・詳細・発展）" }) : null;
     var bNext = h("button", { type: "button", text: mode === "seq" ? "次の問題へ" : "別の問題を出す" });
     var foot = h("div", { class: "row" });
     if (mode !== "check") foot.appendChild(bNext);
-    var box = h("div", { class: "quiz" + (mode === "check" ? " check-quiz" : "") }, kind, prompt, area, fb, sol, foot);
+    var box = h("div", { class: "quiz" + (mode === "check" ? " check-quiz" : "") }, kind, prompt, area, fb, sol, toEx, foot);
     if (mode === "check" && opts.itemId && CA.progress.isDone(opts.itemId)) box.classList.add("done");
 
     function label() {
@@ -1736,6 +1828,80 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
     var d = h("details", { class: "levels" }, h("summary", { text: note }), ol);
     mount.appendChild(d);
   };
+
+  /* ---------- 解説の詳しさ（簡単・通常・詳細・発展） ----------
+     ページには <div class="explain" data-explain> の中に data-lv="easy|normal|detail|adv" の段落を書く。
+     選んだ詳しさはサイト全体で共通（どのページでも同じ詳しさで開く）。スクリプトが動かなくても「通常」は読める。 */
+  var LV = [["easy", "簡単"], ["normal", "通常"], ["detail", "詳細"], ["adv", "発展"]];
+  var LV_KEY = "dp2026.explain-level";
+  var level = "normal";
+  function savedLevel() {
+    try { var v = localStorage.getItem(LV_KEY); return LV.some(function (x) { return x[0] === v; }) ? v : "normal"; } catch (e) { return "normal"; }
+  }
+  function applyLevel(v) {
+    level = v;
+    document.querySelectorAll("[data-explain]").forEach(function (box) {
+      box.querySelectorAll("[data-lv]").forEach(function (p) { p.hidden = p.getAttribute("data-lv") !== v; });
+      box.querySelectorAll("[data-pick]").forEach(function (b) {
+        var on = b.getAttribute("data-pick") === v;
+        b.setAttribute("aria-selected", on ? "true" : "false"); b.tabIndex = on ? 0 : -1;
+      });
+    });
+    document.querySelectorAll("[data-set-level]").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-set-level") === v ? "true" : "false");
+    });
+  }
+  function setLevel(v) { applyLevel(v); try { localStorage.setItem(LV_KEY, v); } catch (e) { /* 保存できない環境 */ } }
+  CA.explain = { level: function () { return level; }, set: setLevel };
+
+  function initExplain() {
+    document.querySelectorAll("[data-explain]").forEach(function (box) {
+      var sec = box.closest("section");
+      if (!box.id) box.id = "ex-" + (sec && sec.id ? sec.id : CA.uid("x"));
+      var tabs = h("div", { class: "explain-tabs", role: "tablist", "aria-label": "解説の詳しさ" }, h("span", { class: "lbl", text: "解説" }));
+      LV.forEach(function (x) {
+        var panel = box.querySelector('[data-lv="' + x[0] + '"]');
+        if (!panel) return;
+        panel.id = box.id + "-" + x[0]; panel.setAttribute("role", "tabpanel");
+        tabs.appendChild(h("button", { type: "button", role: "tab", "data-pick": x[0], "aria-controls": panel.id, text: x[1], onclick: function () { setLevel(x[0]); } }));
+      });
+      tabs.addEventListener("keydown", function (e) {
+        if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+        var bs = Array.prototype.slice.call(tabs.querySelectorAll("[data-pick]"));
+        var k = bs.indexOf(document.activeElement); if (k < 0) return;
+        var nb = bs[(k + (e.key === "ArrowRight" ? 1 : bs.length - 1)) % bs.length];
+        setLevel(nb.getAttribute("data-pick")); nb.focus(); e.preventDefault();
+      });
+      box.insertBefore(tabs, box.firstChild);
+    });
+    document.querySelectorAll("[data-set-level]").forEach(function (b) {
+      b.addEventListener("click", function () { setLevel(b.getAttribute("data-set-level")); });
+    });
+    applyLevel(savedLevel());
+  }
+
+  /* ---------- 左のメニュー（狭い画面では「メニュー」ボタンで開く） ---------- */
+  function initSidenav() {
+    var nav = document.querySelector(".sidenav");
+    if (!nav) return;
+    document.body.classList.add("has-sidenav");
+    var btn = document.querySelector(".nav-toggle");
+    var scrim = h("div", { class: "nav-scrim", hidden: true });
+    document.body.appendChild(scrim);
+    function close() { nav.classList.remove("open"); scrim.hidden = true; if (btn) btn.setAttribute("aria-expanded", "false"); }
+    function open() {
+      nav.classList.add("open"); scrim.hidden = false; if (btn) btn.setAttribute("aria-expanded", "true");
+      var f = nav.querySelector("a, button"); if (f) f.focus();
+    }
+    if (btn) btn.addEventListener("click", function () { if (nav.classList.contains("open")) close(); else open(); });
+    scrim.addEventListener("click", close);
+    nav.addEventListener("click", function (e) { if (e.target.closest && e.target.closest("a")) close(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && nav.classList.contains("open")) { close(); if (btn) btn.focus(); }
+    });
+  }
+
+  if (typeof document !== "undefined" && document.body) { initSidenav(); initExplain(); }
 })(typeof window !== "undefined" ? window : globalThis);
 
 </script>

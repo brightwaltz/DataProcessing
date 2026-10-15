@@ -372,9 +372,57 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
 .us { font-family: Menlo, Consolas, "Courier New", monospace; font-weight: 700; color: var(--lamp); padding: 0 1px; }
 .seg button { white-space: nowrap; }
 
+/* 左のメニュー（2026-10-15 先生の依頼）。広い画面では左に固定し、狭い画面では見出しの「メニュー」ボタンで開く。
+   1080px は、13インチの Windows ノート（表示 125%）の幅に合わせた境目。 */
+.sidenav { display: none; }
+.nav-toggle { display: none; }
+.sidenav .side-sec { display: grid; gap: 4px; padding-block: 12px; border-bottom: 1px solid var(--rule); }
+.sidenav .side-sec:first-child { padding-top: 0; }
+.sidenav .side-sec:last-child { border-bottom: 0; }
+.sidenav .side-h { font-size: var(--fs-small); font-weight: 700; color: var(--muted); padding-inline: 10px; }
+.sidenav a { display: block; padding: 5px 10px; border-radius: 6px; color: var(--ink); text-decoration: none; font-size: var(--fs-small); line-height: 1.5; }
+.sidenav a:hover { background: var(--accent-soft); }
+.sidenav a[aria-current="page"] { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.sidenav a .n { font-family: var(--font-mono); color: var(--accent); margin-right: 6px; }
+.sidenav a.done::after { content: "✓"; color: var(--lamp); font-weight: 700; margin-left: 6px; }
+.sidenav .lv-btns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding-inline: 4px; }
+.sidenav .lv-btns button, .explain-tabs button {
+  font: 700 var(--fs-small)/1.4 var(--font-body); padding: 6px 12px; border-radius: 999px;
+  border: 1px solid var(--rule); background: var(--panel); color: var(--ink); cursor: pointer;
+}
+.sidenav .lv-btns button[aria-pressed="true"], .explain-tabs button[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.sidenav .side-note { font-size: var(--fs-small); color: var(--muted); line-height: 1.6; padding-inline: 10px; text-wrap: balance; }
+@media (min-width: 1080px) {
+  body.has-sidenav, body:has(> .sidenav) { padding-left: 272px; }
+  .sidenav {
+    display: block; position: fixed; top: 0; bottom: 0; left: 0; width: 248px; overflow-y: auto; z-index: 20;
+    background: var(--panel); border-right: 1px solid var(--rule); padding: 18px 12px 40px;
+  }
+  .has-sidenav .intro .toc, body:has(> .sidenav) .intro .toc { display: none; }
+  .nav-scrim { display: none !important; }
+}
+@media (max-width: 1079px) {
+  .nav-toggle {
+    display: inline-flex; align-items: center; gap: 6px; font: 700 var(--fs-small)/1.4 var(--font-body);
+    padding: 6px 12px; border-radius: 8px; border: 2px solid var(--accent); background: var(--panel); color: var(--accent); cursor: pointer;
+  }
+  .sidenav.open {
+    display: block; position: fixed; top: 0; bottom: 0; left: 0; width: min(300px, 86vw); overflow-y: auto; z-index: 40;
+    background: var(--panel); border-right: 1px solid var(--rule); padding: 18px 12px 40px; box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+  }
+  .nav-scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.35); z-index: 30; }
+}
+
+/* 解説の詳しさ（簡単・通常・詳細・発展）。「通常」は今までの要点の一文 */
+.explain { display: grid; gap: 8px; max-width: 40em; scroll-margin-top: 120px; }
+.explain-tabs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.explain-tabs .lbl { font-size: var(--fs-small); font-weight: 700; color: var(--muted); margin-right: 4px; }
+.explain .keyline:not([data-lv="normal"]) { font-weight: 400; }
+.to-explain { font-size: var(--fs-small); justify-self: start; }
+
 </style>
 <header class="mast">
-  <div class="mast-inner">
+  <div class="mast-inner"><button type="button" class="nav-toggle" aria-controls="sidenav" aria-expanded="false">☰ メニュー</button>
     <div>
       <div class="course"><a href="./">データ処理 2026 予習・復習ページ一覧</a></div>
       <div class="title">第4回 予習　データの可視化</div>
@@ -383,6 +431,7 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
   </div>
 </header>
 
+<aside class="sidenav" id="sidenav" aria-label="メニュー"><div class="side-sec"><div class="side-h">ページ</div><a href="./">トップ（日程と一覧）</a><a href="w03-review.html?v=202610152338">第3回 復習</a><a href="w04-preview.html?v=202610152338" aria-current="page">第4回 予習</a></div><div class="side-sec"><div class="side-h">このページ</div><a href="#t1" data-item="t1">調べてから来よう（3つ）</a><a href="#t2" data-item="t2">前回の確認（3問）</a><a href="#t3" data-item="t3">ゲーム：言いたいことに合うグラフは？</a></div></aside>
 <main class="page">
   <section class="intro">
     <h1>第4回 予習<span class="sub">データの可視化（10/23 の授業の前に）</span></h1>
@@ -413,7 +462,7 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
       <h2>前回の確認（3問）</h2>
       <span class="slides">第3回 データ集計の基本</span>
     </div>
-    <p class="prose">第4回でも、まず表を集計してからグラフにします。解けなかったら、<a href="w03-review.html?v=202610152231">第3回 復習ページ</a>で確かめてから授業に来てください。</p>
+    <p class="prose">第4回でも、まず表を集計してからグラフにします。解けなかったら、<a href="w03-review.html?v=202610152338">第3回 復習ページ</a>で確かめてから授業に来てください。</p>
     <div id="review"></div>
   </section>
 
@@ -1472,6 +1521,10 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
         var id = el.getAttribute("data-item-state");
         el.textContent = progress.done[id] ? "確認問題に正解しました" : "";
       });
+      // 左のメニューの項目にも、正解済みの印を付ける
+      document.querySelectorAll(".sidenav a[data-item]").forEach(function (a) {
+        a.classList.toggle("done", !!progress.done[a.getAttribute("data-item")]);
+      });
       progress.listeners.forEach(function (fn) { fn(n, total); });
     }
   };
@@ -1538,10 +1591,14 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
     var area = h("div");
     var fb = h("div", { class: "feedback", role: "status", "aria-live": "polite" });
     var sol = h("details", { class: "solution" }, h("summary", { text: "解き方を見る" }), h("div"));
+    // 項目に解説（簡単・通常・詳細・発展）があれば、そこへ戻る案内を「解き方」の下に置く
+    var sec = mount.closest ? mount.closest("section.item") : null;
+    var ex = sec ? sec.querySelector("[data-explain]") : null;
+    var toEx = ex ? h("a", { class: "to-explain", href: "#" + ex.id, text: "この項目の解説を読む（簡単・通常・詳細・発展）" }) : null;
     var bNext = h("button", { type: "button", text: mode === "seq" ? "次の問題へ" : "別の問題を出す" });
     var foot = h("div", { class: "row" });
     if (mode !== "check") foot.appendChild(bNext);
-    var box = h("div", { class: "quiz" + (mode === "check" ? " check-quiz" : "") }, kind, prompt, area, fb, sol, foot);
+    var box = h("div", { class: "quiz" + (mode === "check" ? " check-quiz" : "") }, kind, prompt, area, fb, sol, toEx, foot);
     if (mode === "check" && opts.itemId && CA.progress.isDone(opts.itemId)) box.classList.add("done");
 
     function label() {
@@ -1646,6 +1703,80 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
     var d = h("details", { class: "levels" }, h("summary", { text: note }), ol);
     mount.appendChild(d);
   };
+
+  /* ---------- 解説の詳しさ（簡単・通常・詳細・発展） ----------
+     ページには <div class="explain" data-explain> の中に data-lv="easy|normal|detail|adv" の段落を書く。
+     選んだ詳しさはサイト全体で共通（どのページでも同じ詳しさで開く）。スクリプトが動かなくても「通常」は読める。 */
+  var LV = [["easy", "簡単"], ["normal", "通常"], ["detail", "詳細"], ["adv", "発展"]];
+  var LV_KEY = "dp2026.explain-level";
+  var level = "normal";
+  function savedLevel() {
+    try { var v = localStorage.getItem(LV_KEY); return LV.some(function (x) { return x[0] === v; }) ? v : "normal"; } catch (e) { return "normal"; }
+  }
+  function applyLevel(v) {
+    level = v;
+    document.querySelectorAll("[data-explain]").forEach(function (box) {
+      box.querySelectorAll("[data-lv]").forEach(function (p) { p.hidden = p.getAttribute("data-lv") !== v; });
+      box.querySelectorAll("[data-pick]").forEach(function (b) {
+        var on = b.getAttribute("data-pick") === v;
+        b.setAttribute("aria-selected", on ? "true" : "false"); b.tabIndex = on ? 0 : -1;
+      });
+    });
+    document.querySelectorAll("[data-set-level]").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-set-level") === v ? "true" : "false");
+    });
+  }
+  function setLevel(v) { applyLevel(v); try { localStorage.setItem(LV_KEY, v); } catch (e) { /* 保存できない環境 */ } }
+  CA.explain = { level: function () { return level; }, set: setLevel };
+
+  function initExplain() {
+    document.querySelectorAll("[data-explain]").forEach(function (box) {
+      var sec = box.closest("section");
+      if (!box.id) box.id = "ex-" + (sec && sec.id ? sec.id : CA.uid("x"));
+      var tabs = h("div", { class: "explain-tabs", role: "tablist", "aria-label": "解説の詳しさ" }, h("span", { class: "lbl", text: "解説" }));
+      LV.forEach(function (x) {
+        var panel = box.querySelector('[data-lv="' + x[0] + '"]');
+        if (!panel) return;
+        panel.id = box.id + "-" + x[0]; panel.setAttribute("role", "tabpanel");
+        tabs.appendChild(h("button", { type: "button", role: "tab", "data-pick": x[0], "aria-controls": panel.id, text: x[1], onclick: function () { setLevel(x[0]); } }));
+      });
+      tabs.addEventListener("keydown", function (e) {
+        if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+        var bs = Array.prototype.slice.call(tabs.querySelectorAll("[data-pick]"));
+        var k = bs.indexOf(document.activeElement); if (k < 0) return;
+        var nb = bs[(k + (e.key === "ArrowRight" ? 1 : bs.length - 1)) % bs.length];
+        setLevel(nb.getAttribute("data-pick")); nb.focus(); e.preventDefault();
+      });
+      box.insertBefore(tabs, box.firstChild);
+    });
+    document.querySelectorAll("[data-set-level]").forEach(function (b) {
+      b.addEventListener("click", function () { setLevel(b.getAttribute("data-set-level")); });
+    });
+    applyLevel(savedLevel());
+  }
+
+  /* ---------- 左のメニュー（狭い画面では「メニュー」ボタンで開く） ---------- */
+  function initSidenav() {
+    var nav = document.querySelector(".sidenav");
+    if (!nav) return;
+    document.body.classList.add("has-sidenav");
+    var btn = document.querySelector(".nav-toggle");
+    var scrim = h("div", { class: "nav-scrim", hidden: true });
+    document.body.appendChild(scrim);
+    function close() { nav.classList.remove("open"); scrim.hidden = true; if (btn) btn.setAttribute("aria-expanded", "false"); }
+    function open() {
+      nav.classList.add("open"); scrim.hidden = false; if (btn) btn.setAttribute("aria-expanded", "true");
+      var f = nav.querySelector("a, button"); if (f) f.focus();
+    }
+    if (btn) btn.addEventListener("click", function () { if (nav.classList.contains("open")) close(); else open(); });
+    scrim.addEventListener("click", close);
+    nav.addEventListener("click", function (e) { if (e.target.closest && e.target.closest("a")) close(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && nav.classList.contains("open")) { close(); if (btn) btn.focus(); }
+    });
+  }
+
+  if (typeof document !== "undefined" && document.body) { initSidenav(); initExplain(); }
 })(typeof window !== "undefined" ? window : globalThis);
 
 </script>
