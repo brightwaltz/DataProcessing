@@ -354,6 +354,23 @@ button.tab[aria-pressed="true"] { background: var(--accent); color: var(--accent
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --c3: #4f7fb3; } }
 :root[data-theme="dark"] { --c3: #4f7fb3; }
 svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
+/* 5つのステップの流れ図・ピボットのフィールド欄 */
+.flow5 { display: flex; flex-wrap: wrap; gap: 6px; align-items: stretch; }
+.flow5 .st { display: grid; gap: 2px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--rule); background: var(--panel); min-width: 6.5em; }
+.flow5 .st span { font-size: var(--fs-small); color: var(--muted); }
+.flow5 .st.hot { border: 2px solid var(--lamp); background: var(--lamp-off); }
+.flow5 .arr { align-self: center; color: var(--muted); }
+.pfields { display: grid; grid-template-columns: minmax(8em, 1fr) 2fr; gap: 12px; max-width: 560px; }
+.plist { display: grid; gap: 4px; padding: 10px; border: 1px solid var(--rule); border-radius: 8px; background: var(--panel); }
+.plist span { font-size: var(--fs-small); padding: 2px 8px; border: 1px solid var(--rule); border-radius: 6px; }
+.pareas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.parea { min-height: 3.6em; padding: 6px 8px; border: 1px dashed var(--rule); border-radius: 8px; background: var(--panel); display: grid; align-content: start; gap: 4px; }
+.parea small { color: var(--muted); font-size: var(--fs-small); }
+.parea span { font-size: var(--fs-small); padding: 2px 8px; border-radius: 6px; background: var(--accent); color: var(--accent-ink); justify-self: start; }
+.parea.hot { border: 2px solid var(--lamp); }
+/* アンダーバーが書体によって見えにくいので、等幅の別書体で太く色を付ける */
+.us { font-family: Menlo, Consolas, "Courier New", monospace; font-weight: 700; color: var(--lamp); padding: 0 1px; }
+.seg button { white-space: nowrap; }
 
 </style>
 <header class="mast">
@@ -396,7 +413,7 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
       <h2>前回の確認（3問）</h2>
       <span class="slides">第3回 データ集計の基本</span>
     </div>
-    <p class="prose">第4回でも、まず表を集計してからグラフにします。解けなかったら、<a href="w03-review.html?v=202610152046">第3回 復習ページ</a>で確かめてから授業に来てください。</p>
+    <p class="prose">第4回でも、まず表を集計してからグラフにします。解けなかったら、<a href="w03-review.html?v=202610152112">第3回 復習ページ</a>で確かめてから授業に来てください。</p>
     <div id="review"></div>
   </section>
 
@@ -1145,6 +1162,134 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
         "検索キーは「都道府県名＋市区町村名」。郡名・支庁名は入れず、政令指定都市は区まで。→ " + q.key);
     }, now);
   };
+
+
+  /* ===== 第6回 データ分析の基礎（例はすべて架空の学食。課題の店のデータは締切まで使わない） ===== */
+  var STEP5 = ["1 目的", "2 収集", "3 把握", "4 分析", "5 解釈"];
+  var STEPQ = [
+    { q: "「年末にどの商品を多めに仕入れるか決めたい」と決める", a: 0 },
+    { q: "何を決めたいのかを、班で 1 文に書く", a: 0 },
+    { q: "いつの、何のデータを、どれだけ集めるかを決めて集める", a: 1 },
+    { q: "e-Stat から表をダウンロードする", a: 1 },
+    { q: "平均や合計を出し、グラフにして全体の様子を見る", a: 2 },
+    { q: "ヒストグラムで、データの形を見る", a: 2 },
+    { q: "1 年生と 3 年生で、注文の割合を比べる", a: 3 },
+    { q: "2 つの量の関係を、散布図で見る", a: 3 },
+    { q: "結果を目的に戻して、何を決めればよいかを書く", a: 4 },
+    { q: "「このデータでは言えないこと」を書き出す", a: 4 }
+  ];
+  G.steps5 = function (rng, now) {
+    return draw(rng, function (r) {
+      var q = pick(r, STEPQ), others = shuffle(r, [0, 1, 2, 3, 4].filter(function (i) { return i !== q.a; })).slice(0, 2);
+      var opts = [q.a].concat(others).sort(function (x, y) { return x - y; });
+      return choice(r, "step5:" + q.q, "「" + q.q + "」。データ分析の 5 つのステップのどれ？", opts.map(function (i) {
+        return { text: STEP5[i], ok: i === q.a, msg: i === q.a ? null : STEP5[i].slice(2) + "は「" + ["何を決めたいか", "いつ・何を・どれだけ集めるか", "要約・グラフで全体を見る", "比べる・関係を見る", "目的に戻して意味づける"][i] + "」の段階です。" };
+      }), STEP5[q.a] + "：" + ["何を決めたいかを決める。", "いつ・何をどれだけ集める。", "要約・グラフで全体を見る。", "比べる・関係を見る。", "結果を目的に戻して意味づける。"][q.a], true);
+    }, now);
+  };
+
+  /* よい仮説は比較を含む */
+  var HG = [["1年生", "3年生"], ["夕方", "昼"], ["土曜", "平日"], ["寮生", "自宅生"], ["運動部の学生", "文化部の学生"]];
+  var HI = ["カレー", "麺類", "定食", "大盛り"];
+  G.hypo = function (rng, now) {
+    return draw(rng, function (r) {
+      var g = pick(r, HG), it = pick(r, HI);
+      return choice(r, "hypo:" + g.join() + it, "学食の注文データ（架空）で確かめる「仮説」として、いちばんよいのは？", [
+        { text: g[1] + "に比べて、" + g[0] + "は" + it + "を選ぶ割合が高い", ok: true },
+        { text: it + "が人気だ", msg: "それは予想（結果だけ）です。何と比べて人気なのかがなく、確かめようがありません。" },
+        { text: g[0] + "には、" + it + "が人気だ", msg: "仮説の形に近いですが、比べる相手（" + g[1] + "）がありません。比べる相手がないと、確かめようがありません。" },
+        { text: g[0] + "も" + g[1] + "も、" + it + "がいちばん多く注文されている", msg: "2 つのグループの結果を並べただけで、どちらの割合が高いかを比べる形になっていません。" }
+      ], "よい仮説は比較を含む：「〇〇に比べて、△△は □□ の割合が高い」。");
+    }, now);
+  };
+
+  /* 人数がちがうなら、割合で比べる */
+  G.ratio = function (rng, now) {
+    return draw(rng, function (r) {
+      var gA = pick(r, [["女子", "男子"], ["1年生", "2年生"], ["昼", "夕方"]]), n1 = randInt(r, 5, 12) * 10, n2 = randInt(r, 2, 5) * 10;
+      if (n1 <= n2) return null;
+      var p1 = randInt(r, 2, 6) * 5, p2 = randInt(r, 2, 6) * 5, c1 = n1 * p1 / 100, c2 = n2 * p2 / 100;
+      if (c1 !== Math.round(c1) || c2 !== Math.round(c2) || p1 === p2 || c1 === c2) return null;
+      var trap = c1 > c2 && p1 < p2;
+      if (!trap && r() < 0.7) return null;
+      var it = pick(r, HI), hi = p1 > p2 ? gA[0] : gA[1], lo = p1 > p2 ? gA[1] : gA[0];
+      return choice(r, "ratio:" + [n1, c1, n2, c2].join(","), gA[0] + " " + n1 + " 人のうち " + c1 + " 人、" + gA[1] + " " + n2 + " 人のうち " + c2 + " 人が" + it + "を選んだ（架空）。" + it + "を選ぶ<b>割合</b>が高いのは？", [
+        { text: gA[0], ok: hi === gA[0], msg: hi === gA[0] ? null : (c1 > c2 ? "人数（" + c1 + " 人）は多いですが、" + gA[0] + "はもともとの人数も多い。割合は " + p1 + "% で、" + gA[1] + "の " + p2 + "% より低い。" : "割合は " + p1 + "% で、" + gA[1] + "の " + p2 + "% より低い。") },
+        { text: gA[1], ok: hi === gA[1], msg: hi === gA[1] ? null : "割合は " + p2 + "% で、" + gA[0] + "の " + p1 + "% より低い。" },
+        { text: "同じ", msg: "割合を計算すると、" + gA[0] + " " + p1 + "%、" + gA[1] + " " + p2 + "% でちがいます。" }
+      ], gA[0] + "：" + c1 + " ÷ " + n1 + " = " + p1 + "%。" + gA[1] + "：" + c2 + " ÷ " + n2 + " = " + p2 + "%。割合が高いのは " + hi + "。", true);
+    }, now);
+  };
+
+  /* 行集計に対する比率（各行の総計が 100%） */
+  G.rowRatio = function (rng, now) {
+    return draw(rng, function (r) {
+      var rows = ["1年", "2年"], cols = ["カレー", "定食", "麺類"], t = [[randInt(r, 2, 9), randInt(r, 2, 9), randInt(r, 2, 9)], [randInt(r, 2, 9), randInt(r, 2, 9), randInt(r, 2, 9)]];
+      var i = randInt(r, 0, 1), j = randInt(r, 0, 2), rt = S_sum(t[i]), ct = t[0][j] + t[1][j], all = S_sum(t[0]) + S_sum(t[1]);
+      var ans = 100 * t[i][j] / rt;
+      if (Math.abs(ans - 100 * t[i][j] / ct) < 1) return null;
+      var tbl = "<div class=\"tbl-wrap\"><table class=\"ref\"><tr><th>件数</th>" + cols.map(function (c) { return "<th>" + c + "</th>"; }).join("") + "<th>総計</th></tr>" +
+        rows.map(function (rw, k) { return "<tr><th>" + rw + "</th>" + t[k].map(function (v) { return "<td>" + v + "</td>"; }).join("") + "<td>" + S_sum(t[k]) + "</td></tr>"; }).join("") + "</table></div>";
+      return {
+        key: "rowr:" + t[0].join(",") + "|" + t[1].join(",") + "|" + i + j,
+        prompt: "学食の注文（架空）。" + tbl + "「行集計に対する比率」にすると、<b>" + rows[i] + " × " + cols[j] + "</b> は何 %？（小数第1位まで）",
+        inputLabel: "%", inputMode: "decimal",
+        check: function (x) {
+          var v = toNum(String(x).replace(/[%％]/g, ""));
+          if (near(v, ans)) return { ok: true };
+          if (near(v, 100 * t[i][j] / ct)) return { ok: false, msg: "それは列集計に対する比率（" + cols[j] + "の列の合計 " + ct + " で割った値）です。行集計なら、" + rows[i] + "の行の総計 " + rt + " で割ります。" };
+          if (near(v, 100 * t[i][j] / all)) return { ok: false, msg: "それは全体の総計（" + all + "）で割った値です。行集計なら、" + rows[i] + "の行の総計 " + rt + " で割ります。" };
+          if (isNaN(v)) return { ok: false, msg: "数字で答えてください。" };
+          return { ok: false };
+        },
+        solution: t[i][j] + " ÷ " + rt + "（" + rows[i] + "の行の総計）× 100 = " + fmt(ans, 1) + "%。行集計の比率では、各行の総計が 100% になる。"
+      };
+    }, now);
+  };
+  function S_sum(a) { return a.reduce(function (s, x) { return s + x; }, 0); }
+
+  /* このデータで言えること・言えないこと */
+  var SAY = [
+    { s: "この 3 か月の学食の注文では、1年生は 3年生に比べて麺類を選ぶ割合が高かった", ok: true },
+    { s: "この 3 か月では、夕方の注文のうち定食が 4 割をこえていた", ok: true },
+    { s: "1年生は、いつの年も麺類が好きだ", ok: false, msg: "このデータは 3 か月・1 つの学食だけです。ほかの年まで同じとは言えません。" },
+    { s: "麺類のメニューを増やせば、1年生の注文が増える", ok: false, msg: "割合が高いことと、増やせば増えること（原因と結果）は別です。このデータからは言えません。" },
+    { s: "全国の大学生も、1年生は麺類を選ぶ割合が高い", ok: false, msg: "1 つの学食のデータから、全国の大学生のことは言えません。" },
+    { s: "1年生と 3年生の数パーセントのちがいは、必ず意味のある差だ", ok: false, msg: "数個・数パーセントの差は、たまたまでも起きます。このデータだけでは言い切れません。" }
+  ];
+  G.canSay = function (rng, now) {
+    return draw(rng, function (r) {
+      var q = pick(r, SAY);
+      return choice(r, "say:" + q.s, "学食の 3 か月の注文データ（架空）から、「" + q.s + "」と言える？", [
+        { text: "このデータから言える", ok: q.ok, msg: q.msg },
+        { text: "このデータだけでは言えない", ok: !q.ok, msg: "この文は、このデータの範囲（3 か月・この学食）の中で、数字から確かめられることです。" }
+      ], q.ok ? "データの範囲の中で、数字から確かめられる → 言える。" : "データの範囲の外（ほかの年・全国・原因）や、たまたまかもしれない差 → このデータだけでは言えない。", true);
+    }, now);
+  };
+
+  /* 表記ゆれ：TRIM で直るもの、直らないもの（発展課題と同じ県名は使わない） */
+  var TRIMQ = [
+    { s: "「 青森県」（先頭に半角の空白）", trim: true }, { s: "「宮城県 」（最後に半角の空白）", trim: true }, { s: "「福井県　」（最後に全角の空白）", trim: true, note: "日本語版の Excel の TRIM は全角の空白も消します。" },
+    { s: "「愛知」（「県」が抜けている）", trim: false }, { s: "「髙知県」（「高」の異体字）", trim: false }, { s: "「大阪」（「府」が抜けている）", trim: false }
+  ];
+  G.trimq = function (rng, now) {
+    return draw(rng, function (r) {
+      var q = pick(r, TRIMQ);
+      return choice(r, "trim:" + q.s, "人口の表とつながらない県名 " + q.s + "。=TRIM() で直る？", [
+        { text: "TRIM で直る", ok: q.trim, msg: "TRIM が消すのは前後の空白だけです。抜けた文字や字体のちがいは、手で正しい名前に直します。" },
+        { text: "TRIM では直らない（手で直す）", ok: !q.trim, msg: "前後の空白は TRIM で消えます。" + (q.note || "") }
+      ], q.trim ? "前後の空白 → TRIM で直る。" + (q.note || "") : "文字の抜け・字体のちがい → TRIM では直らない。正しい名前を手で書く。", true);
+    }, now);
+  };
+
+  /* ピボットテーブルの操作 */
+  var PIVQ = [
+    { q: "ピボットテーブルを作る前に、どこをクリックしておく？", ok: "元の表（1行1件のデータ）の中のどこか", ng: [["空いている別のシートのセル", "空のセルでは、どの表を使うか Excel が分かりません。元の表の中をクリックします。"], ["グラフの上", "グラフではなく、元の表の中をクリックします。"]] },
+    { q: "金額を足したいのに、値が「個数 / 金額」になっている。どうする？", ok: "値のセルを右クリック → 値の集計方法 → 合計", ng: [["元のデータの金額をすべて消す", "元のデータは変えません。集計方法を「合計」に変えます。"], ["列の欄へ金額をドラッグする", "列の欄に入れると、金額ごとの列ができてしまいます。集計方法を変えます。"]] },
+    { q: "学年ごとに、メニューの割合（各行が 100%）を見たい。どうする？", ok: "値のセルを右クリック → 計算の種類 → 行集計に対する比率", ng: [["計算の種類 → 列集計に対する比率", "列集計だと各列が 100% になります。学年（行）ごとの割合なら行集計です。"], ["計算の種類 → 総計に対する比率", "総計に対する比率は、表全体を 100% にします。行ごとの割合にはなりません。"]] },
+    { q: "ピボットテーブルを作ったら、元のデータはどうなる？", ok: "何も変わらない", ng: [["並べ替えられる", "元のデータは並べ替えられません。ピボットは読んで集計するだけです。"], ["ピボットの表に置きかわる", "置きかわりません。ピボットの表は別の場所にできます。"]] }
+  ];
+  G.pivotOps = function (rng, now) { return draw(rng, function (r) { return bank(r, "piv", pick(r, PIVQ)); }, now); };
 
   var api = {
     sum: sum, mean: mean, sorted: sorted, median: median, mode: mode, varP: varP, sdP: sdP, sdS: sdS, mad: mad, countRange: countRange,
@@ -2272,6 +2417,186 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
       return { type: "choice", prompt: prompt, choices: ord.map(function (i) { return choices[i]; }), answer: ord.indexOf(answer), solution: solution,
         check: function (k) { var i = ord[k]; return i === answer ? { ok: true } : { ok: false, msg: msgs[i] }; } };
     };
+  };
+
+
+  /* ===================== 第6回 データ分析の基礎 ===================== */
+  CA.steps.steps5 = function (mount) {
+    var S5 = [["1 目的", "何を決めたい？"], ["2 収集", "いつ・何を・どれだけ"], ["3 把握", "要約・グラフ"], ["4 分析", "比べる・関係を見る"], ["5 解釈", "目的に戻す"]];
+    function flow(k) {
+      var t = "<div class=\"flow5\">" + S5.map(function (s, i) { return "<div class=\"st" + (i === k ? " hot" : "") + "\"><b>" + s[0] + "</b><span>" + s[1] + "</span></div>"; }).join("<span class=\"arr\" aria-hidden=\"true\">→</span>") + "</div>";
+      return html(t);
+    }
+    var cap = [
+      "<b>1 目的</b>：何を決めたいかを決める。例「年末にどのメニューを多めに仕込むか決めたい」。いちばん大事なのはここ。",
+      "<b>2 収集</b>：目的から、いつ・何のデータを・どれだけ集めるかが決まる。例：月ごと・メニューごとの注文数。",
+      "<b>3 把握</b>：平均・合計・グラフで、全体の様子をつかむ（第3・4回）。",
+      "<b>4 分析</b>：比べる、関係を見る。例：12 月とほかの月で、メニューごとの割合を比べる。",
+      "<b>5 解釈</b>：結果を 1 の目的に戻して、何を決めるかを書く。ここで次の問いが生まれ、また 1 へ戻る。"
+    ];
+    CA.stepper(mount, { frames: cap.map(function (c, k) { return { caption: c, render: function (st) { st.appendChild(flow(k)); } }; }) });
+  };
+  CA.steps.hypo = function (mount) {
+    var rows = [["① カレーが人気だ", "予想（結果だけ）"], ["② 1年生には、カレーが人気だ", "仮説の形。でも比べる相手がない"], ["③ 3年生に比べて、1年生はカレーを選ぶ割合が高い", "よい仮説（比較を含む）"]];
+    CA.stepper(mount, { frames: [
+      { caption: "3 つの文。どれも「カレー」の話ですが、データで確かめられるのはどれでしょう。", render: function (st) { st.appendChild(tbl(["文"], rows.map(function (r) { return [r[0]]; }))); } },
+      { caption: "① は結果だけの<b>予想</b>。何と比べて「人気」なのかがありません。", render: function (st) { st.appendChild(tbl(["文", "種類"], [rows[0]])); } },
+      { caption: "② は仮説の形ですが、<b>比べる相手</b>がありません。1年生だけを見ても、3年生も同じかもしれません。", render: function (st) { st.appendChild(tbl(["文", "種類"], rows.slice(0, 2))); } },
+      { caption: "③ は比べる相手（3年生）が入った<b>よい仮説</b>。型は「〇〇に比べて、△△は □□ の割合が高い」。", render: function (st) { st.appendChild(tbl(["文", "種類"], rows)); } }
+    ] });
+  };
+  function ratioBars(stage) {
+    var W = 680, H = 250, x0 = 120, s = "", d = [["女子", 24, 60], ["男子", 18, 30]];
+    d.forEach(function (r, i) {
+      var y = 40 + i * 90, v = stage < 2 ? r[1] : 100 * r[1] / r[2], mx = stage < 2 ? 30 : 100, w = (W - x0 - 60) * v / mx;
+      s += T(x0 - 12, y + 36, r[0], { size: 20, anchor: "end", weight: 700 });
+      if (stage === 1) s += R(x0, y, (W - x0 - 60) * r[2] / 70, 50, "k-off s-none", 0);
+      s += R(x0, y + (stage === 1 ? 10 : 0), w, stage === 1 ? 30 : 50, (i ? "k-lamp" : "k-acc") + " s-none", 0);
+      s += T(x0 + w + 10, y + 34, stage < 2 ? r[1] + " 件" + (stage === 1 ? "（" + r[2] + " 人中）" : "") : S.fmt(v, 0) + "%", { size: 20, anchor: "start", weight: 700 });
+    });
+    return svg(W, H, s, "カレーの注文");
+  }
+  CA.steps.ratio = function (mount) {
+    CA.stepper(mount, { frames: [
+      { caption: "学食のカレーの注文（架空）。女子 24 件、男子 18 件。個数だけを見ると女子のほうが多い。", render: function (st) { st.appendChild(html(ratioBars(0))); } },
+      { caption: "注文した人数を見ると、女子 60 人、男子 30 人。もともとの人数が 2 倍ちがいます。", render: function (st) { st.appendChild(html(ratioBars(1))); } },
+      { caption: "割合に直すと、女子 24 ÷ 60 = 40%、男子 18 ÷ 30 = 60%。<b>カレーを選ぶ割合は男子のほうが高い</b>。", render: function (st) { st.appendChild(html(ratioBars(2))); } },
+      { caption: "人数がちがう集団は、個数ではなく割合で比べる。第3回の「平均は分母を意識する」と同じ話です。", render: function (st) { st.appendChild(html("<p class=\"formula\">個数 ÷ その集団の人数 ＝ 割合</p>")); } }
+    ] });
+  };
+  CA.steps.pivotMake = function (mount) {
+    function box(hot) {
+      var t = "<div class=\"pfields\"><div class=\"plist\"><b>フィールド</b><span>学年</span><span>メニュー</span><span>時間帯</span><span>金額</span></div><div class=\"pareas\">" +
+        [["フィルター", ""], ["列", hot >= 2 ? "メニュー" : ""], ["行", hot >= 2 ? "学年" : ""], ["値", hot >= 3 ? "個数 / 学年" : ""]].map(function (a, i) { return "<div class=\"parea" + ((hot === 2 && (i === 1 || i === 2)) || (hot === 3 && i === 3) ? " hot" : "") + "\"><small>" + a[0] + "</small>" + (a[1] ? "<span>" + a[1] + "</span>" : "") + "</div>"; }).join("") + "</div></div>";
+      return html(t);
+    }
+    CA.stepper(mount, { frames: [
+      { caption: "<b>1 挿入</b>：表の中をクリックしてから、挿入 → ピボットテーブル（「テーブルまたは範囲から」が出たらそれ）。新しいシートに空の表と、右に「フィールド」の欄が出ます。", render: function (st) { st.appendChild(box(1)); } },
+      { caption: "<b>2 行と列</b>：「学年」を<b>行</b>の欄へ、「メニュー」を<b>列</b>の欄へドラッグ。チェックを入れるだけだと列には入りません。", render: function (st) { st.appendChild(box(2)); } },
+      { caption: "<b>3 値</b>：数えたい項目を<b>値</b>の欄へ。件数なら「個数」、金額を足すなら「合計」（値のセルを右クリック → 値の集計方法）。", render: function (st) { st.appendChild(box(3)); st.appendChild(html(pivotTable(pivot("学年", "メニュー", "件数"), "件数"))); } },
+      { caption: "<b>4 計算の種類</b>：値のセルを右クリック → 計算の種類 → 「行集計に対する比率」。各行の総計が 100% になります（次の項目）。", render: function (st) { st.appendChild(html(pivotTable(pivot("学年", "メニュー", "件数"), "件数"))); } }
+    ] });
+  };
+  function ratioTable(kind, hot) {
+    var p = pivot("学年", "メニュー", "件数"), rows = p.R, cols = p.C;
+    var rt = {}, ct = {}, all = 0;
+    rows.forEach(function (r) { rt[r] = 0; cols.forEach(function (c) { var v = p.get(r, c); rt[r] += v; ct[c] = (ct[c] || 0) + v; all += v; }); });
+    function cell(r, c) { var v = p.get(r, c); return kind === "row" ? 100 * v / rt[r] : kind === "col" ? 100 * v / ct[c] : v; }
+    var t = "<div class=\"tbl-wrap\"><table class=\"ref pivot\"><tr><th>" + (kind === "row" ? "行集計の比率" : kind === "col" ? "列集計の比率" : "件数") + "</th>" + cols.map(function (c) { return "<th>" + c + "</th>"; }).join("") + "<th>総計</th></tr>";
+    rows.forEach(function (r) {
+      t += "<tr><th>" + r + "</th>" + cols.map(function (c) { var v = cell(r, c); return "<td>" + (kind === "count" ? v : S.fmt(v, 1) + "%") + "</td>"; }).join("") +
+        "<td" + (hot === "row" ? " class=\"hot\"" : "") + "><b>" + (kind === "count" ? rt[r] : kind === "row" ? "100.0%" : S.fmt(100 * rt[r] / all, 1) + "%") + "</b></td></tr>";
+    });
+    t += "<tr><th>総計</th>" + cols.map(function (c) { return "<td" + (hot === "col" ? " class=\"hot\"" : "") + "><b>" + (kind === "count" ? ct[c] : kind === "col" ? "100.0%" : S.fmt(100 * ct[c] / all, 1) + "%") + "</b></td>"; }).join("") + "<td><b>" + (kind === "count" ? all : "100.0%") + "</b></td></tr></table></div>";
+    return html(t);
+  }
+  CA.ratioTable = ratioTable;
+  CA.steps.rowRatio = function (mount) {
+    CA.stepper(mount, { frames: [
+      { caption: "学年 × メニューの件数（架空、予習ページと同じ 24 件）。学年ごとに注文の数がちがいます（8・9・7 件）。", render: function (st) { st.appendChild(ratioTable("count")); } },
+      { caption: "<b>行集計に対する比率</b>：各行（学年）の総計が 100%。学年ごとに「何を選んだか」の割合を比べられます。1年はカレーが 50%。", render: function (st) { st.appendChild(ratioTable("row", "row")); } },
+      { caption: "<b>列集計に対する比率</b>：各列（メニュー）の総計が 100%。こちらは「カレーを頼んだ人のうち何年生が多いか」。問いがちがいます。", render: function (st) { st.appendChild(ratioTable("col", "col")); } },
+      { caption: "取り違えないコツ：<b>100% になっているのが、行の総計か、列の総計か</b>を必ず見る。学年どうしを比べたいなら行集計。", render: function (st) { st.appendChild(ratioTable("row", "row")); } }
+    ] });
+  };
+  CA.steps.canSay = function (mount) {
+    CA.stepper(mount, { frames: [
+      { caption: "結論は「このデータで言えること」の範囲で書きます。", render: function (st) { st.appendChild(tbl(["言えること（このデータの範囲）"], [["この 3 か月の学食では、1年生は 3年生に比べてカレーを選ぶ割合が高かった"]])); } },
+      { caption: "<b>言えないこと</b>も書きます。期間や場所の外、原因、たまたまかもしれない差。", render: function (st) {
+        st.appendChild(tbl(["このデータでは言えないこと", "なぜ"], [["1年生はいつの年もカレーが好き", "3 か月・1 年分だけ"], ["全国の大学生も同じ", "1 つの学食だけ"], ["カレーを増やせば注文が増える", "割合が高い ≠ 原因"], ["数パーセントの差に必ず意味がある", "たまたまでも起きる"]])); } },
+      { caption: "仮説は、データで「支持されない」こともあります。それも立派な結論です。", render: function (st) { st.appendChild(html("<p class=\"formula\">仮説 → 確かめる → 支持された／されなかった → 言えないことも書く</p>")); } }
+    ] });
+  };
+  CA.steps.trim = function (mount) {
+    var rows = [[" 青森県", "=TRIM(A2)", "青森県", "直る"], ["宮城県 ", "=TRIM(A3)", "宮城県", "直る"], ["愛知", "=TRIM(A4)", "愛知", "直らない → 手で「愛知県」"]];
+    CA.stepper(mount, { frames: [
+      { caption: "2 つの表を県名でつなぐとき（VLOOKUP）、名前が 1 文字でもちがうと、つながりません。", render: function (st) { st.appendChild(sheet(1, [["県名", "", "", ""]].concat(rows.map(function (r) { return [r[0], "", "", ""]; })), null)); } },
+      { caption: "D 列に <span class=\"num\">=TRIM(A2)</span>。前後の空白（見えない文字）を消します。", render: function (st) { st.appendChild(sheet(1, [["県名", "", "", "TRIM"]].concat(rows.map(function (r) { return [r[0], "", "", r[2]]; })), [[1, 3], [2, 3]])); } },
+      { caption: "「県」が抜けている、字体がちがう、などは TRIM では直りません。正しい名前を<b>手で書きます</b>。", render: function (st) { st.appendChild(tbl(["元の名前", "TRIM", "結果"], rows.map(function (r) { return [r[0].replace(/ /g, "␣"), r[2], r[3]]; }))); } }
+    ] });
+  };
+
+  /* ===================== 第7回 予習 ===================== */
+  /* 区切り位置の実験台 */
+  CA.splitLab = function (mount, onUse) {
+    var DATA = ["01_北海道", "13_東京都", "25_滋賀県", "47_沖縄県"], st = { sep: "_", fmt: "標準" }, used = {};
+    function seg(label, key, opts) {
+      var g = h("div", { class: "seg", role: "group", "aria-label": label });
+      opts.forEach(function (o) { g.appendChild(h("button", { type: "button", text: o[1], "data-k": key, "data-v": o[0], onclick: function () { st[key] = o[0]; draw(); } })); });
+      return h("div", { class: "row" }, h("span", { class: "small", text: label }), g);
+    }
+    var out = h("div", { class: "fig-wrap" }), note = h("p", { class: "caption", "aria-live": "polite" });
+    function draw() {
+      mount.querySelectorAll(".seg button").forEach(function (b) { b.setAttribute("aria-pressed", st[b.getAttribute("data-k")] === b.getAttribute("data-v") ? "true" : "false"); });
+      var rows = DATA.map(function (s) {
+        var parts = st.sep ? s.split(st.sep) : [s];
+        if (parts.length < 2) return [s, ""];
+        var code = st.fmt === "標準" ? String(parseInt(parts[0], 10)) : parts[0];
+        return [code, parts[1]];
+      });
+      out.innerHTML = "<div class=\"tbl-wrap\"><table class=\"sheet\"><tr><th></th><th>A（元）</th><th>B</th><th>C</th></tr>" +
+        DATA.map(function (s, i) { return "<tr><th>" + (i + 2) + "</th><td>" + s.replace("_", "<span class=\"us\">_</span>") + "</td><td class=\"" + (rows[i][1] && st.fmt === "標準" && rows[i][0].length < 2 ? "hot" : "") + "\">" + String(rows[i][0]).replace("_", "<span class=\"us\">_</span>") + "</td><td>" + rows[i][1] + "</td></tr>"; }).join("") + "</table></div>";
+      var msg;
+      if (st.sep !== "_") msg = "区切り文字が合っていないので、分かれません。元の文字を見て、区切りに使われている文字（ここでは「_」）を選びます。";
+      else if (st.fmt === "標準") msg = "分かれました。でも「01」が「1」になっています。列が「標準」だと、数として読まれて先頭の 0 が消えます。コードの列は「文字列」にします。";
+      else msg = "コードが「01」のまま残りました。コードは数ではなく名前の一部なので、「文字列」にします。授業の演習でも同じ手順を使います。";
+      note.innerHTML = msg.replace("「_」", "「<span class=\"us\">_</span>」");
+      used[st.sep + st.fmt] = true;
+      if (onUse && used["_文字列"]) onUse();
+    }
+    mount.appendChild(seg("区切り文字", "sep", [[",", "カンマ（ , ）"], ["_", "アンダーバー（ _ ）"], [" ", "スペース"]]));
+    mount.appendChild(seg("B 列のデータ形式", "fmt", [["標準", "標準"], ["文字列", "文字列"]]));
+    mount.appendChild(out); mount.appendChild(note);
+    st.sep = ","; draw();
+  };
+  /* PPDAC に分けるゲーム */
+  CA.ppdacGame = function (mount, opts) {
+    var P5 = [["P", "Problem 問題"], ["P", "Plan 計画"], ["D", "Data データ"], ["A", "Analysis 分析"], ["C", "Conclusion 結論"]];
+    var Q = [
+      { q: "「昼休みに 25 分並ぶ。10 分で買えるようにしたい」と、理想と現実の差を書く", a: 0 },
+      { q: "行列の原因の候補（レジの数・混む時刻・メニュー）を挙げ、どのデータが要るかを決める", a: 1 },
+      { q: "1 週間、5 分ごとに行列の人数を数えて記録する", a: 2 },
+      { q: "時刻ごとの人数をグラフにして、12 時 10 分に集中していることを見つける", a: 3 },
+      { q: "「12 時台だけレジを 1 台増やす」と決め、次に確かめることを書く", a: 4 },
+      { q: "記録した表から、記入ミスや抜けている時刻を見つけて直す", a: 2 }
+    ];
+    var i = 0, ok = 0, tries = 0;
+    var head = h("div", { class: "kind" }), q = h("p", { class: "game-q" }), row = h("div", { class: "choices" }), fb = h("div", { class: "feedback", role: "status", "aria-live": "polite" });
+    var next = h("button", { type: "button", class: "primary", text: "次へ" });
+    var box = h("div", { class: "quiz" }, head, q, row, fb, h("div", { class: "row" }, next));
+    var WHY = ["問題：理想と現実の差をはっきりさせる段階。", "計画：原因の候補と、要るデータ・集め方を決める段階。", "データ：実際に集めて、使える形に整える段階。", "分析：グラフや比較で、傾向や関係を見つける段階。", "結論：分かったことから打ち手を決め、次の問いを見つける段階。"];
+    function load() {
+      tries = 0; next.disabled = true; fb.className = "feedback"; fb.innerHTML = "";
+      head.innerHTML = "<b>PPDAC に分ける　" + (i + 1) + " / " + Q.length + "</b><span class=\"score\">1 回で正解 " + ok + "</span>";
+      q.textContent = "「学食の行列を短くしたい」（架空）。" + Q[i].q + "。これはどの段階？";
+      row.innerHTML = "";
+      P5.forEach(function (p, k) {
+        var b = h("button", { type: "button", text: p[0] + "：" + p[1] });
+        b.onclick = function () {
+          if (!next.disabled) return;
+          tries++;
+          if (k === Q[i].a) {
+            if (tries === 1) ok++;
+            b.classList.add("picked-ok"); fb.className = "feedback ok"; fb.innerHTML = "<span class=\"head\">正解</span>　" + WHY[k];
+            next.disabled = false; next.textContent = i === Q.length - 1 ? "結果を見る" : "次へ"; next.focus();
+            head.querySelector(".score").textContent = "1 回で正解 " + ok;
+          } else { b.classList.add("picked-ng"); fb.className = "feedback ng"; fb.innerHTML = "<span class=\"head\">もう一度</span>　" + WHY[k].replace(/段階。$/, "段階です。") + "この作業はちがう段階です。"; }
+        };
+        row.appendChild(b);
+      });
+    }
+    next.onclick = function () {
+      if (i === Q.length - 1) {
+        q.textContent = ""; row.innerHTML = ""; fb.className = "feedback ok";
+        fb.innerHTML = "<span class=\"head\">" + Q.length + " 問中 " + ok + " 問を 1 回で正解</span>　授業では、滋賀県の事例で PPDAC を 1 周します。";
+        next.textContent = "もう一度"; i = -1; ok = 0;
+        if (opts && opts.onFinish) opts.onFinish();
+        return;
+      }
+      i++; load();
+    };
+    mount.appendChild(box);
+    load();
   };
 
 })(typeof window !== "undefined" ? window : globalThis);
