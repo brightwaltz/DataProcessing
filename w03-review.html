@@ -349,6 +349,11 @@ button.tab[aria-pressed="true"] { background: var(--accent); color: var(--accent
 /* 13インチのノート PC（画面の高さ 約720px）で、動画が操作ボタンまで1画面に収まるように */
 .film-stage { width: 100%; max-width: 760px; }
 .film-stage:fullscreen { max-width: none; }
+/* グラフの3色目（紺・橙と見分けやすい水色） */
+:root { --c3: #8fb6dc; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --c3: #4f7fb3; } }
+:root[data-theme="dark"] { --c3: #4f7fb3; }
+svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
 
 </style>
 <header class="mast">
@@ -501,7 +506,7 @@ button.tab[aria-pressed="true"] { background: var(--accent); color: var(--accent
     <h2>仕上げの5問</h2>
     <p class="prose">項目1・2・3・5・6から1問ずつ出します。間違えたら、その項目に戻って確認問題と練習をもう一度。</p>
     <div id="fin"></div>
-    <div class="done-banner" id="banner" role="status">7項目すべての確認問題に正解しました。次回（10/23）は「データの可視化」です。<a href="w04-preview.html?v=202610151905">第4回 予習ページ</a>も見ておきましょう。</div>
+    <div class="done-banner" id="banner" role="status">7項目すべての確認問題に正解しました。次回（10/23）は「データの可視化」です。<a href="w04-preview.html?v=202610151939">第4回 予習ページ</a>も見ておきましょう。</div>
   </section>
 
   <footer>
@@ -946,11 +951,198 @@ button.tab[aria-pressed="true"] { background: var(--accent); color: var(--accent
     }, now);
   };
 
+  /* ===== 第4回 データの可視化 ===== */
+
+  /* 言いたいこと → グラフ（授業の Menti〔気温・部員数〕と予習のゲームとは別の場面） */
+  var CHARTS = [
+    { q: "4 つのクラスの、文化祭の来場者数を比べたい", a: "bar" },
+    { q: "都道府県ごとの図書館の数を、多い順に並べて見せたい", a: "bar" },
+    { q: "3 つの店の、今月の売上を比べたい", a: "bar" },
+    { q: "ある駅の乗降客数が、この 10 年でどう変わったかを見せたい", a: "line" },
+    { q: "1 年間の、月ごとの電気代の移り変わりを見せたい", a: "line" },
+    { q: "自分の体重の、半年間の変化を見たい", a: "line" },
+    { q: "学食の注文のうち、カレー・定食・麺類がそれぞれ何割かを見せたい", a: "pie" },
+    { q: "1 日 24 時間のうち、睡眠・授業・アルバイトなどが何割かを見せたい", a: "pie" },
+    { q: "サークルの予算の使いみち（合宿・道具・飲食など）の内訳を見せたい", a: "pie" }
+  ];
+  var CHART_NAME = { bar: "棒グラフ", line: "折れ線グラフ", pie: "円グラフ" };
+  var CHART_MISS = {
+    bar: { line: "折れ線は、時間を追った変化を見るときに使います。ここは項目どうしの大小です。", pie: "円は全体の中の割合を見せるグラフです。ここは数の大小を比べたい場面です。" },
+    line: { bar: "時間とともにどう変わったかは、折れ線のほうが増え方・減り方の向きがひと目で分かります。", pie: "円は、ある時点の割合を見せるグラフです。時間の変化は表せません。" },
+    pie: { bar: "「全体のうち何割か」を 1 枚で見せたいなら円グラフが向いています（100% 積み上げ棒でもよい）。", line: "折れ線は時間を追った変化を見るグラフです。ここは 1 つの全体の内訳です。" }
+  };
+  G.chartPick = function (rng, now) {
+    return draw(rng, function (r) {
+      var q = pick(r, CHARTS);
+      var opts = ["bar", "line", "pie"].map(function (k) { return { text: CHART_NAME[k], ok: k === q.a, msg: k === q.a ? null : CHART_MISS[q.a][k] }; });
+      return choice(r, "chart:" + q.q, q.q + "。向いているグラフは？", opts, { bar: "大小を比べる → 棒グラフ。", line: "時間で変わる様子 → 折れ線グラフ。", pie: "全体の中の割合 → 円グラフ。" }[q.a], true);
+    }, now);
+  };
+
+  /* 円グラフの使い方 */
+  var PIE = [
+    { q: "アンケートの答えが 12 種類ある。円グラフにするなら？", ok: "少ないものを「その他」にまとめ、5 つくらいにする", ng: [["12 個をそのまま全部描く", "項目が多いと、細い扇形が並んで読めなくなります。"], ["色を 12 色に増やして見分けやすくする", "色を増やしても、細い扇形の大きさは読み取れません。"]] },
+    { q: "円グラフの扇形の並べ方として、授業で決めたのは？", ok: "大きい順に、12 時の位置から時計回り", ng: [["あいうえお順に並べる", "大きい順に並べると、どれが大きいかがすぐ分かります。"], ["小さい順に、12 時から反時計回り", "大きい順・時計回りが読みやすい並べ方です。"]] },
+    { q: "円グラフを立体（3D）にすると？", ok: "手前の扇形が大きく見えて、割合を読み違える", ng: [["立体のほうが正確に読める", "立体にすると、手前は大きく奥は小さく見えます。"], ["見た目が変わるだけで、読み取りやすさは同じ", "傾けた円は、角度も面積もゆがんで見えます。"]] },
+    { q: "10 月と 12 月で、各メニューの割合がどう変わったかを見せたい。どうする？", ok: "100% 積み上げ棒や棒グラフで、長さを並べて比べる", ng: [["円グラフを 2 つ並べる", "円を 2 つ並べると、角度の差はほとんど読めません（授業スライド 10〜11）。"], ["2 つの円を重ねて描く", "重ねると、さらに読めなくなります。長さで比べられる棒にします。"]] }
+  ];
+  G.pieRule = function (rng, now) {
+    return draw(rng, function (r) {
+      var q = pick(r, PIE);
+      return choice(r, "pie:" + q.q, q.q, [{ text: q.ok, ok: true }].concat(q.ng.map(function (x) { return { text: x[0], msg: x[1] }; })), "正しいのは「" + q.ok + "」。");
+    }, now);
+  };
+
+  /* 縦軸を切った棒グラフ：見た目の倍率と、本当の増え方 */
+  var TRUNC = [
+    { what: "サークルの部員数", unit: "人", lo: 30, hi: 80 },
+    { what: "文化祭の来場者数", unit: "百人", lo: 20, hi: 60 },
+    { what: "店の 1 日の客数", unit: "人", lo: 80, hi: 150 },
+    { what: "図書館の 1 日の貸出冊数", unit: "冊", lo: 100, hi: 300 }
+  ];
+  G.trunc = function (rng, now) {
+    return draw(rng, function (r) {
+      var sc = pick(r, TRUNC), a = randInt(r, sc.lo, sc.hi), d = randInt(r, 1, Math.max(2, Math.round(a * 0.08))), b = a + d;
+      var g = randInt(r, 1, d * 2), m = a - g;
+      var look = (b - m) / (a - m), real = 100 * d / a;
+      if (look < 1.5 || Math.abs(round(look, 1) - look) > 1e-9 || m < 0) return null;
+      var ask = r() < 0.5 ? "look" : "real";
+      var head = sc.what + "の棒グラフ。左の棒が <span class=\"num\">" + a + "</span>、右の棒が <span class=\"num\">" + b + "</span>（" + sc.unit + "）。縦軸は <span class=\"num\">" + m + "</span> から始まっている。";
+      if (ask === "look") return {
+        key: "trunc:" + a + "," + b + "," + m + ":look",
+        prompt: head + "見た目では、右の棒は左の棒の何倍の長さ？",
+        inputLabel: "何倍", inputMode: "decimal",
+        check: function (x) {
+          var v = toNum(x);
+          if (near(v, look)) return { ok: true };
+          if (near(v, b / a, 0.02)) return { ok: false, msg: "それは本当の比（" + b + " ÷ " + a + "）です。見た目の長さは、縦軸の始まり " + m + " から測ります。" };
+          if (isNaN(v)) return { ok: false, msg: "数字で答えてください。" };
+          return { ok: false, msg: "棒の見た目の長さは「値 − " + m + "」です。" };
+        },
+        solution: "見た目の長さは " + b + " − " + m + " = " + (b - m) + " と " + a + " − " + m + " = " + (a - m) + "。" + (b - m) + " ÷ " + (a - m) + " = " + fmt(look, 1) + " 倍に見える。本当は " + fmt(real, 1) + "% 増えただけ。"
+      };
+      return {
+        key: "trunc:" + a + "," + b + "," + m + ":real",
+        prompt: head + "本当は何 % 増えた？（小数第1位まで）",
+        inputLabel: "%", inputMode: "decimal",
+        check: function (x) {
+          var v = toNum(String(x).replace(/[%％]/g, ""));
+          if (near(v, real)) return { ok: true };
+          if (near(v, 100 * (look - 1), 0.06)) return { ok: false, msg: "それは見た目の増え方です。本当の増え方は (" + b + " − " + a + ") ÷ " + a + " で出します。" };
+          if (near(v, d)) return { ok: false, msg: "それは増えた数です。割合にするには、もとの " + a + " で割って 100 を掛けます。" };
+          if (isNaN(v)) return { ok: false, msg: "数字で答えてください。" };
+          return { ok: false };
+        },
+        solution: "(" + b + " − " + a + ") ÷ " + a + " × 100 = " + fmt(real, 1) + "%。見た目では " + fmt(look, 1) + " 倍に見えるが、縦軸が " + m + " から始まっているため。"
+      };
+    }, now);
+  };
+
+  /* 期間をそろえる：日数のちがう期間の合計は、1日あたりに直す */
+  G.perDay = function (rng, now) {
+    return draw(rng, function (r) {
+      var days = pick(r, [2, 3, 4]), per = randInt(r, 12, 40) * 100, lastPer = per + randInt(r, -3, 3) * 100;
+      var full = per * 7 + randInt(r, -2, 2) * 100, last = lastPer * days;
+      var what = pick(r, ["パン屋の売上（円）", "学食の注文数（食）", "カフェの売上（円）"]);
+      var unit = /円/.test(what) ? "円" : "食";
+      if (/食/.test(unit)) { full = Math.round(full / 100); last = Math.round(last / 100); }
+      var lp = last / days;
+      if (Math.abs(lp - Math.round(lp)) > 1e-9) return null;
+      return {
+        key: "perday:" + full + "," + last + "," + days,
+        prompt: "週ごとに合計した" + what + "。前の週（7 日分）は <span class=\"num\">" + fmt(full, 0) + "</span>、最後の週は <span class=\"num\">" + fmt(last, 0) + "</span> で、急に減ったように見える。ただし最後の週は <b>" + days + " 日分</b>しかデータがない。最後の週の 1 日あたりは？",
+        inputLabel: "1日あたり（" + unit + "）", inputMode: "decimal",
+        check: function (x) {
+          var v = toNum(x);
+          if (near(v, lp)) return { ok: true };
+          if (near(v, last / 7, 0.6)) return { ok: false, msg: "7 で割っていませんか。最後の週は " + days + " 日分なので、" + days + " で割ります。" };
+          if (near(v, last)) return { ok: false, msg: "それは週の合計です。日数で割って 1 日あたりにします。" };
+          if (isNaN(v)) return { ok: false, msg: "数字で答えてください。" };
+          return { ok: false };
+        },
+        solution: fmt(last, 0) + " ÷ " + days + " = " + fmt(lp, 0) + " " + unit + "。前の週は " + fmt(full, 0) + " ÷ 7 ≒ " + fmt(full / 7, 0) + " " + unit + " なので、1 日あたりでは急に減ってはいない。"
+      };
+    }, now);
+  };
+
+  /* 見えたこと・考えたこと（学食の架空データ） */
+  var SEE = [
+    { s: "カレーの注文数は、10 月から 12 月まで毎月増えた", see: true },
+    { s: "麺類の 12 月の注文数は、10 月の 1.6 倍だった", see: true },
+    { s: "A定食は、10 月から 12 月で 120 食減った", see: true },
+    { s: "3 か月の合計では、カレーが全体の約 34% でいちばん多い", see: true },
+    { s: "寒くなって、温かい麺類を選ぶ人が増えたのかもしれない", see: false },
+    { s: "A定食が減ったのは、値上げがあったからかもしれない", see: false },
+    { s: "麺類は寒い季節によく売れる", see: false, msg: "グラフに出ているのは「麺類が増えた」までです。「寒いから」は理由の予想なので、考えたことです。言い切らずに「かもしれない」で書きます。" },
+    { s: "学生はカレーが好きだから、カレーがいちばん売れている", see: false, msg: "「好きだから」はグラフからは分かりません。理由の予想なので、考えたことです。" }
+  ];
+  G.seeThink = function (rng, now) {
+    return draw(rng, function (r) {
+      var q = pick(r, SEE);
+      return choice(r, "see:" + q.s, "学食の注文数のグラフについて書いた文：「" + q.s + "」。これはどっち？", [
+        { text: "見えたこと（グラフから数字で言える）", ok: q.see, msg: q.msg || "この文は、グラフには出ていない理由の予想です。考えたこと（仮説）として「かもしれない」で書きます。" },
+        { text: "考えたこと（理由の予想・仮説）", ok: !q.see, msg: "この文は、グラフの数字から直接言えることです。見えたことです。" }
+      ], q.see ? "グラフの数字から直接言える → 見えたこと。" : "グラフには出ていない理由の予想 → 考えたこと（「かもしれない」で書く）。", true);
+    }, now);
+  };
+
+  /* SUMIFS の複合参照：$A5 は列だけ、B$4 は行だけ固定 */
+  G.mixedRef = function (rng, now) {
+    return draw(rng, function (r) {
+      var c = randInt(r, 2, 3), rr = randInt(r, 6, 8), col = colName(c);
+      var f = function (a, b) { return "<span class=\"num\">=SUMIFS(売上, 商品, " + a + ", 月, " + b + ")</span>"; };
+      return choice(r, "mixed:" + col + rr, "B5 の式 " + f("$A5", "B$4") + " を <b>" + col + rr + "</b> へコピーすると？", [
+        { text: f("$A" + rr, col + "$4"), ok: true },
+        { text: f("$A5", "B$4") + "（変わらない）", msg: "$ は付いた側だけを固定します。$A5 の行と、B$4 の列は動きます。" },
+        { text: f("$A5", col + "$4"), msg: "$A5 は列（A）だけが固定です。行の 5 は、下へコピーすると " + rr + " に変わります。" },
+        { text: f("$A" + rr, "B$4"), msg: "B$4 は行（4）だけが固定です。列の B は、右へコピーすると " + col + " に変わります。" }
+      ], "$A5 → 列 A は固定、行は " + rr + " へ。B$4 → 行 4 は固定、列は " + col + " へ。商品名はいつも A 列、月はいつも 4 行目を見る。");
+    }, now);
+  };
+
+  /* Excel のグラフ操作 */
+  var OPS = [
+    { q: "集計表を「合計」の大きい順に並べ替えたい。範囲に合計の行（いちばん下）まで入れると？", ok: "合計の行もいっしょに並べ替えられ、いちばん上に来てしまう", ng: [["合計の行は自動で除かれる", "Excel は合計の行かどうかを区別しません。範囲に入れないようにします。"], ["エラーになって並べ替えられない", "エラーにはならず、合計の行が先頭に来てしまいます。"]] },
+    { q: "折れ線グラフを描いたら、横軸が商品名になった。横軸を月にするには？", ok: "グラフのデザイン → 行/列の切り替え", ng: [["表を作り直して、行と列を入れかえる", "表はそのままで、グラフの「行/列の切り替え」だけで入れかわります。"], ["グラフの種類を棒グラフに変える", "種類を変えても、横軸は商品のままです。"]] },
+    { q: "グラフに題と軸ラベルを付けるには？", ok: "グラフを選び、右上の「＋」（グラフ要素）から付ける", ng: [["セルに題を書けば、グラフに入る", "セルの文字は自動ではグラフに入りません。"], ["印刷するときに付く", "自分で付けないと、題も軸ラベルも出ません。"]] },
+    { q: "軸ラベルに必ず入れるものは？", ok: "単位（例：注文数（食）、売上金額（円））", ng: [["自分の名前", "名前ではなく、何の数かと単位を書きます。"], ["グラフを作った日", "日付ではなく、何の数かと単位を書きます。"]] },
+    { q: "商品名の列と合計の列だけを選んで棒グラフにしたい。離れた 2 か所を選ぶには？", ok: "1 か所目を選んだあと、Ctrl を押しながら 2 か所目を選ぶ", ng: [["Shift を押しながら 2 か所目を選ぶ", "Shift はあいだの範囲もまとめて選びます。離れた範囲は Ctrl です。"], ["2 回に分けてグラフを作る", "Ctrl を使えば 1 回で選べます。"]] }
+  ];
+  G.excelOps = function (rng, now) {
+    return draw(rng, function (r) {
+      var q = pick(r, OPS);
+      return choice(r, "ops:" + q.q, q.q, [{ text: q.ok, ok: true }].concat(q.ng.map(function (x) { return { text: x[0], msg: x[1] }; })), "正しいのは「" + q.ok + "」。");
+    }, now);
+  };
+
+  /* ===== 第5回 予習：人口ピラミッド ===== */
+  /* 架空の町の、5歳ごと（0〜4歳 … 85歳以上の18階級）の人数（男女それぞれ、百人） */
+  function profile(kind) {
+    var a = [];
+    for (var i = 0; i < 18; i++) {
+      var v;
+      if (kind === "fuji") v = 30 * Math.pow(0.86, i);
+      else if (kind === "tsubo") v = i < 13 ? 8 + i * 1.1 : 22 - (i - 13) * 3.5;
+      else if (kind === "bell") v = i < 12 ? 14 : 14 - (i - 12) * 2.2;
+      else v = 10;
+      if (kind === "univ") v = (i < 13 ? 9 + i * 0.6 : 16 - (i - 13) * 2.6) + (i === 4 ? 14 : i === 5 ? 6 : 0);
+      if (kind === "hill40") v = (i < 13 ? 8 + i * 0.4 : 13 - (i - 13) * 2) + (i === 8 || i === 9 ? 9 : 0);
+      if (kind === "hill60") v = (i < 13 ? 8 + i * 0.4 : 13 - (i - 13) * 2) + (i === 12 || i === 13 ? 9 : 0);
+      a.push(Math.max(1, Math.round(v * 10) / 10));
+    }
+    return a;
+  }
+  function share65(p) { return sum(p.slice(13)) / sum(p); }
+  function shareKids(p) { return sum(p.slice(0, 3)) / sum(p); }
+  var PYR = ["fuji", "tsubo", "bell", "univ", "hill40"];
+  var PYR_DESC = { fuji: "子どもが多く、年齢が上がるほど少ない町", tsubo: "子どもが少なく、高齢者が多い町", bell: "どの年齢もだいたい同じくらいの町", univ: "大学があり、20 代前半だけが多い町", hill40: "40 代が多い町" };
+
   var api = {
     sum: sum, mean: mean, sorted: sorted, median: median, mode: mode, varP: varP, sdP: sdP, sdS: sdS, mad: mad, countRange: countRange,
     round: round, fmt: fmt, toNum: toNum, near: near, hash: hash, setBlock: setBlock, isBlocked: isBlocked,
     mulberry32: mulberry32, randInt: randInt, pick: pick, shuffle: shuffle, choice: choice,
-    SHAPES: SHAPES, fromCounts: fromCounts, histSvg: histSvg, SD_PAIRS: SD_PAIRS, PS: PS, FUNCS: FUNCS, gen: G
+    SHAPES: SHAPES, fromCounts: fromCounts, histSvg: histSvg, SD_PAIRS: SD_PAIRS, PS: PS, FUNCS: FUNCS, gen: G,
+    CHARTS: CHARTS, SEE: SEE, profile: profile, share65: share65, shareKids: shareKids, PYR: PYR, PYR_DESC: PYR_DESC
   };
   root.CA = root.CA || {};
   root.CA.stats = api;
@@ -1513,7 +1705,7 @@ button.tab[aria-pressed="true"] { background: var(--accent); color: var(--accent
   /* ---------- 予習：同じデータを 3 つのグラフで ---------- */
   var MENU = { items: ["カレー", "A定食", "B定食", "麺類"], months: ["10月", "11月", "12月"],
     v: { "カレー": [900, 950, 1010], "A定食": [820, 760, 700], "B定食": [540, 600, 650], "麺類": [400, 520, 640] } };
-  var PAL = ["k-acc", "k-lamp", "k-wire", "k-mut"], PALS = ["s-acc", "s-lamp", "s-wire", "s-mut"];
+  var PAL = ["k-acc", "k-lamp", "k-c3", "k-mut"], PALS = ["s-acc", "s-lamp", "s-c3", "s-mut"];
   function barChart() {
     var W = 760, H = 300, x0 = 80, y0 = 250, s = "", tot = MENU.items.map(function (k) { return S.sum(MENU.v[k]); }), mx = 3500;
     for (var k = 0; k <= 3000; k += 1000) { var y = y0 - (y0 - 50) * k / mx; s += L(x0, y, W - 20, y, "s-rule", 1) + T(x0 - 10, y + 6, S.fmt(k, 0), { size: 16, anchor: "end", cls: "k-mut" }); }
@@ -1629,6 +1821,247 @@ button.tab[aria-pressed="true"] { background: var(--accent); color: var(--accent
     mount.appendChild(box);
     load();
   };
+
+  /* ===================== 第4回 データの可視化 ===================== */
+  function pieSvg(vals, labels, title, w) {
+    var W = w || 380, H = 300, cx = 120, cy = 160, r = 100, all = S.sum(vals), a0 = -Math.PI / 2, s = "";
+    if (title) s += T(cx, 26, title, { size: 19, weight: 700 });
+    vals.forEach(function (t, i) {
+      var a1 = a0 + 2 * Math.PI * t / all, big = a1 - a0 > Math.PI ? 1 : 0;
+      s += "<path d=\"M" + cx + "," + cy + " L" + (cx + r * Math.cos(a0)) + "," + (cy + r * Math.sin(a0)) + " A" + r + "," + r + " 0 " + big + " 1 " + (cx + r * Math.cos(a1)) + "," + (cy + r * Math.sin(a1)) + " Z\" class=\"" + PAL[i] + " s-panel\" stroke-width=\"3\"/>";
+      s += R(245, 92 + i * 34, 16, 16, PAL[i] + " s-none", 2) + T(268, 106 + i * 34, labels[i], { size: 17, anchor: "start" });
+      a0 = a1;
+    });
+    return svg(W, H, s, (title || "") + " 円グラフ");
+  }
+  /* 横向きの100%積み上げ棒（月ごとの割合） */
+  function shareBars(rows, labels, months) {
+    var W = 760, H = 70 + rows.length * 70, x0 = 90, x1 = 720, s = "";
+    rows.forEach(function (vals, j) {
+      var all = S.sum(vals), x = x0, y = 40 + j * 70;
+      s += T(x0 - 12, y + 30, months[j], { size: 18, anchor: "end" });
+      vals.forEach(function (v, i) {
+        var w = (x1 - x0) * v / all;
+        s += R(x, y, w, 44, PAL[i] + " s-panel", 0);
+        if (w > 60) s += T(x + w / 2, y + 29, S.fmt(100 * v / all, 1) + "%", { size: 16, weight: 700, cls: i === 2 ? "k-ink" : "k-panel" });
+        x += w;
+      });
+    });
+    labels.forEach(function (l, i) { s += R(x0 + i * 150, 8, 16, 16, PAL[i] + " s-none", 2) + T(x0 + i * 150 + 22, 22, l, { size: 16, anchor: "start" }); });
+    return svg(W, H, s, "100% 積み上げ棒グラフ");
+  }
+  /* 2本の棒（縦軸の始まり m を指定できる） */
+  function twoBars(a, b, la, lb, m, top, unit, hot) {
+    var W = 520, H = 300, x0 = 90, y0 = 250, y1 = 40, s = "";
+    function Y(v) { return y0 - (y0 - y1) * (v - m) / (top - m); }
+    var step = (top - m) / 4;
+    for (var k = 0; k <= 4; k++) {
+      var v = m + step * k;
+      s += L(x0, Y(v), W - 20, Y(v), "s-rule", 1) + T(x0 - 10, Y(v) + 6, S.fmt(v, 0), { size: 17, anchor: "end", cls: k === 0 && hot ? "k-ng" : "k-mut", weight: k === 0 && hot ? 700 : null });
+    }
+    [[a, la], [b, lb]].forEach(function (p, i) {
+      var x = x0 + 70 + i * 190;
+      s += R(x, Y(p[0]), 110, y0 - Y(p[0]), "k-acc s-none", 0) + T(x + 55, Y(p[0]) - 8, S.fmt(p[0], 0), { size: 18, weight: 700 }) + T(x + 55, y0 + 26, p[1], { size: 17 });
+    });
+    s += L(x0, y0, W - 20, y0, "s-ink", 2) + T(x0 - 80, 22, unit, { size: 16, anchor: "start", cls: "k-mut" });
+    if (hot && m > 0) s += "<path d=\"M" + (x0 - 6) + "," + (y0 + 4) + " l12,-6 m-12,12 l12,-6\" class=\"s-ng\" stroke-width=\"2.5\"/>";
+    return svg(W, H, s, "棒グラフ（縦軸は " + m + " から）");
+  }
+  function weekly(vals, perDay, days) {
+    var W = 760, H = 290, x0 = 90, x1 = 700, y0 = 240, y1 = 40, s = "", raw = Math.max.apply(null, vals) * 1.1 / 4, mag = Math.pow(10, Math.floor(Math.log10(raw))), stp = [1, 2, 2.5, 5, 10].map(function (k) { return k * mag; }).filter(function (k) { return k >= raw; })[0], mx = stp * 4;
+    function X(i) { return x0 + (x1 - x0) * i / (vals.length - 1); }
+    function Y(v) { return y0 - (y0 - y1) * v / mx; }
+    for (var k = 0; k <= 4; k++) { var v = stp * k; s += L(x0, Y(v), x1, Y(v), "s-rule", 1) + T(x0 - 10, Y(v) + 6, S.fmt(v, 0), { size: 16, anchor: "end", cls: "k-mut" }); }
+    s += "<polyline points=\"" + vals.map(function (v, i) { return X(i) + "," + Y(v); }).join(" ") + "\" fill=\"none\" class=\"s-acc\" stroke-width=\"4\"/>";
+    vals.forEach(function (v, i) {
+      var last = i === vals.length - 1;
+      s += C(X(i), Y(v), 7, (last ? "k-lamp s-lamp" : "k-acc s-acc"));
+      s += T(X(i), y0 + 26, (i + 1) + "週目", { size: 16 });
+      if (days) s += T(X(i), y0 + 46, days[i] + "日分", { size: 15, cls: days[i] < 7 ? "k-ng" : "k-mut", weight: days[i] < 7 ? 700 : null });
+    });
+    s += T(x0 - 80, 22, perDay ? "1日あたりの注文数（食）" : "週の合計の注文数（食）", { size: 16, anchor: "start", cls: "k-mut" });
+    return svg(W, H + (days ? 14 : 0), s, "週ごとの折れ線グラフ");
+  }
+  var MENU_ROWS = ["10月", "11月", "12月"].map(function (m, j) { return MENU.items.map(function (it) { return MENU.v[it][j]; }); });
+
+  CA.steps.chooseChart = function (mount) {
+    CA.stepper(mount, { frames: [
+      { caption: "グラフは<b>言いたいこと</b>で選ぶ。Excel の「おすすめグラフ」は形からしか選ばないので、何を言いたいかは自分で決めます。", render: function (st) {
+        st.appendChild(html("<div class=\"tbl-wrap\"><table class=\"ref\"><tr><th>言いたいこと</th><th>グラフ</th></tr><tr><td>大小を比べる</td><td>棒グラフ</td></tr><tr><td>時間で変わる様子</td><td>折れ線グラフ</td></tr><tr><td>全体の中の割合</td><td>円グラフ（100% 積み上げ棒でも）</td></tr><tr><td>ばらつき・分布</td><td>ヒストグラム（第3回）</td></tr><tr><td>2 つの量の関係</td><td>散布図（第8回）</td></tr></table></div>")); } },
+      { caption: "学食の注文数（架空）。<b>大小を比べる</b>なら棒。大きい順に並べると、1 位と最下位がすぐ分かります。", render: function (st) { st.appendChild(html(barChart())); } },
+      { caption: "<b>時間で変わる様子</b>なら折れ線。横軸が時間。麺類が増え、A定食が減っていることが、線の傾きで分かります。", render: function (st) { st.appendChild(html(lineChart())); } },
+      { caption: "<b>全体の中の割合</b>なら円。大きい順に 12 時から時計回り。カレーが約 3 分の 1。", render: function (st) { st.appendChild(html(pieChart())); } }
+    ] });
+  };
+  CA.steps.pie = function (mount) {
+    CA.stepper(mount, { frames: [
+      { caption: "10 月と 12 月の、注文数に占める割合。<b>麺類の割合は、どれくらい増えた？</b> 円を 2 つ並べると、角度の差はほとんど読めません。", render: function (st) {
+        var g = h("div", { class: "two" }); g.appendChild(html(pieSvg(MENU_ROWS[0], MENU.items, "10月"))); g.appendChild(html(pieSvg(MENU_ROWS[2], MENU.items, "12月"))); st.appendChild(g); } },
+      { caption: "同じ数を 100% 積み上げ棒にすると、長さで比べられます。麺類は 15.0% → 21.3%、A定食は 30.8% → 23.3%。", render: function (st) { st.appendChild(html(shareBars([MENU_ROWS[0], MENU_ROWS[2]], MENU.items, ["10月", "12月"]))); } },
+      { caption: "円グラフは禁止ではありません。守ること：項目は 5 つくらいまで（多ければ「その他」）、大きい順に 12 時から時計回り、立体（3D）にしない、並べて比べない。", render: function (st) { st.appendChild(html(pieChart())); } }
+    ] });
+  };
+  CA.steps.trunc = function (mount) {
+    CA.stepper(mount, { frames: [
+      { caption: "B定食の注文数、10 月 600 食 → 12 月 650 食。右の棒が 3 倍以上に見えます。", render: function (st) { st.appendChild(html(twoBars(600, 650, "10月", "12月", 580, 660, "注文数（食）"))); } },
+      { caption: "縦軸の目盛りを読むと、<b>580 から始まっています</b>。見た目の長さは 650 − 580 = 70 と 600 − 580 = 20 で、3.5 倍に見えていました。", render: function (st) { st.appendChild(html(twoBars(600, 650, "10月", "12月", 580, 660, "注文数（食）", true))); } },
+      { caption: "縦軸を 0 からにすると、ほとんど同じ高さ。本当は (650 − 600) ÷ 600 ≒ <b>8.3% 増え</b>ただけです。", render: function (st) { st.appendChild(html(twoBars(600, 650, "10月", "12月", 0, 800, "注文数（食）"))); } },
+      { caption: "<b>棒グラフは長さで比べるので、縦軸は 0 から</b>。折れ線は傾き（変化の向き）を見るので、0 からでなくてもかまいません。", render: function (st) { st.appendChild(html(lineChart())); } }
+    ] });
+  };
+  CA.steps.period = function (mount) {
+    var tot = [700, 714, 693, 707, 198], days = [7, 7, 7, 7, 2], per = tot.map(function (v, i) { return v / days[i]; });
+    CA.stepper(mount, { frames: [
+      { caption: "学食のある 1 品の注文数を、週ごとに合計しました。5 週目に急に減ったように見えます。", render: function (st) { st.appendChild(html(weekly(tot))); } },
+      { caption: "日数を書き足すと、5 週目は<b>2 日分</b>しかありません（月の終わりで切れている）。", render: function (st) { st.appendChild(html(weekly(tot, false, days))); } },
+      { caption: "1 日あたりに直すと（合計 ÷ 日数）、どの週も 100 食くらい。<b>急な減りは消えました</b>。", render: function (st) { st.appendChild(html(weekly(per, true, days))); } },
+      { caption: "期間や件数がそろっていない合計は、そのまま比べない。1 日あたり・1 人あたりなどに直してから比べます。", render: function (st) { st.appendChild(html(weekly(per, true, days))); } }
+    ] });
+  };
+  CA.steps.seeThink = function (mount) {
+    CA.stepper(mount, { frames: [
+      { caption: "グラフを描いたら終わりではありません。何が言えるかを、2 つに分けて書きます。", render: function (st) { st.appendChild(html(lineChart())); } },
+      { caption: "<b>見えたこと</b>：グラフから数字で言えること。例「麺類の 12 月は 10 月の 1.6 倍」「A定食は 3 か月で 120 食減った」。", render: function (st) {
+        st.appendChild(html("<div class=\"tbl-wrap\"><table class=\"ref\"><tr><th>見えたこと（グラフから言える）</th></tr><tr><td>麺類の 12 月は 10 月の 1.6 倍（400 → 640 食）</td></tr><tr><td>A定食は 3 か月で 120 食減った（820 → 700 食）</td></tr></table></div>")); } },
+      { caption: "<b>考えたこと</b>：見えたことの理由の予想（仮説）。まだ確かめていないので「かもしれない」で書きます。", render: function (st) {
+        st.appendChild(html("<div class=\"tbl-wrap\"><table class=\"ref\"><tr><th>見えたこと</th><th>考えたこと（まだ仮説）</th></tr><tr><td>麺類の 12 月は 10 月の 1.6 倍</td><td>寒くなって、温かい麺類が選ばれたのかもしれない</td></tr><tr><td>A定食は 3 か月で 120 食減った</td><td>ほかのメニューに客が移ったのかもしれない</td></tr></table></div>")); } },
+      { caption: "見えたことは数字で。考えたことは「かもしれない」で。考えたことは、第7回の仮説検証で確かめる候補になります。", render: function (st) { st.appendChild(html("<p class=\"formula\">見えたこと ＝ 数字　／　考えたこと ＝ 「かもしれない」</p>")); } }
+    ] });
+  };
+  function sheet(head, rows, hot, cols) {
+    var t = "<div class=\"tbl-wrap\"><table class=\"sheet\"><tr><th></th>" + (cols || ["A", "B", "C", "D"]).map(function (c) { return "<th>" + c + "</th>"; }).join("") + "</tr>";
+    rows.forEach(function (r, i) {
+      t += "<tr><th>" + (head + i) + "</th>";
+      r.forEach(function (c, j) { t += "<td" + (hot && hot.some(function (x) { return x[0] === i && x[1] === j; }) ? " class=\"hot\"" : "") + ">" + c + "</td>"; });
+      t += "</tr>";
+    });
+    return html(t + "</table></div>");
+  }
+  CA.steps.sumifs = function (mount) {
+    var data = [["月", "商品", "注文数"], ["10月", "カレー", "30"], ["10月", "麺類", "12"], ["11月", "カレー", "32"], ["10月", "カレー", "28"], ["11月", "麺類", "15"]];
+    var hd = [[1, 0], [1, 1], [1, 2], [4, 0], [4, 1], [4, 2]];
+    CA.stepper(mount, { frames: [
+      { caption: "元のデータは 1 行 1 件（第2回の「1 行 1 観測」）。ここから「商品 × 月」の表を作ります。", render: function (st) { st.appendChild(sheet(1, data, null, ["A", "B", "C"])); } },
+      { caption: "<span class=\"num\">=SUMIFS(合計する範囲, 条件の範囲1, 条件1, 条件の範囲2, 条件2)</span>。「商品がカレー」かつ「月が 10月」の行だけを足します。第3回の COUNTIFS の「数える」が「足す」に変わっただけ。", render: function (st) { st.appendChild(sheet(1, data, hd, ["A", "B", "C"])); } },
+      { caption: "30 + 28 = 58。集計表の B5 に入る値です。", render: function (st) { st.appendChild(sheet(4, [["", "10月", "11月"], ["カレー", "58", ""], ["麺類", "", ""]], [[1, 1]], ["A", "B", "C"])); } },
+      { caption: "B5 の式 <span class=\"num\">=SUMIFS(注文数, 商品, <b>$A5</b>, 月, <b>B$4</b>)</span>。商品名はいつも A 列（<b>$A</b>：列だけ固定）、月はいつも 4 行目（<b>$4</b>：行だけ固定）。", render: function (st) {
+        st.appendChild(sheet(4, [["", "10月", "11月"], ["カレー", "=SUMIFS(…, <b>$A5</b>, …, <b>B$4</b>)", ""], ["麺類", "", ""]], [[1, 1], [1, 0], [0, 1]], ["A", "B", "C"])); } },
+      { caption: "C6 へコピーすると <span class=\"num\">$A6</span> と <span class=\"num\">C$4</span> に。商品は 6 行目の「麺類」、月は C 列の「11月」を見ます。だから表全体に 1 回でコピーできます。", render: function (st) {
+        st.appendChild(sheet(4, [["", "10月", "11月"], ["カレー", "58", "32"], ["麺類", "12", "=SUMIFS(…, <b>$A6</b>, …, <b>C$4</b>)"]], [[2, 2], [2, 0], [0, 2]], ["A", "B", "C"])); } }
+    ] });
+  };
+  CA.steps.excelChart = function (mount) {
+    var tbl = [["商品", "10月", "11月", "12月", "合計"], ["カレー", "900", "950", "1,010", "2,860"], ["A定食", "820", "760", "700", "2,280"], ["B定食", "540", "600", "650", "1,790"], ["麺類", "400", "520", "640", "1,560"], ["合計", "2,660", "2,830", "3,000", "8,490"]];
+    function sel(rows) { var out = []; rows.forEach(function (r) { for (var c = 0; c < 5; c++) out.push([r, c]); }); return out; }
+    CA.stepper(mount, { frames: [
+      { caption: "棒グラフの前に、合計の大きい順に並べ替えます。選ぶのは<b>見出しから最後の商品まで</b>（4〜8 行目）。合計の行（9 行目）は入れません。入れると合計の行が先頭に来てしまいます。", render: function (st) { st.appendChild(sheet(4, tbl, sel([0, 1, 2, 3, 4]), ["A", "B", "C", "D", "E"])); } },
+      { caption: "棒と円は、商品名（A 列）と合計（E 列）の 2 か所から描きます。1 か所目を選んだら、<b>Ctrl を押しながら</b> 2 か所目を選びます。", render: function (st) {
+        st.appendChild(sheet(4, tbl, [0, 1, 2, 3, 4].reduce(function (a, r) { return a.concat([[r, 0], [r, 4]]); }, []), ["A", "B", "C", "D", "E"])); } },
+      { caption: "折れ線は A4:D8 から。描いた直後は横軸が商品になることがあります。グラフを選んで「グラフのデザイン → <b>行/列の切り替え</b>」で横軸が月になります。", render: function (st) { st.appendChild(html(lineChart())); } },
+      { caption: "最後に、グラフ右上の「＋」から<b>題と軸ラベル（単位）</b>、挿入 → テキスト ボックスで<b>出典</b>。3 つそろって、人に見せられるグラフになります。", render: function (st) { st.appendChild(html(barChart())); } }
+    ] });
+  };
+
+  /* ===================== 第5回 人口ピラミッド ===================== */
+  var AGES5 = []; for (var ai = 0; ai < 18; ai++) AGES5.push(ai === 17 ? "85+" : (ai * 5) + "-" + (ai * 5 + 4));
+  /* m, f：下（若い）から上への人数。o: { hl: [行], ghost: [前の形], max, w, label, labels10 } */
+  function pyramidSvg(m, f, o) {
+    o = o || {};
+    var n = m.length, W = o.w || 520, H = o.h || 360, cx = W / 2, top = 30, bottom = H - 34, rowH = (bottom - top) / n, half = W / 2 - 60;
+    var mx = o.max || Math.max(Math.max.apply(null, m), Math.max.apply(null, f));
+    var s = "";
+    for (var i = 0; i < n; i++) {
+      var y = bottom - (i + 1) * rowH, hl = o.hl && o.hl.indexOf(i) >= 0;
+      var wm = half * m[i] / mx, wf = half * f[i] / mx;
+      s += R(cx - 22 - wm, y + 1, wm, rowH - 2, (hl ? "k-lamp" : "k-acc") + " s-none", 0);
+      s += R(cx + 22, y + 1, wf, rowH - 2, (hl ? "k-lamp" : "k-c3") + " s-none", 0);
+      var lab = o.ageLabels ? o.ageLabels[i] : (i % 2 === 0 ? String(i * 5) : "");
+      if (lab) s += T(cx, y + rowH / 2 + 5, lab, { size: 13, cls: "k-mut" });
+    }
+    s += T(cx - 22 - half / 2, H - 10, "男", { size: 18, weight: 700 }) + T(cx + 22 + half / 2, H - 10, "女", { size: 18, weight: 700 });
+    s += T(cx, 18, o.title || "年齢", { size: 15, cls: "k-mut" });
+    return svg(W, H, s, o.label || "人口ピラミッド");
+  }
+  CA.pyramidSvg = pyramidSvg;
+  function prof(kind) { var p = S.profile(kind); return { m: p, f: p.map(function (v, i) { return Math.round(v * (i > 13 ? 1.25 : 0.97) * 10) / 10; }) }; }
+  CA.pyrProfile = prof;
+
+  /* 予習の今日の問い：表からピラミッドを組み立てる（Excel の手順と同じ） */
+  CA.steps.pyramidBuild = function (mount) {
+    var ages = ["0〜9", "10〜19", "20〜29", "30〜39", "40〜49", "50〜59", "60〜69", "70〜79", "80〜"];
+    var M = [310, 340, 420, 380, 450, 470, 520, 430, 260], F = [300, 330, 400, 370, 440, 480, 560, 510, 420];
+    function table(neg) {
+      return html("<div class=\"tbl-wrap\"><table class=\"ref\"><tr><th>年齢</th>" + ages.map(function (a) { return "<th>" + a + "</th>"; }).join("") + "</tr><tr><th>男</th>" +
+        M.map(function (v) { return "<td" + (neg ? " class=\"hot\"" : "") + ">" + (neg ? "−" : "") + v + "</td>"; }).join("") + "</tr><tr><th>女</th>" + F.map(function (v) { return "<td>" + v + "</td>"; }).join("") + "</tr></table></div>");
+    }
+    function bars(stage) {
+      var W = 620, H = 330, cx = 330, y0 = 290, rh = 28, s = "", sc = 0.42;
+      ages.forEach(function (a, i) {
+        var y = y0 - (i + 1) * (rh + (stage < 3 ? 2 : 0));
+        var gap = stage < 3 ? 4 : 0;
+        if (stage === 1) { s += R(cx, y + gap, M[i] * sc, rh / 2 - gap, "k-acc s-none", 0); }
+        else { s += R(cx - M[i] * sc, y + gap, M[i] * sc, rh - 2 * gap, "k-acc s-none", 0); }
+        s += R(cx, y + gap + (stage === 1 ? rh / 2 : 0), F[i] * sc, (stage === 1 ? rh / 2 : rh) - 2 * gap, "k-c3 s-none", 0);
+        s += T(48, y + rh / 2 + 6, a, { size: 15, anchor: "start", cls: "k-mut" });
+      });
+      s += L(cx, 20, cx, y0, "s-ink", 2);
+      s += T(cx - 120, y0 + 30, stage === 1 ? "" : "男（マイナス）", { size: 16, cls: "k-acc", weight: 700 }) + T(cx + 120, y0 + 30, "女", { size: 16, cls: "k-wire", weight: 700 });
+      return html(svg(W, H, s, "横棒グラフからピラミッドへ"));
+    }
+    CA.stepper(mount, { frames: [
+      { caption: "ある町（架空）の、男女・年齢別の人口（人）です。", render: function (st) { st.appendChild(table(false)); } },
+      { caption: "そのまま横棒にすると、男女が同じ向きに並んでしまいます。", render: function (st) { st.appendChild(bars(1)); } },
+      { caption: "<b>男の人数をマイナスにする</b>と、男の棒が左へのびます（授業の Excel でも同じ手順です）。", render: function (st) { st.appendChild(table(true)); st.appendChild(bars(2)); } },
+      { caption: "棒のすき間をなくすと（重なり 100%・間隔 0%）、<b>人口ピラミッド</b>。60 代がいちばん多く、上（高齢）が重い形の町だと分かります。", render: function (st) { st.appendChild(bars(3)); } }
+    ] });
+  };
+
+  /* 予習のゲーム：ピラミッドの形から町を当てる */
+  CA.pyramidGame = function (mount, opts) {
+    var R0 = [["fuji", ["tsubo", "univ"]], ["tsubo", ["fuji", "hill40"]], ["univ", ["hill40", "bell"]], ["hill40", ["univ", "tsubo"]], ["bell", ["fuji", "tsubo"]]];
+    var i = 0, ok = 0, tries = 0;
+    var head = h("div", { class: "kind" }), fig = h("div", { class: "fig-wrap pyr" }), row = h("div", { class: "choices" }), fb = h("div", { class: "feedback", role: "status", "aria-live": "polite" });
+    var next = h("button", { type: "button", class: "primary", text: "次へ" });
+    var box = h("div", { class: "quiz" }, head, h("p", { class: "game-q", text: "このピラミッドは、どんな町？" }), fig, row, fb, h("div", { class: "row" }, next));
+    var WHY = { fuji: "下（子ども）が広く、上へいくほど細い三角形。", tsubo: "下がすぼまり、60〜70 代がいちばん広い、上が重い形。", univ: "20〜24 歳の段だけが横に飛び出している。", hill40: "40 代の段が横にふくらんでいる。", bell: "下から 60 代まで幅がほぼ同じで、上だけ細くなる形。" };
+    function load() {
+      tries = 0; next.disabled = true; fb.className = "feedback"; fb.innerHTML = "";
+      var k = R0[i][0], p = prof(k);
+      head.innerHTML = "<b>ピラミッドを読む　" + (i + 1) + " / " + R0.length + "</b><span class=\"score\">1 回で正解 " + ok + "</span>";
+      fig.innerHTML = pyramidSvg(p.m, p.f, { label: "架空の町の人口ピラミッド" });
+      row.innerHTML = "";
+      var opts2 = [k].concat(R0[i][1]);
+      opts2.sort(function (a, b) { return PYR_ORDER.indexOf(a) - PYR_ORDER.indexOf(b); });
+      opts2.forEach(function (c) {
+        var b = h("button", { type: "button", text: S.PYR_DESC[c] });
+        b.onclick = function () {
+          if (!next.disabled) return;
+          tries++;
+          if (c === k) {
+            if (tries === 1) ok++;
+            b.classList.add("picked-ok"); fb.className = "feedback ok"; fb.innerHTML = "<span class=\"head\">正解</span>　" + WHY[k];
+            next.disabled = false; next.textContent = i === R0.length - 1 ? "結果を見る" : "次へ"; next.focus();
+            head.querySelector(".score").textContent = "1 回で正解 " + ok;
+          } else { b.classList.add("picked-ng"); fb.className = "feedback ng"; fb.innerHTML = "<span class=\"head\">もう一度</span>　その町なら、" + WHY[c].replace(/。$/, "") + "はずです。"; }
+        };
+        row.appendChild(b);
+      });
+    }
+    var PYR_ORDER = ["univ", "fuji", "hill40", "bell", "tsubo"];
+    next.onclick = function () {
+      if (i === R0.length - 1) {
+        fig.innerHTML = ""; row.innerHTML = ""; fb.className = "feedback ok";
+        fb.innerHTML = "<span class=\"head\">" + R0.length + " 問中 " + ok + " 問を 1 回で正解</span>　授業では、日本全体のピラミッドを読みます。";
+        next.textContent = "もう一度"; i = -1; ok = 0;
+        if (opts && opts.onFinish) opts.onFinish();
+        return;
+      }
+      i++; load();
+    };
+    mount.appendChild(box);
+    load();
+  };
+
 })(typeof window !== "undefined" ? window : globalThis);
 
 </script>
