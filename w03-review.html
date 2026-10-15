@@ -523,7 +523,7 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
     <h2>仕上げの5問</h2>
     <p class="prose">項目1・2・3・5・6から1問ずつ出します。間違えたら、その項目に戻って確認問題と練習をもう一度。</p>
     <div id="fin"></div>
-    <div class="done-banner" id="banner" role="status">7項目すべての確認問題に正解しました。次回（10/23）は「データの可視化」です。<a href="w04-preview.html?v=202610152112">第4回 予習ページ</a>も見ておきましょう。</div>
+    <div class="done-banner" id="banner" role="status">7項目すべての確認問題に正解しました。次回（10/23）は「データの可視化」です。<a href="w04-preview.html?v=202610152231">第4回 予習ページ</a>も見ておきましょう。</div>
   </section>
 
   <footer>
@@ -1381,12 +1381,104 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
   ];
   G.pivotOps = function (rng, now) { return draw(rng, function (r) { return bank(r, "piv", pick(r, PIVQ)); }, now); };
 
+  /* ===== 第7回 仮説検証サイクル（課題の滋賀県の値・Data Start の答えは締切まで使わない） ===== */
+  var PP = ["Problem（問題）", "Plan（計画）", "Data（データ）", "Analysis（分析）", "Conclusion（結論）"];
+  var PPQ = [
+    { q: "駅前の放置自転車を減らしたい。「理想は 0 台、今は平日 120 台」と書く", a: 0 },
+    { q: "図書館の閉館前に席が足りない。理想と現実の差をはっきりさせる", a: 0 },
+    { q: "放置が多い原因の候補（駐輪場の数・料金・時刻）を木に分ける", a: 1 },
+    { q: "原因の候補ごとに、どの統計・どの記録を使うかを決める", a: 1 },
+    { q: "1 週間、時刻ごとの台数を数えて表にする", a: 2 },
+    { q: "e-Stat の表を、1 行 1 観測に整える", a: 2 },
+    { q: "時刻ごとの台数をグラフにし、どの時刻に多いかを見つける", a: 3 },
+    { q: "47 都道府県の散布図で、2 つの指標の関係を見る", a: 3 },
+    { q: "「朝 8 時台だけ臨時の駐輪場を開く」と決める", a: 4 },
+    { q: "打ち手を決め、その効果を確かめるという次の問いを書く", a: 4 }
+  ];
+  G.ppdac = function (rng, now) {
+    return draw(rng, function (r) {
+      var q = pick(r, PPQ), others = shuffle(r, [0, 1, 2, 3, 4].filter(function (i) { return i !== q.a; })).slice(0, 2);
+      var opts = [q.a].concat(others).sort(function (x, y) { return x - y; });
+      var WHAT = ["理想と現実の差（問題）をはっきりさせる", "原因の候補と、要るデータ・集め方を決める", "データを集めて整える", "グラフや比較で傾向・関係を見る", "打ち手を決め、次の問いを見つける"];
+      return choice(r, "ppdac:" + q.q, "「" + q.q + "」。PPDAC のどの段階？", opts.map(function (i) {
+        return { text: PP[i], ok: i === q.a, msg: i === q.a ? null : PP[i] + "は「" + WHAT[i] + "」段階です。" };
+      }), PP[q.a] + "：" + WHAT[q.a] + "。", true);
+    }, now);
+  };
+  var SYMQ = [
+    { q: "統計表で「-」の記号を見つけた。意味を確かめるには？", ok: "その表の注記と、調査の「利用上の注意」を読む", ng: [["どの表でも「0」の意味なので、0 として読む", "記号の意味は調査ごとに違います。e-Stat 全体で共通の決まりはありません。"], ["検索エンジンで「-　意味」と調べる", "一般の説明ではなく、その調査の注記で確かめます。調査ごとに意味が違うからです。"]] },
+    { q: "「X」（秘匿）のセルがある市の値を合計に入れたい。どうする？", ok: "空欄にして、秘匿があることを注記に書く", ng: [["0 として足す", "秘匿は「0」ではなく「隠されている」です。0 にすると合計や平均がずれます。"], ["ほかの市の平均で埋める", "勝手に埋めると、本当の値と違う数を使うことになります。空欄にして注記します。"]] },
+    { q: "「秘匿」とは？", ok: "個人や事業所が分かってしまうので、値を隠していること", ng: [["値が 0 であること", "0 ではありません。値はあるけれど、公表すると個人などが分かるので隠しています。"], ["調査をしなかったこと", "調査をしていないのとは別です。値はあるけれど隠しています。"]] }
+  ];
+  G.symbol = function (rng, now) { return draw(rng, function (r) { return bank(r, "sym", pick(r, SYMQ)); }, now); };
+  /* 再掲・総数の二度数え */
+  G.saikei = function (rng, now) {
+    return draw(rng, function (r) {
+      var a = randInt(r, 8, 20) * 100, b = randInt(r, 40, 70) * 100, c = randInt(r, 20, 45) * 100, tot = a + b + c, all = tot + a + b + c + b;
+      var town = pick(r, ["ある町", "ある村", "ある市の地区"]);
+      var tbl = "<div class=\"tbl-wrap\"><table class=\"ref\"><tr><th>年齢</th><th>人口（人）</th></tr><tr><td>総数</td><td>" + fmt(tot, 0) + "</td></tr><tr><td>0〜14 歳</td><td>" + fmt(a, 0) + "</td></tr><tr><td>15〜64 歳</td><td>" + fmt(b, 0) + "</td></tr><tr><td>65 歳以上</td><td>" + fmt(c, 0) + "</td></tr><tr><td>（再掲）15〜64 歳</td><td>" + fmt(b, 0) + "</td></tr></table></div>";
+      return {
+        key: "saikei:" + [a, b, c].join(","),
+        prompt: town + "（架空）の年齢別人口の表。" + tbl + "<b>全部の行を足すと、本当の人口より何人多く数えてしまう？</b>",
+        inputLabel: "多く数える人数", inputMode: "numeric",
+        check: function (x) {
+          var v = toNum(x);
+          if (near(v, all - tot, 0)) return { ok: true };
+          if (near(v, b, 0)) return { ok: false, msg: "再掲の行（" + fmt(b, 0) + "）だけではありません。「総数」の行も各年齢の合計なので、足すと二度数えになります。" };
+          if (near(v, tot, 0)) return { ok: false, msg: "総数の行の分だけではありません。（再掲）15〜64 歳の行も、すでに各年齢の中に入っています。" };
+          if (near(v, all, 0)) return { ok: false, msg: "それは全部の行を足した数です。多く数えてしまう分（二度数えの分）を答えます。" };
+          if (isNaN(v)) return { ok: false, msg: "数字で答えてください。" };
+          return { ok: false };
+        },
+        solution: "総数 " + fmt(tot, 0) + " と（再掲）" + fmt(b, 0) + " の行は、二度数え。全部足すと " + fmt(all, 0) + " で、" + fmt(all - tot, 0) + " 人多い。合計の前に「総数」「再掲」の行を外す。"
+      };
+    }, now);
+  };
+  var UNITQ = [
+    { q: "2015 年の人口と 2020 年の病院数を割り算して「人口あたりの病院数」を出した。問題は？", ok: "年がそろっていない", ng: [["単位がそろっていない", "単位よりも先に、年がちがうことが問題です。同じ年の値どうしで計算します。"], ["問題はない", "年がちがうと、人口も病院数も変わっています。同じ年にそろえます。"]] },
+    { q: "表 A は「人」、表 B は「千人」で人口が書いてある。そのまま比べると？", ok: "1,000 倍ずれて比べてしまう", ng: [["同じ人口なので問題ない", "「千人」の表の 431 は 431,000 人です。単位をそろえます。"], ["小数点の位置が 1 つずれる", "1 けたではなく 3 けた（1,000 倍）ずれます。"]] },
+    { q: "都道府県の表と市区町村の表を 1 つにして、平均を出した。問題は？", ok: "粒度（都道府県と市区町村）が混ざっている", ng: [["年がそろっていない", "この場合の問題は、大きさのちがう単位（県と市）が混ざっていることです。"], ["問題はない", "県と市を混ぜると、県の値が市の値を含むので二度数えにもなります。"]] },
+    { q: "労働力率が 2 時点で 70.2% → 73.5% になった。増え方の正しい言い方は？", ok: "3.3 ポイント増えた", ng: [["3.3% 増えた", "% どうしの差は「ポイント」で言います。3.3% 増えた、だと 70.2 の 3.3% 増え（約 2.3 ポイント）と区別がつきません。"], ["4.7 倍になった", "倍ではありません。73.5 − 70.2 = 3.3 ポイントです。"]] }
+  ];
+  G.unitGrain = function (rng, now) { return draw(rng, function (r) { return bank(r, "unit", pick(r, UNITQ)); }, now); };
+  var TIDYQ = [
+    { q: "e-Stat の表で、列の名前は 10 行目にある。女だけに絞るには？", ok: "10 行目を選んで フィルター、男女の列で「女」だけにする", ng: [["1 行目を選んでフィルターをかける", "1〜9 行目は表題や注記です。列の名前がある 10 行目でフィルターをかけます。"], ["男の行を 1 行ずつ削除する", "削除すると元の表がこわれます。フィルターで見えている行だけを使います。"]] },
+    { q: "「01_北海道」をコードと名前に分ける。区切り位置で選ぶ区切り文字は？", ok: "その他「_」", ng: [["カンマ", "この文字列にカンマはありません。区切りに使われているのは「_」です。"], ["スペース", "この文字列にスペースはありません。区切りに使われているのは「_」です。"]] },
+    { q: "区切り位置でコードの列を「標準」のまま分けた。どうなる？", ok: "「01」が「1」になり、先頭の 0 が消える", ng: [["「01」のまま残る", "標準だと数として読まれ、先頭の 0 が消えます。コードの列は「文字列」にします。"], ["エラーで分けられない", "分けられますが、先頭の 0 が消えます。"]] }
+  ];
+  G.tidy = function (rng, now) { return draw(rng, function (r) { return bank(r, "tidy", pick(r, TIDYQ)); }, now); };
+  var CAUSEQ = [
+    { q: "保育所の数が多い県ほど、女性の労働力率が高い（相関がある）。言えることは？", ok: "一緒に動く傾向がある。原因かどうかは、まだ分からない", ng: [["保育所を増やせば、必ず女性が働くようになる", "相関は「一緒に動く」ことだけです。逆向き（働く人が多いから保育所が増えた）や、別の要因もありえます。"], ["関係はない", "相関があるので、一緒に動く傾向はあります。ただし原因とは限りません。"]] },
+    { q: "相関があるのに原因とは言えない理由として、当てはまらないのは？", ok: "相関係数が大きいから", ng: [["逆向き（結果が原因を増やした）かもしれない", "それは当てはまる理由です。当てはまらないものを選びます。"], ["両方に効く別の要因があるかもしれない", "それは当てはまる理由です（第三の要因）。当てはまらないものを選びます。"]] }
+  ];
+  G.cause = function (rng, now) { return draw(rng, function (r) { return bank(r, "cause", pick(r, CAUSEQ)); }, now); };
+
+  /* ===== 第8回 予習：散布図（架空のクラス 20 人） ===== */
+  var CLASS = (function () {
+    var r = mulberry32(8031), out = [];
+    for (var i = 0; i < 20; i++) {
+      var study = Math.round((1 + r() * 9) * 2) / 2;
+      var score = Math.round(Math.min(98, Math.max(25, 35 + study * 5.5 + (r() - 0.5) * 42)));
+      var phone = Math.round((0.5 + r() * 5.5) * 2) / 2;
+      var sleep = Math.round(Math.min(9, Math.max(4.5, 8.6 - phone * 0.55 + (r() - 0.5) * 2.6)) * 2) / 2;
+      var height = Math.round(150 + r() * 35);
+      out.push({ "勉強時間": study, "点数": score, "スマホの時間": phone, "睡眠時間": sleep, "身長": height });
+    }
+    return out;
+  })();
+  var CLASS_UNIT = { "勉強時間": "時間/週", "点数": "点", "スマホの時間": "時間/日", "睡眠時間": "時間/日", "身長": "cm" };
+  function corr(xs, ys) {
+    var mx = mean(xs), my = mean(ys), sxy = 0, sxx = 0, syy = 0;
+    for (var i = 0; i < xs.length; i++) { sxy += (xs[i] - mx) * (ys[i] - my); sxx += (xs[i] - mx) * (xs[i] - mx); syy += (ys[i] - my) * (ys[i] - my); }
+    return sxy / Math.sqrt(sxx * syy);
+  }
+
   var api = {
     sum: sum, mean: mean, sorted: sorted, median: median, mode: mode, varP: varP, sdP: sdP, sdS: sdS, mad: mad, countRange: countRange,
     round: round, fmt: fmt, toNum: toNum, near: near, hash: hash, setBlock: setBlock, isBlocked: isBlocked,
     mulberry32: mulberry32, randInt: randInt, pick: pick, shuffle: shuffle, choice: choice,
     SHAPES: SHAPES, fromCounts: fromCounts, histSvg: histSvg, SD_PAIRS: SD_PAIRS, PS: PS, FUNCS: FUNCS, gen: G,
-    CHARTS: CHARTS, SEE: SEE, profile: profile, share65: share65, shareKids: shareKids, PYR: PYR, PYR_DESC: PYR_DESC, JP: JP, ageLabel: ageLabel
+    CHARTS: CHARTS, SEE: SEE, profile: profile, share65: share65, shareKids: shareKids, PYR: PYR, PYR_DESC: PYR_DESC, JP: JP, ageLabel: ageLabel, CLASS: CLASS, CLASS_UNIT: CLASS_UNIT, corr: corr
   };
   root.CA = root.CA || {};
   root.CA.stats = api;
@@ -2679,6 +2771,162 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
       if (i === Q.length - 1) {
         q.textContent = ""; row.innerHTML = ""; fb.className = "feedback ok";
         fb.innerHTML = "<span class=\"head\">" + Q.length + " 問中 " + ok + " 問を 1 回で正解</span>　授業では、滋賀県の事例で PPDAC を 1 周します。";
+        next.textContent = "もう一度"; i = -1; ok = 0;
+        if (opts && opts.onFinish) opts.onFinish();
+        return;
+      }
+      i++; load();
+    };
+    mount.appendChild(box);
+    load();
+  };
+
+
+  /* ===================== 第7回 仮説検証サイクル ===================== */
+  /* M字カーブの模式図（形だけ。値は課題で自分で出すので載せない） */
+  function mcurve(stage) {
+    var W = 720, H = 300, x0 = 70, x1 = 690, y0 = 250, y1 = 30, s = "";
+    var ages = ["15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70"];
+    var f = [17, 75, 86, 79, 78, 80, 82, 80, 74, 62, 42, 28], m = [17, 75, 95, 96, 96, 96, 96, 95, 93, 88, 64, 45];
+    function X(i) { return x0 + (x1 - x0) * i / 11; }
+    function Y(v) { return y0 - (y0 - y1) * v / 100; }
+    s += L(x0, y0, x1, y0, "s-ink", 2) + L(x0, y1, x0, y0, "s-rule", 1);
+    ages.forEach(function (a, i) { s += T(X(i), y0 + 22, a, { size: 15, cls: "k-mut" }); });
+    s += T(x1, y0 + 44, "年齢（歳〜）", { size: 15, anchor: "end", cls: "k-mut" }) + T(x0 - 50, 20, "働いている・仕事を探している人の割合（模式図）", { size: 15, anchor: "start", cls: "k-mut" });
+    s += "<polyline points=\"" + f.map(function (v, i) { return X(i) + "," + Y(v); }).join(" ") + "\" fill=\"none\" class=\"s-lamp\" stroke-width=\"4\"/>";
+    s += T(X(11) - 4, Y(f[11]) - 10, "女性", { size: 17, anchor: "end", weight: 700, cls: "k-lampdark" });
+    if (stage >= 1) { s += "<polyline points=\"" + m.map(function (v, i) { return X(i) + "," + Y(v); }).join(" ") + "\" fill=\"none\" class=\"s-acc\" stroke-width=\"4\" stroke-dasharray=\"8 6\"/>" + T(X(11) - 4, Y(m[11]) - 10, "男性", { size: 17, anchor: "end", weight: 700, cls: "k-acc" }); }
+    if (stage >= 2) s += "<ellipse cx=\"" + X(3.5) + "\" cy=\"" + Y(78) + "\" rx=\"50\" ry=\"22\" class=\"k-none s-ng\" stroke-width=\"3\" fill=\"none\"/>" + T(X(3.5), Y(78) + 44, "30代でへこむ", { size: 17, weight: 700, cls: "k-ng" });
+    return svg(W, H, s, "M字カーブの模式図");
+  }
+  CA.steps.mcurve = function (mount) {
+    CA.stepper(mount, { frames: [
+      { caption: "年齢ごとに、働いている・仕事を探している人の割合（労働力率）を折れ線にすると、女性は 30 代でいったん下がり、また上がります（模式図）。", render: function (st) { st.appendChild(html(mcurve(0))); } },
+      { caption: "男性と並べると、ちがいがはっきりします。この形を「M 字カーブ」といいます。", render: function (st) { st.appendChild(html(mcurve(2))); } },
+      { caption: "PPDAC の最初は<b>問題 ＝ 理想 − 現実</b>。理想「子育てを経ても、希望すれば働き続けられる」と、現実「30 代でへこむ」の差が問題です。", render: function (st) { st.appendChild(html("<p class=\"formula\">問題 ＝ 理想 − 現実</p>")); } }
+    ] });
+  };
+  CA.steps.ppdacSteps = function (mount) {
+    var rows = [["Problem 問題", "理想と現実の差をはっきりさせる"], ["Plan 計画", "原因の候補を木に分け、要るデータを決める"], ["Data データ", "統計を探し、集めて整える"], ["Analysis 分析", "グラフ・散布図で関係を見る"], ["Conclusion 結論", "打ち手を決め、次の問いを見つける"]];
+    CA.stepper(mount, { frames: rows.map(function (r, i) {
+      return { caption: "<b>" + r[0] + "</b>：" + r[1] + "。", render: function (st) {
+        st.appendChild(html("<div class=\"flow5\">" + rows.map(function (x, k) { return "<div class=\"st" + (k === i ? " hot" : "") + "\"><b>" + x[0].split(" ")[0] + "</b><span>" + x[0].split(" ")[1] + "</span></div>"; }).join("<span class=\"arr\" aria-hidden=\"true\">→</span>") + "</div>")); } };
+    }).concat([{ caption: "結論で新しい問いが見つかり、また Problem へ。サイクルは 1 周で終わりません。第 9 回からの班も、この順で進めます。", render: function (st) { st.appendChild(html("<p class=\"formula\">P → P → D → A → C → 次の P …</p>")); } }]) });
+  };
+  CA.steps.cause = function (mount) {
+    CA.stepper(mount, { frames: [
+      { caption: "「保育所が多い県ほど、女性の労働力率が高い」という相関があったとします。", render: function (st) { st.appendChild(html("<p class=\"formula\">保育所が多い ⇔ 女性が働く割合が高い</p>")); } },
+      { caption: "考えられる説明は 1 つではありません。", render: function (st) { st.appendChild(tbl(["説明", "向き"], [["保育所が多いから、働ける", "保育所 → 働く"], ["働く人が多いから、保育所が増えた", "働く → 保育所（逆向き）"], ["三世代同居や賃金など、別の要因が両方に効いている", "別の要因 → 両方"]])); } },
+      { caption: "<b>相関は「一緒に動く」ことしか言いません</b>。原因を言うには、年を追う、条件をそろえるなどの比べ方の工夫が要ります（第 8 回でくわしく）。", render: function (st) { st.appendChild(html("<p class=\"formula\">相関 ≠ 原因</p>")); } }
+    ] });
+  };
+  CA.steps.symbols = function (mount) {
+    CA.stepper(mount, { frames: [
+      { caption: "本物の統計表には「-」「…」「X」などの記号が出てきます。", render: function (st) { st.appendChild(tbl(["市", "農家数"], [["A 市", "1,204"], ["B 町", "-"], ["C 村", "X"], ["D 町", "…"]])); } },
+      { caption: "<b>記号の意味は調査ごとに違います</b>。e-Stat 全体で共通の決まりはありません。その表の注記と、調査の「利用上の注意」で確かめます。", render: function (st) { st.appendChild(tbl(["記号", "例：農林業センサスでの意味"], [["-", "事実のないもの"], ["…", "事実不詳又は調査を欠くもの"], ["X", "秘匿（個人や事業所が分かってしまうため）"]])); } },
+      { caption: "<b>秘匿（X）を 0 にしない</b>。0 にすると合計や平均がずれます。空欄にして、理由を注記に書きます。", render: function (st) { st.appendChild(tbl(["市", "農家数", "使うときの値"], [["A 市", "1,204", "1,204"], ["C 村", "X", "（空欄）注記：秘匿"]])); } }
+    ] });
+  };
+  CA.steps.saikeiSteps = function (mount) {
+    var rows = [["総数", "10,000"], ["0〜14 歳", "1,200"], ["15〜64 歳", "5,600"], ["65 歳以上", "3,200"], ["（再掲）15〜64 歳", "5,600"]];
+    function t(hot) { return html("<div class=\"tbl-wrap\"><table class=\"ref\"><tr><th>年齢</th><th>人口（人）</th></tr>" + rows.map(function (r, i) { var h2 = hot && hot.indexOf(i) >= 0; return "<tr><td" + (h2 ? " class=\"hot\"" : "") + ">" + r[0] + "</td><td" + (h2 ? " class=\"hot\"" : "") + ">" + r[1] + "</td></tr>"; }).join("") + "</table></div>"); }
+    CA.stepper(mount, { frames: [
+      { caption: "ある町（架空）の年齢別人口。全部の行を足すと 25,600 人。でも総数は 10,000 人です。", render: function (st) { st.appendChild(t()); } },
+      { caption: "「総数」は各年齢の合計。「（再掲）」は、すでに上の行に入っている数をもう一度書いたもの。どちらも足すと<b>二度数え</b>になります。", render: function (st) { st.appendChild(t([0, 4])); } },
+      { caption: "合計の前に「総数」「再掲」の行を外す。1,200 + 5,600 + 3,200 = 10,000 で、総数と一致します。", render: function (st) { st.appendChild(t([1, 2, 3])); } }
+    ] });
+  };
+  CA.steps.unitGrain = function (mount) {
+    CA.stepper(mount, { frames: [
+      { caption: "2 つの表を合わせる前に、3 つをそろえます。", render: function (st) { st.appendChild(tbl(["そろえるもの", "まちがいの例"], [["年", "2015 年と 2020 年を混ぜる"], ["単位", "「人」と「千人」、「%」と「ポイント」"], ["粒度", "都道府県と市区町村を混ぜる"]])); } },
+      { caption: "<b>% と ポイント</b>：70.2% → 73.5% は「3.3 ポイント増えた」。「3.3% 増えた」と言うと、70.2 の 3.3% 増え（約 2.3 ポイント）と区別がつきません。", render: function (st) { st.appendChild(html("<p class=\"formula\">73.5% − 70.2% ＝ 3.3 ポイント</p>")); } }
+    ] });
+  };
+  CA.steps.tidy = function (mount) {
+    CA.stepper(mount, { frames: [
+      { caption: "e-Stat の表は、1〜9 行目が表題や注記で、<b>列の名前は 10 行目</b>。10 行目を選んで フィルター をかけ、必要な行（例：女、15〜74 歳）だけを見せます。", render: function (st) { st.appendChild(sheet(9, [["…注記…", "", ""], ["地域", "男女", "年齢"], ["00000_全国", "2_女", "15～19歳"]], [[1, 0], [1, 1], [1, 2]], ["A", "B", "C"])); } },
+      { caption: "見えている行だけをコピーして、整形用のシートに貼ります（隠れた行は貼られません）。", render: function (st) { st.appendChild(sheet(2, [["00000_全国", "", "15～19歳"], ["25000_滋賀県", "", "15～19歳"]], null, ["A", "B", "C"])); } },
+      { caption: "データ → 区切り位置 → 区切り文字に「<span class=\"us\">_</span>」。3/3 の画面でコードの列を<b>文字列</b>にすると、「00000」の 0 が消えません。", render: function (st) { st.appendChild(sheet(2, [["00000", "全国", "15～19歳"], ["25000", "滋賀県", "15～19歳"]], [[0, 0], [1, 0]], ["A", "B", "C"])); } }
+    ] });
+  };
+
+  /* ===================== 第8回 予習：散布図 ===================== */
+  function scatterSvg(xs, ys, o) {
+    o = o || {};
+    var W = 560, H = 380, x0 = 70, x1 = 530, y0 = 320, y1 = 30, s = "";
+    function nice(lo, hi) { var span = hi - lo, st = span > 60 ? 20 : span > 20 ? 10 : span > 8 ? 2 : 1; return [Math.floor(lo / st) * st, Math.ceil(hi / st) * st, st]; }
+    var nx = nice(Math.min.apply(null, xs), Math.max.apply(null, xs)), ny = nice(Math.min.apply(null, ys), Math.max.apply(null, ys));
+    function X(v) { return x0 + (x1 - x0) * (v - nx[0]) / (nx[1] - nx[0]); }
+    function Y(v) { return y0 - (y0 - y1) * (v - ny[0]) / (ny[1] - ny[0]); }
+    for (var v = nx[0]; v <= nx[1] + 1e-9; v += nx[2]) s += L(X(v), y0, X(v), y1, "s-rule", 1) + T(X(v), y0 + 22, String(v), { size: 15, cls: "k-mut" });
+    for (var w = ny[0]; w <= ny[1] + 1e-9; w += ny[2]) s += L(x0, Y(w), x1, Y(w), "s-rule", 1) + T(x0 - 8, Y(w) + 5, String(w), { size: 15, anchor: "end", cls: "k-mut" });
+    s += L(x0, y0, x1, y0, "s-ink", 2) + L(x0, y0, x0, y1, "s-ink", 2);
+    xs.forEach(function (x, i) { s += C(X(x), Y(ys[i]), 7, "k-acc s-panel", 1.5); });
+    if (o.xl) s += T(x1, y0 + 46, o.xl, { size: 16, anchor: "end", weight: 700 });
+    if (o.yl) s += T(x0 - 60, 18, o.yl, { size: 16, anchor: "start", weight: 700 });
+    return svg(W, H + 20, s, o.label || "散布図");
+  }
+  CA.scatterSvg = scatterSvg;
+  CA.scatterLab = function (mount, onUse) {
+    var keys = Object.keys(S.CLASS_UNIT), st = { x: "勉強時間", y: "点数" }, used = {};
+    function seg(label, key) {
+      var g = h("div", { class: "seg", role: "group", "aria-label": label });
+      keys.forEach(function (k) { g.appendChild(h("button", { type: "button", text: k, "data-k": key, "data-v": k, onclick: function () { if (st[key === "x" ? "y" : "x"] === k) return; st[key] = k; draw(); } })); });
+      return h("div", { class: "row" }, h("span", { class: "small", text: label }), g);
+    }
+    var raw = h("details", { class: "raw" }, h("summary", { text: "元のデータ（架空のクラス 20 人）を見る" }),
+      html("<div class=\"tbl-wrap\"><table class=\"ref\"><tr><th></th>" + keys.map(function (k) { return "<th>" + k + "（" + S.CLASS_UNIT[k] + "）</th>"; }).join("") + "</tr>" + S.CLASS.map(function (o, i) { return "<tr><th>" + (i + 1) + "</th>" + keys.map(function (k) { return "<td>" + o[k] + "</td>"; }).join("") + "</tr>"; }).join("") + "</table></div>"));
+    var out = h("div", { class: "fig-wrap" }), note = h("p", { class: "caption", "aria-live": "polite" });
+    function draw() {
+      mount.querySelectorAll(".seg button").forEach(function (b) { var k = b.getAttribute("data-k"), v = b.getAttribute("data-v"); b.setAttribute("aria-pressed", st[k] === v ? "true" : "false"); b.disabled = st[k === "x" ? "y" : "x"] === v; });
+      var xs = S.CLASS.map(function (o) { return o[st.x]; }), ys = S.CLASS.map(function (o) { return o[st.y]; });
+      out.innerHTML = scatterSvg(xs, ys, { xl: st.x + "（" + S.CLASS_UNIT[st.x] + "）", yl: st.y + "（" + S.CLASS_UNIT[st.y] + "）", label: st.x + "と" + st.y + "の散布図" });
+      note.textContent = "横軸＝" + st.x + "、縦軸＝" + st.y + "。点の並びは、右上がり・右下がり・はっきりしない、のどれに見える？（1 つの点が 1 人）";
+      used[st.x + st.y] = true;
+      if (onUse && Object.keys(used).length >= 3) onUse();
+    }
+    mount.appendChild(raw);
+    mount.appendChild(seg("横軸", "x")); mount.appendChild(seg("縦軸", "y"));
+    mount.appendChild(out); mount.appendChild(note);
+    draw();
+  };
+  CA.scatterGame = function (mount, opts) {
+    var rng = S.mulberry32(20261120), R = [];
+    ["up", "down", "none", "up", "down"].forEach(function (k, i) {
+      var xs = [], ys = [];
+      for (var j = 0; j < 24; j++) { var x = 1 + rng() * 9, e = (rng() - 0.5) * (i < 3 ? 5 : 8); xs.push(Math.round(x * 10) / 10); ys.push(Math.round((k === "up" ? 2 + x * 0.9 + e : k === "down" ? 11 - x * 0.9 + e : 6 + (rng() - 0.5) * 9) * 10) / 10); }
+      R.push({ k: k, xs: xs, ys: ys });
+    });
+    var NAMES = { up: "右上がり（一方が多いと、もう一方も多い）", down: "右下がり（一方が多いと、もう一方は少ない）", none: "はっきりした関係は見えない" };
+    var WHY = { up: "点のまとまりが、左下から右上へのびています。", down: "点のまとまりが、左上から右下へのびています。", none: "点が全体に散らばっていて、傾きが見えません。" };
+    var i = 0, ok = 0, tries = 0;
+    var head = h("div", { class: "kind" }), fig = h("div", { class: "fig-wrap" }), row = h("div", { class: "choices" }), fb = h("div", { class: "feedback", role: "status", "aria-live": "polite" });
+    var next = h("button", { type: "button", class: "primary", text: "次へ" });
+    var box = h("div", { class: "quiz" }, head, h("p", { class: "game-q", text: "この散布図の点の並びは？" }), fig, row, fb, h("div", { class: "row" }, next));
+    function load() {
+      tries = 0; next.disabled = true; fb.className = "feedback"; fb.innerHTML = "";
+      head.innerHTML = "<b>散布図を読む　" + (i + 1) + " / " + R.length + "</b><span class=\"score\">1 回で正解 " + ok + "</span>";
+      fig.innerHTML = scatterSvg(R[i].xs, R[i].ys, { label: "架空のデータの散布図" });
+      row.innerHTML = "";
+      ["up", "down", "none"].forEach(function (k) {
+        var b = h("button", { type: "button", text: NAMES[k] });
+        b.onclick = function () {
+          if (!next.disabled) return;
+          tries++;
+          if (k === R[i].k) {
+            if (tries === 1) ok++;
+            b.classList.add("picked-ok"); fb.className = "feedback ok"; fb.innerHTML = "<span class=\"head\">正解</span>　" + WHY[k] + (i >= 3 ? "ばらつきが大きくても、全体の傾きを見ます。" : "");
+            next.disabled = false; next.textContent = i === R.length - 1 ? "結果を見る" : "次へ"; next.focus();
+            head.querySelector(".score").textContent = "1 回で正解 " + ok;
+          } else { b.classList.add("picked-ng"); fb.className = "feedback ng"; fb.innerHTML = "<span class=\"head\">もう一度</span>　1 つ 1 つの点ではなく、点のまとまり全体がどちらへ傾いているかを見ましょう。"; }
+        };
+        row.appendChild(b);
+      });
+    }
+    next.onclick = function () {
+      if (i === R.length - 1) {
+        fig.innerHTML = ""; row.innerHTML = ""; fb.className = "feedback ok";
+        fb.innerHTML = "<span class=\"head\">" + R.length + " 問中 " + ok + " 問を 1 回で正解</span>　授業では、この関係の強さを 1 つの数で表します。";
         next.textContent = "もう一度"; i = -1; ok = 0;
         if (opts && opts.onFinish) opts.onFinish();
         return;
