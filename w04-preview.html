@@ -36,11 +36,11 @@
   --ng-soft: #fbe6e3;
   --font-body: "BIZ UDPGothic", "BIZ UDPゴシック", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
   --font-mono: "BIZ UDGothic", "BIZ UDゴシック", "Osaka-Mono", Menlo, Consolas, monospace;
-  --fs-body: 20px;
-  --fs-small: 16px;
-  --fs-h1: 32px;
-  --fs-h2: 28px;
-  --fs-h3: 22px;
+  --fs-body: 17px;
+  --fs-small: 14px;
+  --fs-h1: 26px;
+  --fs-h2: 22px;
+  --fs-h3: 18px;
   --radius: 10px;
 }
 @media (prefers-color-scheme: dark) {
@@ -68,11 +68,11 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--fs-body);
-  line-height: 1.8;
+  line-height: 1.75;
   padding-inline: 16px;
   padding-block: 0 64px;
 }
-.page { max-width: 960px; margin-inline: auto; display: grid; gap: 40px; }
+.page { max-width: 960px; margin-inline: auto; display: grid; gap: 32px; }
 .prose { max-width: 40em; }
 h1, h2, h3 { line-height: 1.4; text-wrap: balance; margin: 0; }
 h1 { font-size: var(--fs-h1); }
@@ -177,7 +177,7 @@ button:hover { border-color: var(--wire); }
 button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
 button:disabled { opacity: 0.45; cursor: default; }
 input[type="text"], textarea {
-  font: 24px/1.4 var(--font-mono); padding: 8px 12px; border-radius: 8px;
+  font: 19px/1.4 var(--font-mono); padding: 6px 10px; border-radius: 8px;
   border: 2px solid var(--rule); background: var(--panel); color: var(--ink); width: 100%; max-width: 16em;
 }
 textarea { font: var(--fs-body)/1.7 var(--font-body); max-width: 100%; min-height: 4.5em; resize: vertical; }
@@ -206,13 +206,13 @@ input[type="text"]:focus, textarea:focus { border-color: var(--wire); outline: n
 
 .readout { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; align-items: baseline; }
 .readout dt { font-size: var(--fs-small); color: var(--muted); }
-.readout dd { margin: 0; font: 700 24px/1.4 var(--font-mono); overflow-wrap: anywhere; }
+.readout dd { margin: 0; font: 700 19px/1.4 var(--font-mono); overflow-wrap: anywhere; }
 .readout dd .expr { font-weight: 400; font-size: var(--fs-small); color: var(--muted); display: block; }
 .seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
 .seg button { border: 0; border-radius: 0; }
 .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
 
-.result { text-align: center; font: 700 28px/1.4 var(--font-mono); }
+.result { text-align: center; font: 700 22px/1.4 var(--font-mono); }
 .result .small { font-family: var(--font-body); }
 
 /* 一覧の表 */
@@ -222,7 +222,7 @@ table.ref th, table.ref td { border: 1px solid var(--rule); padding: 4px 10px; t
 table.ref th { background: var(--accent-soft); font-weight: 700; }
 table.ref td.mono { font-family: var(--font-mono); }
 
-select { font: 18px/1.4 var(--font-mono); padding: 6px 8px; border-radius: 8px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); }
+select { font: 15px/1.4 var(--font-mono); padding: 6px 8px; border-radius: 8px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); }
 
 .log { font-size: var(--fs-small); min-height: 3em; }
 .log .warn { color: var(--ng); font-weight: 700; }
@@ -247,7 +247,7 @@ footer { font-size: var(--fs-small); color: var(--muted); border-top: 1px solid 
 @media (max-width: 520px) { .task dl { grid-template-columns: 1fr; } .task dt { margin-top: 6px; } }
 .checklist { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
 .checklist li { display: flex; gap: 10px; align-items: baseline; }
-.checklist .box { width: 22px; height: 22px; border-radius: 5px; border: 2px solid var(--rule); flex: none; display: inline-grid; place-items: center; font-size: 16px; }
+.checklist .box { width: 22px; height: 22px; border-radius: 5px; border: 2px solid var(--rule); flex: none; display: inline-grid; place-items: center; font-size: 14px; }
 .checklist li.done .box { background: var(--ok); border-color: var(--ok); color: var(--panel); }
 
 .stars { font-size: 26px; letter-spacing: 4px; color: var(--lamp); }
@@ -255,7 +255,7 @@ footer { font-size: var(--fs-small); color: var(--muted); border-top: 1px solid 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 @media (max-width: 520px) {
   .lab { padding: 14px; }
-  .mast .title { font-size: 18px; }
+  .mast .title { font-size: 16px; }
   .readout { grid-template-columns: 1fr; gap: 0; }
   .readout dd { margin-bottom: 10px; }
 }
@@ -320,23 +320,23 @@ svg .ft { font-family: var(--font-body); } svg .fm { font-family: var(--font-mon
 /* ---------- データ処理の部品（stats-ui.js） ---------- */
 svg .k-lampdark, .film svg .k-lampdark { fill: var(--lamp); }
 svg .s-panel, .film svg .s-panel { stroke: var(--panel); }
-svg.fig { width: 100%; height: auto; display: block; max-width: 760px; }
+svg.fig { width: 100%; height: auto; display: block; max-width: 680px; }
 .fig-wrap { min-width: 0; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { display: inline-grid; justify-items: center; min-width: 3.4em; padding: 6px 10px; border-radius: 8px;
   border: 1px solid var(--rule); background: var(--panel); font-family: var(--font-mono); }
-.chip b { font-size: 22px; }
+.chip b { font-size: 18px; }
 .chip small { font-size: var(--fs-small); color: var(--muted); font-family: var(--font-body); }
 .chip.hl { border: 2px solid var(--lamp); background: var(--lamp-off); }
 .chip.dim { opacity: 0.45; }
 button.chip { cursor: pointer; line-height: 1.3; }
 .two { display: grid; grid-template-columns: 1fr; gap: 12px; }
 @media (min-width: 860px) { .two { grid-template-columns: 1fr 1fr; } }
-.formula { font-size: 22px; overflow-wrap: anywhere; }
+.formula { font-size: 18px; overflow-wrap: anywhere; }
 .formula b { color: var(--wire); }
 table.ref td.hot, table.sheet td.hot { background: var(--lamp-off); outline: 2px solid var(--lamp); outline-offset: -2px; font-weight: 700; }
 table.ref tr.foot td { border-top: 3px double var(--ink); font-weight: 700; }
-table.calc-t td { font-family: var(--font-mono); font-size: 20px; text-align: right; min-width: 5em; }
+table.calc-t td { font-family: var(--font-mono); font-size: 16px; text-align: right; min-width: 5em; }
 table.sheet { border-collapse: collapse; font: var(--fs-small)/1.5 var(--font-mono); }
 table.sheet th { background: var(--lamp-off); color: var(--muted); font-weight: 400; padding: 2px 10px; border: 1px solid var(--rule); }
 table.sheet td { border: 1px solid var(--rule); padding: 4px 10px; min-width: 7em; background: var(--panel); }
@@ -346,6 +346,9 @@ button.tab[aria-pressed="true"] { background: var(--accent); color: var(--accent
 .game-q { font-weight: 700; }
 .lab .caption { max-width: 40em; min-height: 2.4em; }
 .chip, .readout dd { font-family: var(--font-body); }
+/* 13インチのノート PC（画面の高さ 約720px）で、動画が操作ボタンまで1画面に収まるように */
+.film-stage { width: 100%; max-width: 760px; }
+.film-stage:fullscreen { max-width: none; }
 
 </style>
 <header class="mast">
@@ -388,7 +391,7 @@ button.tab[aria-pressed="true"] { background: var(--accent); color: var(--accent
       <h2>前回の確認（3問）</h2>
       <span class="slides">第3回 データ集計の基本</span>
     </div>
-    <p class="prose">第4回でも、まず表を集計してからグラフにします。解けなかったら、<a href="w03-review.html?v=202610151845">第3回 復習ページ</a>で確かめてから授業に来てください。</p>
+    <p class="prose">第4回でも、まず表を集計してからグラフにします。解けなかったら、<a href="w03-review.html?v=202610151905">第3回 復習ページ</a>で確かめてから授業に来てください。</p>
     <div id="review"></div>
   </section>
 
