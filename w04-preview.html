@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>データ処理 第4回 予習</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic:wght@400;700&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+<style>
+/* レイアウト：1カラムの「実験ノート」。読む部分は 40em、手を動かす実験台は方眼のパネルで少し広く。
+   色：授業スライドの紺を地の色、点いたもの（ランプ・選んだもの）は橙、地は淡いクリーム。操作できるものは青。 */
+:root {
+  --paper: #efede3;
+  --panel: #ffffff;
+  --ink: #191b0e;
+  --muted: #55574a;
+  --rule: #d5d2c3;
+  --grid: rgba(31, 78, 121, 0.07);
+  --accent: #1f4e79;
+  --accent-ink: #ffffff;
+  --accent-soft: #dfe7f0;
+  --lamp: #b84a0b;
+  --lamp-ink: #ffffff;
+  --lamp-glow: rgba(184, 74, 11, 0.3);
+  --lamp-off: #e0ddd1;
+  --wire: #1d5fa0;
+  --wire-soft: #e1ebf6;
+  --ok: #1d7a3d;
+  --ok-soft: #e1f2e6;
+  --ng: #b3261e;
+  --ng-soft: #fbe6e3;
+  --font-body: "BIZ UDPGothic", "BIZ UDPゴシック", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  --font-mono: "BIZ UDGothic", "BIZ UDゴシック", "Osaka-Mono", Menlo, Consolas, monospace;
+  --fs-body: 20px;
+  --fs-small: 16px;
+  --fs-h1: 32px;
+  --fs-h2: 28px;
+  --fs-h3: 22px;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12161b; --panel: #1a2028; --ink: #eceae0; --muted: #a5a89c; --rule: #2f3640;
+    --grid: rgba(141, 184, 224, 0.07); --accent: #8db8e0; --accent-ink: #0e1a26; --accent-soft: #1e3044;
+    --lamp: #f08a4b; --lamp-ink: #241000; --lamp-glow: rgba(240, 138, 75, 0.4); --lamp-off: #2a3038;
+    --wire: #7fb6f0; --wire-soft: #1a2a3a; --ok: #63c986; --ok-soft: #1b3325; --ng: #ff7d69; --ng-soft: #3b211c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12161b; --panel: #1a2028; --ink: #eceae0; --muted: #a5a89c; --rule: #2f3640;
+  --grid: rgba(141, 184, 224, 0.07); --accent: #8db8e0; --accent-ink: #0e1a26; --accent-soft: #1e3044;
+  --lamp: #f08a4b; --lamp-ink: #241000; --lamp-glow: rgba(240, 138, 75, 0.4); --lamp-off: #2a3038;
+  --wire: #7fb6f0; --wire-soft: #1a2a3a; --ok: #63c986; --ok-soft: #1b3325; --ng: #ff7d69; --ng-soft: #3b211c;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.8;
+  padding-inline: 16px;
+  padding-block: 0 64px;
+}
+.page { max-width: 960px; margin-inline: auto; display: grid; gap: 40px; }
+.prose { max-width: 40em; }
+h1, h2, h3 { line-height: 1.4; text-wrap: balance; margin: 0; }
+h1 { font-size: var(--fs-h1); }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); }
+p { margin: 0; }
+a { color: var(--wire); }
+.mono, code, kbd { font-family: var(--font-mono); }
+.small { font-size: var(--fs-small); color: var(--muted); }
+sub { font-size: 0.7em; }
+.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.stack { display: grid; gap: 16px; }
+.page > *, .item > *, .stack > *, .lab > *, .intro > *, .quiz > *, .stepper > * { min-width: 0; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+:focus-visible { outline: 3px solid var(--wire); outline-offset: 2px; }
+
+/* 見出しまわり */
+.mast {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+  padding-block: 12px;
+  margin-inline: -16px; padding-inline: 16px;
+}
+.mast-inner { max-width: 960px; margin-inline: auto; display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; justify-content: space-between; }
+.mast .course { font-size: var(--fs-small); color: var(--muted); }
+.mast .title { font-size: var(--fs-h3); font-weight: 700; line-height: 1.4; }
+.badge {
+  display: inline-block; font-size: var(--fs-small); line-height: 1.4; padding: 2px 10px; border-radius: 999px;
+  border: 1px solid var(--lamp); color: var(--ink); background: transparent; vertical-align: middle; margin-left: 8px;
+}
+.lamps { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.lamps .label { font-size: var(--fs-small); color: var(--muted); margin-right: 4px; }
+.lamp {
+  width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+  font: 700 var(--fs-small)/1 var(--font-mono); color: var(--muted);
+  background: var(--lamp-off); border: 1px solid var(--rule); text-decoration: none;
+}
+.lamp.on { background: var(--lamp); color: var(--lamp-ink); border-color: var(--lamp); box-shadow: 0 0 0 4px var(--lamp-glow); }
+
+.intro { display: grid; gap: 16px; padding-top: 24px; }
+.intro h1 .sub { display: block; font-size: var(--fs-h3); font-weight: 400; color: var(--muted); }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: var(--fs-small); color: var(--muted); }
+
+/* 抽象レベルの地図 */
+.levels { border: 1px solid var(--rule); border-radius: var(--radius); background: var(--panel); padding: 12px 16px; }
+.levels summary { cursor: pointer; font-size: var(--fs-small); color: var(--muted); }
+.levels ol { list-style: none; margin: 12px 0 4px; padding: 0; display: grid; gap: 4px; }
+.levels li { display: grid; grid-template-columns: 15em 1fr; gap: 12px; align-items: baseline; padding: 4px 10px; border-radius: 6px; font-size: var(--fs-small); }
+.levels li .ex { color: var(--muted); }
+.levels li.here { background: var(--accent-soft); outline: 2px solid var(--accent); }
+.levels li.here .ex { color: var(--ink); }
+@media (max-width: 520px) { .levels li { grid-template-columns: 1fr; gap: 0; } }
+
+/* 目次 */
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a {
+  font-size: var(--fs-small); text-decoration: none; color: var(--ink);
+  border: 1px solid var(--rule); background: var(--panel); border-radius: 999px; padding: 4px 14px;
+}
+.toc a .n { font-family: var(--font-mono); color: var(--accent); margin-right: 6px; }
+
+/* 実験台（方眼のパネル） */
+.lab {
+  background-color: var(--panel);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 20px 20px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: grid; gap: 16px;
+  min-width: 0;
+}
+.lab > h3 { font-size: var(--fs-h3); }
+.lab .hint { font-size: var(--fs-small); color: var(--muted); }
+
+/* 項目 */
+.item { display: grid; gap: 20px; scroll-margin-top: 120px; }
+.item-head { display: grid; gap: 6px; border-top: 3px solid var(--accent); padding-top: 16px; }
+.item-head .no { font: 700 var(--fs-small)/1 var(--font-mono); color: var(--accent); letter-spacing: 0.08em; }
+.item-head .rule { font-size: var(--fs-body); }
+.item-head .slides { font-size: var(--fs-small); color: var(--muted); }
+.keyline {
+  font-weight: 700; background: var(--accent-soft); border-radius: 6px; padding: 10px 14px; max-width: 40em;
+}
+
+/* ステップ再生 */
+.stepper { display: grid; gap: 12px; min-width: 0; }
+.stepper .stage { min-height: 160px; overflow-x: auto; display: grid; align-content: center; padding: 8px 0; }
+.stepper .caption { min-height: 3.6em; max-width: 40em; }
+.stepper .ctrl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.stepper input[type="range"] { flex: 1 1 140px; accent-color: var(--accent); min-width: 0; }
+.stepper .count { font: var(--fs-small) var(--font-mono); color: var(--muted); min-width: 3.5em; text-align: right; }
+
+/* ボタンと入力 */
+button, .btn {
+  font: inherit; font-size: var(--fs-small); line-height: 1.4;
+  padding: 8px 16px; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--rule); background: var(--panel); color: var(--ink);
+}
+button:hover { border-color: var(--wire); }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+button:disabled { opacity: 0.45; cursor: default; }
+input[type="text"], textarea {
+  font: 24px/1.4 var(--font-mono); padding: 8px 12px; border-radius: 8px;
+  border: 2px solid var(--rule); background: var(--panel); color: var(--ink); width: 100%; max-width: 16em;
+}
+textarea { font: var(--fs-body)/1.7 var(--font-body); max-width: 100%; min-height: 4.5em; resize: vertical; }
+input[type="text"]:focus, textarea:focus { border-color: var(--wire); outline: none; }
+
+/* ドリル・確認問題 */
+.quiz { display: grid; gap: 12px; padding: 16px 20px; border-radius: var(--radius); border: 1px solid var(--rule); background: var(--panel); min-width: 0; }
+.quiz .kind { font-size: var(--fs-small); color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; }
+.quiz .kind b { color: var(--ink); }
+.quiz .prompt { font-size: var(--fs-body); }
+.quiz .answer-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.quiz .answer-row label { font-size: var(--fs-small); color: var(--muted); }
+.quiz .choices { display: grid; gap: 8px; }
+.quiz .choices button { text-align: left; font-size: var(--fs-body); padding: 10px 16px; }
+.quiz .choices button.picked-ok { border-color: var(--ok); background: var(--ok-soft); }
+.quiz .choices button.picked-ng { border-color: var(--ng); background: var(--ng-soft); }
+.feedback { border-radius: 8px; padding: 10px 14px; display: none; }
+.feedback.ok { display: block; background: var(--ok-soft); border-left: 6px solid var(--ok); }
+.feedback.ng { display: block; background: var(--ng-soft); border-left: 6px solid var(--ng); }
+.feedback .head { font-weight: 700; }
+.solution { border-top: 1px dashed var(--rule); padding-top: 10px; }
+.solution summary { cursor: pointer; font-size: var(--fs-small); color: var(--wire); }
+.check-quiz { border: 2px solid var(--lamp); }
+.check-quiz.done { border-color: var(--ok); }
+.score { font: var(--fs-small) var(--font-mono); color: var(--muted); }
+
+.readout { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; align-items: baseline; }
+.readout dt { font-size: var(--fs-small); color: var(--muted); }
+.readout dd { margin: 0; font: 700 24px/1.4 var(--font-mono); overflow-wrap: anywhere; }
+.readout dd .expr { font-weight: 400; font-size: var(--fs-small); color: var(--muted); display: block; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+
+.result { text-align: center; font: 700 28px/1.4 var(--font-mono); }
+.result .small { font-family: var(--font-body); }
+
+/* 一覧の表 */
+.tbl-wrap { overflow-x: auto; }
+table.ref { border-collapse: collapse; font-size: var(--fs-small); }
+table.ref th, table.ref td { border: 1px solid var(--rule); padding: 4px 10px; text-align: center; }
+table.ref th { background: var(--accent-soft); font-weight: 700; }
+table.ref td.mono { font-family: var(--font-mono); }
+
+select { font: 18px/1.4 var(--font-mono); padding: 6px 8px; border-radius: 8px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); }
+
+.log { font-size: var(--fs-small); min-height: 3em; }
+.log .warn { color: var(--ng); font-weight: 700; }
+.log .warnu { color: var(--wire); font-weight: 700; }
+
+/* つまずき・仕上げ */
+.pitfalls { display: grid; gap: 12px; }
+.pitfalls ul { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; max-width: 40em; }
+.final .quiz { border-width: 2px; }
+.done-banner { display: none; padding: 16px 20px; border-radius: var(--radius); background: var(--ok-soft); border: 2px solid var(--ok); font-weight: 700; }
+.done-banner.show { display: block; }
+footer { font-size: var(--fs-small); color: var(--muted); border-top: 1px solid var(--rule); padding-top: 16px; display: grid; gap: 6px; }
+
+/* 予習ページ */
+.research { display: grid; gap: 16px; }
+.task { display: grid; gap: 10px; padding: 16px 20px; border-radius: var(--radius); background: var(--panel); border: 1px solid var(--rule); min-width: 0; }
+.task h3 { font-size: var(--fs-h3); }
+.task dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 0; font-size: var(--fs-small); }
+.task dt { color: var(--muted); }
+.task dd { margin: 0; }
+.task .saved { font-size: var(--fs-small); color: var(--ok); min-height: 1.4em; }
+@media (max-width: 520px) { .task dl { grid-template-columns: 1fr; } .task dt { margin-top: 6px; } }
+.checklist { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.checklist li { display: flex; gap: 10px; align-items: baseline; }
+.checklist .box { width: 22px; height: 22px; border-radius: 5px; border: 2px solid var(--rule); flex: none; display: inline-grid; place-items: center; font-size: 16px; }
+.checklist li.done .box { background: var(--ok); border-color: var(--ok); color: var(--panel); }
+
+.stars { font-size: 26px; letter-spacing: 4px; color: var(--lamp); }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@media (max-width: 520px) {
+  .lab { padding: 14px; }
+  .mast .title { font-size: 18px; }
+  .readout { grid-template-columns: 1fr; gap: 0; }
+  .readout dd { margin-bottom: 10px; }
+}
+.checklist a { color: var(--ink); }
+
+/* 動画プレイヤー */
+.film { display: grid; gap: 10px; background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius); padding: 16px; min-width: 0; }
+.film > * { min-width: 0; }
+.film-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; align-items: baseline; }
+.film-title { font-weight: 700; }
+.film-scene { font-size: var(--fs-small); color: var(--muted); }
+.film-stage { position: relative; aspect-ratio: 16 / 9; max-width: 100%; background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.film-stage:fullscreen { border: 0; border-radius: 0; display: grid; place-items: center; }
+.film-stage svg { width: 100%; height: 100%; display: block; }
+.film-big { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 12px; align-items: center;
+  font-size: var(--fs-body); font-weight: 700; background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 999px; padding: 12px 26px; }
+.film-big .tri { width: 0; height: 0; border-left: 18px solid currentColor; border-top: 11px solid transparent; border-bottom: 11px solid transparent; }
+.film-pause { display: grid; gap: 10px; padding: 14px 16px; border-radius: 8px; border: 2px solid var(--wire); background: var(--wire-soft); }
+.film-pause .q { font-weight: 700; }
+.film-pause .choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.film-pause .choices button { font-size: var(--fs-body); }
+.film-pause .skip { justify-self: start; border: 0; background: transparent; color: var(--wire); text-decoration: underline; padding: 2px 0; }
+.film-cap { min-height: 3.6em; }
+.film-pred { font-size: var(--fs-small); min-height: 1.4em; }
+.film-pred.ok { color: var(--ok); font-weight: 700; }
+.film-pred.ng { color: var(--ng); font-weight: 700; }
+.film-ctrl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.film-ctrl input[type="range"] { flex: 1 1 160px; accent-color: var(--accent); min-width: 0; }
+.film-time { font: var(--fs-small) var(--font-mono); color: var(--muted); }
+.film-chaps { display: flex; flex-wrap: wrap; gap: 6px; }
+.film-chaps button { padding: 4px 12px; border-radius: 999px; }
+.film-chaps button[aria-current="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.film-chaps b { font-family: var(--font-mono); color: var(--accent); }
+.film-script summary { cursor: pointer; font-size: var(--fs-small); color: var(--wire); }
+.film-script ol { font-size: var(--fs-small); display: grid; gap: 6px; padding-left: 1.4em; margin: 8px 0 0; }
+.film svg .ft { font-family: var(--font-body); }
+.film svg .fm { font-family: var(--font-mono); }
+.film svg .k-ink { fill: var(--ink); } .film svg .k-mut { fill: var(--muted); } .film svg .k-acc { fill: var(--accent); } .film svg .k-accink { fill: var(--accent-ink); }
+.film svg .k-lamp { fill: var(--lamp); } .film svg .k-lampink { fill: var(--lamp-ink); } .film svg .k-wire { fill: var(--wire); } .film svg .k-wiresoft { fill: var(--wire-soft); }
+.film svg .k-ng { fill: var(--ng); } .film svg .k-panel { fill: var(--panel); } .film svg .k-off { fill: var(--lamp-off); } .film svg .k-none { fill: none; }
+.film svg .s-ink { stroke: var(--ink); } .film svg .s-mut { stroke: var(--muted); } .film svg .s-acc { stroke: var(--accent); } .film svg .s-lamp { stroke: var(--lamp); }
+.film svg .s-wire { stroke: var(--wire); } .film svg .s-ng { stroke: var(--ng); } .film svg .s-rule { stroke: var(--rule); } .film svg .s-none { stroke: none; }
+.film-big { white-space: nowrap; }
+@media (max-width: 520px) { .film { padding: 10px; } .film-big { padding: 6px 14px; font-size: var(--fs-small); gap: 8px; } .film-big .tri { border-left-width: 12px; border-top-width: 8px; border-bottom-width: 8px; } }
+
+.movie-link { display: flex; gap: 14px; align-items: center; max-width: 40em; padding: 12px 18px; border-radius: var(--radius);
+  border: 2px solid var(--accent); background: var(--panel); color: var(--ink); text-decoration: none; }
+.movie-link:hover { background: var(--accent-soft); }
+.movie-link .tri { flex: none; width: 0; height: 0; border-left: 16px solid var(--accent); border-top: 10px solid transparent; border-bottom: 10px solid transparent; }
+#movie { scroll-margin-top: 120px; }
+
+.film-hint { display: none; font-size: var(--fs-small); color: var(--muted); }
+@media (max-width: 520px) { .film-hint { display: block; } }
+/* SVG の色（動画以外の図でも使う） */
+svg .k-ink { fill: var(--ink); } svg .k-mut { fill: var(--muted); } svg .k-acc { fill: var(--accent); } svg .k-accink { fill: var(--accent-ink); }
+svg .k-lamp { fill: var(--lamp); } svg .k-lampink { fill: var(--lamp-ink); } svg .k-wire { fill: var(--wire); } svg .k-wiresoft { fill: var(--wire-soft); }
+svg .k-ng { fill: var(--ng); } svg .k-panel { fill: var(--panel); } svg .k-off { fill: var(--lamp-off); } svg .k-none { fill: none; }
+svg .s-ink { stroke: var(--ink); } svg .s-mut { stroke: var(--muted); } svg .s-acc { stroke: var(--accent); } svg .s-lamp { stroke: var(--lamp); }
+svg .s-wire { stroke: var(--wire); } svg .s-ng { stroke: var(--ng); } svg .s-rule { stroke: var(--rule); } svg .s-none { stroke: none; }
+svg .ft { font-family: var(--font-body); } svg .fm { font-family: var(--font-mono); }
+
+/* ---------- データ処理の部品（stats-ui.js） ---------- */
+svg .k-lampdark, .film svg .k-lampdark { fill: var(--lamp); }
+svg .s-panel, .film svg .s-panel { stroke: var(--panel); }
+svg.fig { width: 100%; height: auto; display: block; max-width: 760px; }
+.fig-wrap { min-width: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-grid; justify-items: center; min-width: 3.4em; padding: 6px 10px; border-radius: 8px;
+  border: 1px solid var(--rule); background: var(--panel); font-family: var(--font-mono); }
+.chip b { font-size: 22px; }
+.chip small { font-size: var(--fs-small); color: var(--muted); font-family: var(--font-body); }
+.chip.hl { border: 2px solid var(--lamp); background: var(--lamp-off); }
+.chip.dim { opacity: 0.45; }
+button.chip { cursor: pointer; line-height: 1.3; }
+.two { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 860px) { .two { grid-template-columns: 1fr 1fr; } }
+.formula { font-size: 22px; overflow-wrap: anywhere; }
+.formula b { color: var(--wire); }
+table.ref td.hot, table.sheet td.hot { background: var(--lamp-off); outline: 2px solid var(--lamp); outline-offset: -2px; font-weight: 700; }
+table.ref tr.foot td { border-top: 3px double var(--ink); font-weight: 700; }
+table.calc-t td { font-family: var(--font-mono); font-size: 20px; text-align: right; min-width: 5em; }
+table.sheet { border-collapse: collapse; font: var(--fs-small)/1.5 var(--font-mono); }
+table.sheet th { background: var(--lamp-off); color: var(--muted); font-weight: 400; padding: 2px 10px; border: 1px solid var(--rule); }
+table.sheet td { border: 1px solid var(--rule); padding: 4px 10px; min-width: 7em; background: var(--panel); }
+.slider-row input[type="range"] { flex: 1 1 200px; accent-color: var(--lamp); min-width: 0; }
+.mini-hist { max-width: 100%; height: auto; display: block; margin-top: 8px; }
+button.tab[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+.game-q { font-weight: 700; }
+.lab .caption { max-width: 40em; min-height: 2.4em; }
+.chip, .readout dd { font-family: var(--font-body); }
+
+</style>
+<header class="mast">
+  <div class="mast-inner">
+    <div>
+      <div class="course"><a href="./">データ処理 2026 予習・復習ページ一覧</a></div>
+      <div class="title">第4回 予習　データの可視化</div>
+    </div>
+    <div class="lamps" data-lamps></div>
+  </div>
+</header>
+
+<main class="page">
+  <section class="intro">
+    <h1>第4回 予習<span class="sub">データの可視化（10/23 の授業の前に）</span></h1>
+    <p class="prose">第3回では、たくさんの数を平均・中央値・標準偏差で<b>1つの数</b>にまとめ、ヒストグラムで<b>形</b>を見ました。第4回は、棒・折れ線・円の3つのグラフを、言いたいことに合わせて使い分けます。授業の前に、このページの3つをやっておきましょう。</p>
+    <div class="meta"><span>目安 15〜20分</span><span>書き込んだ内容はこのブラウザの中だけに残ります</span></div>
+    <ol class="checklist" id="todo" aria-label="授業までにやること"></ol>
+  </section>
+
+  <section class="lab" aria-labelledby="hook-title">
+    <h2 id="hook-title">今日の問い：同じデータでも、グラフを変えると何が見える？</h2>
+    <p class="hint">ある学食の、メニューごとの注文数です（教材用の架空の数）。下のボタンで、同じ表を棒・折れ線・円の3つのグラフにしてみてください。それぞれ、何が分かりやすくなるでしょう。</p>
+    <div id="charts"></div>
+  </section>
+
+  <section class="item" id="t1">
+    <div class="item-head">
+      <span class="no">やること 1</span>
+      <h2>調べてから来よう（3つ）</h2>
+      <span class="slides">それぞれ、授業のどこで使うかを書いてあります</span>
+    </div>
+    <p class="prose">答えは1〜2行のメモで十分です。2つ以上に書き込むと、上のランプ 1 が点きます。1つ目は授業の最初に Mentimeter で聞きます。</p>
+    <div class="research" id="research"></div>
+  </section>
+
+  <section class="item" id="t2">
+    <div class="item-head">
+      <span class="no">やること 2</span>
+      <h2>前回の確認（3問）</h2>
+      <span class="slides">第3回 データ集計の基本</span>
+    </div>
+    <p class="prose">第4回でも、まず表を集計してからグラフにします。解けなかったら、<a href="w03-review.html?v=202610151845">第3回 復習ページ</a>で確かめてから授業に来てください。</p>
+    <div id="review"></div>
+  </section>
+
+  <section class="item" id="t3">
+    <div class="item-head">
+      <span class="no">やること 3</span>
+      <h2>ゲーム：言いたいことに合うグラフは？</h2>
+      <span class="slides">授業の前半で、この選び方から始めます</span>
+    </div>
+    <p class="prose">6つの場面で、棒・折れ線・円のどれを使うかを選んでください。最後まで進むと、ランプ 3 が点きます。</p>
+    <div id="game"></div>
+  </section>
+
+  <section class="pitfalls">
+    <h2>授業の前に知っておくと楽になること</h2>
+    <ul>
+      <li>Excel のグラフは、表の範囲を選んでから「挿入」タブで作ります。どの範囲を選ぶかで、できるグラフが変わります。</li>
+      <li>「量」（注文数、円）と「割合」（%）は別のものです。割合は「全体のうちどれくらいか」で、全部足すと 100% になります。</li>
+      <li>グラフには、題・単位・出典を付けます。第3回のヒストグラムで付けた題と軸ラベルと同じです。</li>
+    </ul>
+  </section>
+
+  <footer>
+    <span>データ処理（2026年度 秋・金曜）第4回 予習ページ</span>
+    <span>調べた内容のメモは、このブラウザの中だけに保存されます（提出は不要です）。</span>
+  </footer>
+</main>
+
+<script>window.CA_PAGE = "w04p";</script>
+<script>
+/* 部品① 代表値とばらつきの計算（画面に依存しない関数と、ドリルの問題生成）。node のテストからも読む。 */
+(function (root) {
+  "use strict";
+
+  /* ---------- 基本の計算 ---------- */
+  function sum(a) { return a.reduce(function (s, x) { return s + x; }, 0); }
+  function mean(a) { return sum(a) / a.length; }
+  function sorted(a) { return a.slice().sort(function (x, y) { return x - y; }); }
+  function median(a) {
+    var s = sorted(a), n = s.length;
+    return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2;
+  }
+  /* 最頻値。いちばん多い値が1つに決まらないとき（全部ちがう、同点がある）は null */
+  function mode(a) {
+    var c = {}, best = null, bestN = 0, tie = false;
+    a.forEach(function (x) { c[x] = (c[x] || 0) + 1; });
+    Object.keys(c).forEach(function (k) {
+      if (c[k] > bestN) { best = +k; bestN = c[k]; tie = false; }
+      else if (c[k] === bestN) tie = true;
+    });
+    return bestN < 2 || tie ? null : best;
+  }
+  function varP(a) { var m = mean(a); return sum(a.map(function (x) { return (x - m) * (x - m); })) / a.length; }
+  function sdP(a) { return Math.sqrt(varP(a)); }
+  function sdS(a) { var m = mean(a); return Math.sqrt(sum(a.map(function (x) { return (x - m) * (x - m); })) / (a.length - 1)); }
+  function mad(a) { var m = mean(a); return mean(a.map(function (x) { return Math.abs(x - m); })); }
+  /* lo 以上 hi 未満の個数（COUNTIFS と同じ数え方） */
+  function countRange(a, lo, hi) { return a.filter(function (x) { return x >= lo && x < hi; }).length; }
+
+  /* ---------- 表示と入力 ---------- */
+  function round(x, d) { var k = Math.pow(10, d || 0); return Math.round(x * k + 1e-9) / k; }
+  function fmt(x, d) {
+    var r = round(x, d == null ? 1 : d), s = String(Math.abs(r)).split(".");
+    s[0] = s[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return (r < 0 ? "−" : "") + s.join(".");
+  }
+  function list(a, unit) { return a.map(function (x) { return fmt(x, 2); }).join("、") + (unit || ""); }
+  /* 全角の数字・記号、桁区切り、単位を取り除いて数にする。数でなければ NaN */
+  function toNum(str) {
+    var s = String(str == null ? "" : str).trim()
+      .replace(/[０-９]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xfee0); })
+      .replace(/[．。]/g, ".").replace(/[−ー－‐―]/g, "-").replace(/[,，、\s]/g, "")
+      .replace(/(点|円|分|時間|人|個|冊|回|歳|cm|ｃｍ|kg|ｋｇ|ポイント)+$/i, "");
+    if (!/^-?\d+(\.\d+)?$/.test(s)) return NaN;
+    return parseFloat(s);
+  }
+  function near(v, x, tol) { return isFinite(v) && Math.abs(v - x) <= (tol == null ? 0.051 : tol); }
+
+  /* ---------- 出してはいけない問題（課題と同じ問題）の照合 ---------- */
+  function hash(key) {
+    var h = 0x811c9dc5, s = "dp2026|" + key;
+    for (var i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 0x01000193) >>> 0;
+    }
+    return ("00000000" + h.toString(16)).slice(-8);
+  }
+  var BLOCK = { perm: [], temp: [] };
+  function setBlock(b) { BLOCK = b || { perm: [], temp: [] }; }
+  function isBlocked(key, now) {
+    var h = hash(key);
+    if (BLOCK.perm.indexOf(h) >= 0) return true;
+    var t = now || Date.now();
+    for (var i = 0; i < BLOCK.temp.length; i++) {
+      if (BLOCK.temp[i].h === h && t < Date.parse(BLOCK.temp[i].until)) return true;
+    }
+    return false;
+  }
+
+  /* ---------- 乱数 ---------- */
+  function mulberry32(seed) {
+    return function () {
+      seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+      var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function randInt(rng, lo, hi) { return lo + Math.floor(rng() * (hi - lo + 1)); }
+  function pick(rng, arr) { return arr[Math.floor(rng() * arr.length)]; }
+  function shuffle(rng, arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(rng() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function draw(rng, make, now) {
+    for (var k = 0; k < 200; k++) {
+      var p = make(rng);
+      if (!p) continue;
+      if (!isBlocked(p.key, now)) return p;
+    }
+    throw new Error("問題を作れませんでした");
+  }
+  /* 選択肢を並べ替えた選択問題。opts: [{text, ok, msg}] */
+  function choice(rng, key, prompt, opts, solution, keepOrder) {
+    var o = keepOrder ? opts.slice() : shuffle(rng, opts);
+    var answer = -1;
+    o.forEach(function (x, i) { if (x.ok) answer = i; });
+    return {
+      key: key, type: "choice", prompt: prompt, solution: solution, answer: answer,
+      choices: o.map(function (x) { return x.text; }),
+      check: function (i) { return o[i] && o[i].ok ? { ok: true } : { ok: false, msg: o[i] ? o[i].msg : "" }; }
+    };
+  }
+
+  /* 架空の場面（数の単位と、ありそうな範囲） */
+  var SCENES = [
+    { what: "小テストの点", unit: "点", lo: 30, hi: 100 },
+    { what: "1週間の読書時間", unit: "時間", lo: 0, hi: 20 },
+    { what: "1か月に使ったお金", unit: "千円", lo: 5, hi: 60 },
+    { what: "通学時間", unit: "分", lo: 5, hi: 90 },
+    { what: "1日の歩数", unit: "百歩", lo: 20, hi: 150 }
+  ];
+  var WHO = ["人", "人の友だち", "人のサークルの仲間"];
+
+  /* ---------- 問題の生成 ----------
+     どれも { key, prompt, check(input)->{ok, msg}, solution } を返す（選択問題は type:"choice" と choices）。 */
+  var G = {};
+
+  /* 平均：合計 ÷ 個数（割り切れる数にする） */
+  G.mean = function (rng, now) {
+    return draw(rng, function (r) {
+      var sc = pick(r, SCENES), n = pick(r, [4, 5, 6]);
+      var a = [];
+      for (var i = 0; i < n; i++) a.push(randInt(r, sc.lo, sc.hi));
+      var rest = sum(a) % n;
+      a[n - 1] -= rest;
+      if (a[n - 1] < sc.lo) a[n - 1] += n;
+      if (a[n - 1] > sc.hi) return null;
+      var m = mean(a), md = median(a), s = sum(a);
+      if (md === m) return null;
+      return {
+        key: "mean:" + sorted(a).join(","),
+        prompt: n + WHO[0] + "の" + sc.what + "：<span class=\"num\">" + list(a) + "</span>（" + sc.unit + "）。平均は？",
+        inputLabel: "平均（" + sc.unit + "）", inputMode: "decimal",
+        check: function (x) {
+          var v = toNum(x);
+          if (near(v, m)) return { ok: true };
+          if (near(v, s)) return { ok: false, msg: "それは合計です。合計を個数（" + n + "）で割ります。" };
+          if (near(v, md)) return { ok: false, msg: "それは中央値（小さい順の真ん中）です。平均は、全部足して個数で割ります。" };
+          if (isNaN(v)) return { ok: false, msg: "数字で答えてください。" };
+          return { ok: false };
+        },
+        solution: "合計 " + a.join(" + ") + " = " + fmt(s, 0) + "。" + n + " で割って " + fmt(m, 2) + " " + sc.unit + "。"
+      };
+    }, now);
+  };
+
+  /* 中央値：小さい順に並べて真ん中。偶数個なら真ん中2つの平均 */
+  G.median = function (rng, now) {
+    return draw(rng, function (r) {
+      var sc = pick(r, SCENES), n = pick(r, [5, 6, 7]);
+      var a = [];
+      for (var i = 0; i < n; i++) a.push(randInt(r, sc.lo, sc.hi));
+      var s = sorted(a), md = median(a), m = mean(a);
+      if (a.join() === s.join()) return null;
+      var mid = n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2;
+      if (mid === md || near(m, md, 0.3)) return null;
+      var even = n % 2 === 0;
+      return {
+        key: "median:" + s.join(","),
+        prompt: n + WHO[0] + "の" + sc.what + "：<span class=\"num\">" + list(a) + "</span>（" + sc.unit + "）。中央値は？",
+        inputLabel: "中央値（" + sc.unit + "）", inputMode: "decimal",
+        check: function (x) {
+          var v = toNum(x);
+          if (near(v, md)) return { ok: true };
+          if (near(v, mid)) return { ok: false, msg: "書かれた順のまま真ん中を取っていませんか。まず小さい順に並べ替えます。" };
+          if (even && (near(v, s[n / 2 - 1]) || near(v, s[n / 2]))) return { ok: false, msg: "個数が偶数（" + n + "個）なので、真ん中は2つあります。その2つの平均が中央値です。" };
+          if (near(v, m, 0.06)) return { ok: false, msg: "それは平均です。中央値は、小さい順に並べた真ん中の値です。" };
+          if (isNaN(v)) return { ok: false, msg: "数字で答えてください。" };
+          return { ok: false };
+        },
+        solution: "小さい順に並べると " + s.join("、") + "。" + (even ? "真ん中の2つ " + s[n / 2 - 1] + " と " + s[n / 2] + " の平均で " + fmt(md, 2) : "真ん中（" + ((n + 1) / 2) + " 番目）は " + md) + " " + sc.unit + "。"
+      };
+    }, now);
+  };
+
+  /* 最頻値：いちばん多く出てくる値 */
+  G.mode = function (rng, now) {
+    return draw(rng, function (r) {
+      var sc = pick(r, SCENES), n = pick(r, [7, 8, 9]);
+      var top = randInt(r, sc.lo, sc.hi), a = [top, top, top];
+      while (a.length < n) {
+        var x = randInt(r, sc.lo, sc.hi);
+        if (a.filter(function (y) { return y === x; }).length < (x === top ? 3 : 1)) a.push(x);
+      }
+      a = shuffle(r, a);
+      if (mode(a) !== top) return null;
+      var md = median(a), m = mean(a);
+      if (md === top) return null;
+      return {
+        key: "mode:" + sorted(a).join(","),
+        prompt: n + WHO[0] + "の" + sc.what + "：<span class=\"num\">" + list(a) + "</span>（" + sc.unit + "）。最頻値は？",
+        inputLabel: "最頻値（" + sc.unit + "）", inputMode: "decimal",
+        check: function (x) {
+          var v = toNum(x);
+          if (near(v, top)) return { ok: true };
+          if (near(v, 3)) return { ok: false, msg: "3 は出てくる回数です。答えるのは、いちばん多く出てくる「値」のほうです。" };
+          if (near(v, md)) return { ok: false, msg: "それは中央値です。最頻値は、いちばん多く出てくる値です。" };
+          if (near(v, m, 0.06)) return { ok: false, msg: "それは平均です。最頻値は、いちばん多く出てくる値です。" };
+          if (isNaN(v)) return { ok: false, msg: "数字で答えてください。" };
+          return { ok: false };
+        },
+        solution: top + " が 3 回出てきて、いちばん多い。最頻値は " + top + " " + sc.unit + "。"
+      };
+    }, now);
+  };
+
+  /* 外れ値：1つの値が大きく（小さく）変わると、平均と中央値はどうなる？ */
+  G.outlier = function (rng, now) {
+    return draw(rng, function (r) {
+      var sc = pick(r, SCENES), n = pick(r, [5, 7]);
+      var a = [];
+      for (var i = 0; i < n; i++) a.push(randInt(r, sc.lo, Math.round((sc.lo + sc.hi) / 2)));
+      a = sorted(a);
+      if (a[n - 1] === a[n - 2] || a[0] === a[1]) return null;
+      var up = r() < 0.75, b = a.slice(), from, to;
+      if (up) { from = a[n - 1]; to = from + randInt(r, 3, 6) * Math.max(5, Math.round((sc.hi - sc.lo) / 4)); b[n - 1] = to; }
+      else { from = a[0]; to = Math.max(0, from - randInt(r, 2, 4) * Math.max(2, Math.round((sc.hi - sc.lo) / 8))); if (to === from) return null; b[0] = to; }
+      var m0 = mean(a), m1 = mean(b), md = median(a);
+      var dir = up ? "上がる" : "下がる";
+      var what = up ? "いちばん大きい " + from : "いちばん小さい " + from;
+      var prompt = n + WHO[0] + "の" + sc.what + "：<span class=\"num\">" + list(a) + "</span>（" + sc.unit + "）。" + what + " が <span class=\"num\">" + fmt(to, 2) + "</span> に変わると、平均と中央値はどうなる？";
+      return choice(r, "outlier:" + a.join(",") + ">" + to, prompt, [
+        { text: "平均だけが" + dir + "。中央値は変わらない", ok: true },
+        { text: "平均も中央値も" + dir, msg: "中央値は、並べた真ん中の値です。端の値が動いても、真ん中の値は同じなので変わりません。" },
+        { text: "中央値だけが" + dir + "。平均は変わらない", msg: "逆です。平均は全員の値を足すので、1人の値が変われば必ず動きます。" },
+        { text: "どちらも変わらない", msg: "平均は全員の値を足して割るので、1人の値が変われば動きます。" }
+      ], "平均 " + fmt(m0, 2) + " → " + fmt(m1, 2) + "。中央値は " + fmt(md, 2) + " のまま（真ん中の値は変わらない）。");
+    }, now);
+  };
+
+  /* 外れ値：新しい平均を計算する */
+  G.outlierMean = function (rng, now) {
+    return draw(rng, function (r) {
+      var sc = pick(r, SCENES), n = 5;
+      var a = [];
+      for (var i = 0; i < n; i++) a.push(randInt(r, sc.lo, Math.round((sc.lo + sc.hi) / 2)));
+      a = sorted(a);
+      var to = a[n - 1] + randInt(r, 3, 8) * 10;
+      var b = a.slice(); b[n - 1] = to;
+      if (sum(b) % n) { to += n - (sum(b) % n); b[n - 1] = to; }
+      var m1 = mean(b), md = median(b);
+      return {
+        key: "outmean:" + a.join(",") + ">" + to,
+        prompt: n + WHO[0] + "の" + sc.what + "：<span class=\"num\">" + list(a) + "</span>（" + sc.unit + "）。いちばん大きい " + a[n - 1] + " が <span class=\"num\">" + to + "</span> になったときの平均は？",
+        inputLabel: "新しい平均（" + sc.unit + "）", inputMode: "decimal",
+        check: function (x) {
+          var v = toNum(x);
+          if (near(v, m1)) return { ok: true };
+          if (near(v, mean(a))) return { ok: false, msg: "変わる前の平均です。" + a[n - 1] + " を " + to + " に入れかえてから計算します。" };
+          if (near(v, md)) return { ok: false, msg: "それは中央値（変わらない）です。平均は全部足して個数で割ります。" };
+          if (isNaN(v)) return { ok: false, msg: "数字で答えてください。" };
+          return { ok: false };
+        },
+        solution: b.join(" + ") + " = " + sum(b) + "。" + n + " で割って " + fmt(m1, 2) + "。中央値は " + fmt(md, 2) + " のまま。"
+      };
+    }, now);
+  };
+
+  /* 分布の形（度数の並び）。right: 右に裾が長い、sym: 左右対称に近い、left: 左に裾が長い */
+  var SHAPES = {
+    right: [[3, 9, 7, 4, 2, 1, 1, 0, 1], [6, 10, 6, 3, 2, 1, 1, 1], [2, 8, 9, 5, 3, 2, 1, 0, 0, 1], [9, 7, 4, 3, 2, 1, 0, 1]],
+    sym: [[1, 3, 6, 9, 6, 3, 1], [2, 4, 7, 7, 4, 2], [1, 2, 5, 8, 8, 5, 2, 1], [1, 4, 8, 10, 8, 4, 1]],
+    left: [[1, 0, 1, 1, 2, 4, 7, 9, 3], [1, 1, 1, 2, 3, 6, 10, 6], [1, 0, 0, 1, 2, 3, 5, 9, 8, 2]]
+  };
+  /* 度数から、階級の真ん中の値を並べたデータを作る */
+  function fromCounts(c) { var a = []; c.forEach(function (k, i) { for (var j = 0; j < k; j++) a.push(i + 0.5); }); return a; }
+  function histSvg(c, label) {
+    var W = 360, H = 150, n = c.length, bw = (W - 20) / n, mx = Math.max.apply(null, c), s = "";
+    c.forEach(function (k, i) {
+      var hh = Math.round((H - 30) * k / mx);
+      if (k) s += "<rect x=\"" + (10 + i * bw) + "\" y=\"" + (H - 20 - hh) + "\" width=\"" + bw + "\" height=\"" + hh + "\" class=\"k-acc s-panel\" stroke-width=\"1.5\"/>";
+    });
+    s += "<line x1=\"6\" y1=\"" + (H - 20) + "\" x2=\"" + (W - 6) + "\" y2=\"" + (H - 20) + "\" class=\"s-mut\" stroke-width=\"2\"/>";
+    s += "<text x=\"" + (W / 2) + "\" y=\"" + (H - 2) + "\" text-anchor=\"middle\" font-size=\"16\" class=\"ft k-mut\">小 ← 値 → 大</text>";
+    return "<svg class=\"mini-hist\" viewBox=\"0 0 " + W + " " + H + "\" width=\"" + W + "\" role=\"img\" aria-label=\"" + label + "\">" + s + "</svg>";
+  }
+  G.shape = function (rng, now) {
+    return draw(rng, function (r) {
+      var kind = pick(r, ["right", "right", "sym", "left"]), c = pick(r, SHAPES[kind]);
+      var lab = { right: "山が左にあり、右に長い裾がのびたヒストグラム", sym: "山が真ん中にあり、左右がほぼ同じ形のヒストグラム", left: "山が右にあり、左に長い裾がのびたヒストグラム" }[kind];
+      var prompt = "このヒストグラムのデータで、平均と中央値の関係に近いのは？<br>" + histSvg(c, lab);
+      var why = { right: "右の裾にある少数の大きな値に、平均が引っぱられます。", sym: "左右が釣り合っているので、平均と中央値はほぼ同じ場所に来ます。", left: "左の裾にある少数の小さな値に、平均が引っぱられます。" };
+      return choice(r, "shape:" + c.join(","), prompt, [
+        { text: "平均 ＞ 中央値", ok: kind === "right", msg: kind === "sym" ? "左右がほぼ対称なら、平均と中央値は近くなります。" : "裾が左にのびています。平均は小さい値の側へ引っぱられます。" },
+        { text: "平均 ≒ 中央値", ok: kind === "sym", msg: "左右が対称ではありません。裾の長い側へ平均が引っぱられます。" },
+        { text: "平均 ＜ 中央値", ok: kind === "left", msg: kind === "sym" ? "左右がほぼ対称なら、平均と中央値は近くなります。" : "裾が右にのびています。平均は大きい値の側へ引っぱられます。" }
+      ], why[kind], true);
+    }, now);
+  };
+
+  /* 度数：「a 以上 b 未満」に入る個数 */
+  G.bin = function (rng, now) {
+    return draw(rng, function (r) {
+      var w = pick(r, [10, 10, 20]), lo = pick(r, [20, 30, 40, 50, 60]), hi = lo + w;
+      var n = randInt(r, 10, 12), a = [lo, hi];
+      if (r() < 0.6) a.push(lo);
+      while (a.length < n) a.push(randInt(r, 5, 19) * 5 + randInt(r, 0, 4));
+      a = shuffle(r, a);
+      var k = countRange(a, lo, hi);
+      if (k < 2) return null;
+      var withHi = a.filter(function (x) { return x >= lo && x <= hi; }).length;
+      var noLo = a.filter(function (x) { return x > lo && x < hi; }).length;
+      return {
+        key: "bin:" + sorted(a).join(",") + "|" + lo + "-" + hi,
+        prompt: n + WHO[0] + "の小テストの点：<span class=\"num\">" + list(a) + "</span>。<b>" + lo + " 点以上 " + hi + " 点未満</b>は何人？",
+        inputLabel: "人数", inputMode: "numeric",
+        check: function (x) {
+          var v = toNum(x);
+          if (near(v, k, 0)) return { ok: true };
+          if (near(v, withHi, 0) && withHi !== k) return { ok: false, msg: "ちょうど " + hi + " 点の人を入れていませんか。「未満」なので " + hi + " は入りません（次の区切りに入ります）。" };
+          if (near(v, noLo, 0) && noLo !== k) return { ok: false, msg: "ちょうど " + lo + " 点の人を外していませんか。「以上」なので " + lo + " は入ります。" };
+          if (isNaN(v)) return { ok: false, msg: "数字で答えてください。" };
+          return { ok: false, msg: "1人ずつ、" + lo + " 以上か、" + hi + " より小さいかを確かめましょう。" };
+        },
+        solution: lo + " 以上 " + hi + " 未満に入るのは " + (sorted(a).filter(function (x) { return x >= lo && x < hi; }).join("、") || "なし") + " の " + k + " 人。" + hi + " ちょうどは次の区切りに入る。"
+      };
+    }, now);
+  };
+
+  /* 標準偏差：差 → 2乗 → 平均 → ルート。答えが整数になる4個の組 */
+  var SD_PAIRS = [[1, 7, 5], [2, 14, 10], [3, 21, 15], [7, 17, 13], [4, 28, 20], [2, 2, 2], [3, 3, 3], [5, 5, 5], [6, 6, 6], [1, 1, 1]];
+  G.sd = function (rng, now) {
+    return draw(rng, function (r) {
+      var pr = pick(r, SD_PAIRS), d1 = pr[0], d2 = pr[1], sd = pr[2];
+      var sc = pick(r, [SCENES[0], SCENES[3], SCENES[4]]);
+      var m = randInt(r, sc.lo + d2, sc.hi - d2);
+      if (m < sc.lo + d2) return null;
+      var a = shuffle(r, [m - d2, m - d1, m + d1, m + d2]);
+      var v = varP(a), s = sdS(a), md = mad(a);
+      if (Math.abs(sdP(a) - sd) > 1e-9) return null;
+      return {
+        key: "sd:" + sorted(a).join(","),
+        prompt: "4" + WHO[0] + "の" + sc.what + "：<span class=\"num\">" + list(a) + "</span>（" + sc.unit + "）。標準偏差（STDEV.P と同じ計算）は？",
+        inputLabel: "標準偏差（" + sc.unit + "）", inputMode: "decimal",
+        check: function (x) {
+          var y = toNum(x);
+          if (near(y, sd)) return { ok: true };
+          if (near(y, v)) return { ok: false, msg: "それは「差の2乗の平均」（分散）です。単位も " + sc.unit + " の2乗になっています。最後に √ をとって " + sc.unit + " に戻します。" };
+          if (near(y, s, 0.06) && Math.abs(s - sd) > 0.06) return { ok: false, msg: "4 − 1 = 3 で割っていませんか（STDEV.S の計算）。全部のデータがそろっているので、4 で割ります。" };
+          if (near(y, md) && Math.abs(md - sd) > 0.06) return { ok: false, msg: "差の大きさをそのまま平均していませんか。差は2乗してから平均し、最後に √ をとります。" };
+          if (near(y, 0)) return { ok: false, msg: "差をそのまま足すと、プラスとマイナスが打ち消し合って 0 になります。2乗してから足します。" };
+          if (near(y, m)) return { ok: false, msg: "それは平均です。標準偏差は、平均からどれくらい離れているか（ばらつき）です。" };
+          if (isNaN(y)) return { ok: false, msg: "数字で答えてください。" };
+          return { ok: false };
+        },
+        solution: "平均 " + m + "。差は " + sorted(a).map(function (x) { return x - m; }).map(function (d) { return d > 0 ? "+" + d : d < 0 ? "−" + (-d) : "0"; }).join("、") +
+          "。2乗は " + sorted(a).map(function (x) { return (x - m) * (x - m); }).join("、") + "。その平均 " + v + "（" + sc.unit + "²）。√" + v + " = " + sd + " " + sc.unit + "。"
+      };
+    }, now);
+  };
+
+  /* 標準偏差の比べ方（計算しないで判断する） */
+  G.sdCompare = function (rng, now) {
+    return draw(rng, function (r) {
+      var m = randInt(r, 4, 8) * 10, kind = pick(r, ["wide", "wide", "same-mirror", "same-shift"]);
+      var base = pick(r, [[-3, -1, 1, 3], [-4, 0, 1, 3], [-2, -2, 2, 2], [-5, 0, 0, 5]]);
+      var k = pick(r, [2, 3, 4]);
+      var A = base.map(function (d) { return m + d; }), B;
+      if (kind === "wide") B = base.map(function (d) { return m + d * k; });
+      else if (kind === "same-mirror") B = base.map(function (d) { return m - d; });
+      else B = base.map(function (d) { return m + 10 + d; });
+      var swap = r() < 0.5;
+      if (swap) { var t = A; A = B; B = t; }
+      A = shuffle(r, A); B = shuffle(r, B);
+      if (sorted(A).join() === sorted(B).join()) return null;
+      var sa = sdP(A), sb = sdP(B), same = Math.abs(sa - sb) < 1e-9;
+      var big = same ? "same" : (sa > sb ? "A" : "B");
+      var why = same ? (kind === "same-shift" ? "全員に同じ数を足しても、平均が動くだけで、平均からの離れ方は変わりません。" : "並び方がちがうだけで、平均からの離れ方は同じです。")
+        : "平均からの離れ方が大きいのは " + big + " です。";
+      return choice(r, "sdcmp:" + sorted(A).join(",") + "|" + sorted(B).join(","),
+        "標準偏差が大きいのは？<br><span class=\"num\">A：" + A.join("・") + "</span><br><span class=\"num\">B：" + B.join("・") + "</span>", [
+          { text: "A", ok: big === "A", msg: big === "same" ? "どちらも平均からの離れ方は同じです。" : "B のほうが平均から遠い値があります。" },
+          { text: "B", ok: big === "B", msg: big === "same" ? "どちらも平均からの離れ方は同じです。" : "A のほうが平均から遠い値があります。" },
+          { text: "同じ", ok: big === "same", msg: "平均からの離れ方を比べましょう。値が大きいかどうかではありません。" }
+        ], why + "（A は " + fmt(sa, 2) + "、B は " + fmt(sb, 2) + "）", true);
+    }, now);
+  };
+
+  /* STDEV.P と STDEV.S の使い分け */
+  var PS = [
+    { s: "クラス 40 人全員の小テストの点のばらつきを知りたい", p: true },
+    { s: "自分の 1 か月 30 日分すべての歩数のばらつきを知りたい", p: true },
+    { s: "ある店の 1 年間 365 日すべての売上のばらつきを知りたい", p: true },
+    { s: "全国の大学生から 100 人を選んで聞いたアンケートから、大学生全体のばらつきを推測したい", p: false },
+    { s: "工場で作ったネジから 30 本を抜き出して長さを測り、全部のネジのばらつきを推測したい", p: false },
+    { s: "ある市の 50 世帯を選んで聞いた食費から、市全体の世帯のばらつきを推測したい", p: false }
+  ];
+  G.ps = function (rng, now) {
+    return draw(rng, function (r) {
+      var q = pick(r, PS);
+      return choice(r, "ps:" + q.s, q.s + "。使う関数は？", [
+        { text: "STDEV.P", ok: q.p, msg: "知りたいのは、選んだ一部ではなく「全体」のばらつきです。一部から全体を推測するときは STDEV.S を使います。" },
+        { text: "STDEV.S", ok: !q.p, msg: "知りたいデータが全部そろっています。全部のデータがあるときは STDEV.P を使います。" }
+      ], q.p ? "知りたいものが全部そろっている → STDEV.P（P は population、全体）。" : "一部（標本）から全体を推測する → STDEV.S（S は sample、標本）。", true);
+    }, now);
+  };
+
+  /* やりたいこと → 関数 */
+  var FUNCS = [
+    { want: "数値の入ったセルの個数を数えたい", f: "COUNT", near: ["COUNTIFS", "SUM", "MAX"], why: { COUNTIFS: "COUNTIFS は条件に合うものだけを数えます。全部の個数なら COUNT。", SUM: "SUM は値を足し合わせます。個数ではありません。", MAX: "MAX はいちばん大きい値を返します。" } },
+    { want: "全部足して個数で割った値を出したい", f: "AVERAGE", near: ["MEDIAN", "SUM", "MODE.SNGL"], why: { MEDIAN: "MEDIAN は小さい順に並べた真ん中です。", SUM: "SUM は足すだけで、個数で割りません。", "MODE.SNGL": "MODE.SNGL はいちばん多く出てくる値です。" } },
+    { want: "小さい順に並べた真ん中の値を出したい", f: "MEDIAN", near: ["AVERAGE", "MODE.SNGL", "MIN"], why: { AVERAGE: "AVERAGE は全部足して個数で割った値（平均）です。", "MODE.SNGL": "MODE.SNGL はいちばん多く出てくる値です。", MIN: "MIN はいちばん小さい値です。" } },
+    { want: "いちばん多く出てくる値を出したい", f: "MODE.SNGL", near: ["MAX", "MEDIAN", "COUNT"], why: { MAX: "MAX はいちばん大きい値です。「多く出てくる」とは別です。", MEDIAN: "MEDIAN は小さい順に並べた真ん中です。", COUNT: "COUNT は個数を数えます。" } },
+    { want: "全部そろったデータの、ばらつき（平均からの離れ方）を出したい", f: "STDEV.P", near: ["STDEV.S", "AVERAGE", "MAX"], why: { "STDEV.S": "STDEV.S は一部から全体を推測するときに使います。全部そろっているなら STDEV.P。", AVERAGE: "AVERAGE は平均です。ばらつきではありません。", MAX: "MAX はいちばん大きい値です。" } },
+    { want: "「20 以上 30 未満」のように、区切りの中に入る個数を数えたい", f: "COUNTIFS", near: ["COUNT", "SUM", "MEDIAN"], why: { COUNT: "COUNT は全部の個数を数えます。条件で絞るなら COUNTIFS。", SUM: "SUM は値を足します。個数ではありません。", MEDIAN: "MEDIAN は真ん中の値です。" } }
+  ];
+  G.func = function (rng, now) {
+    return draw(rng, function (r) {
+      var q = pick(r, FUNCS);
+      var opts = [{ text: q.f, ok: true }].concat(q.near.map(function (f) { return { text: f, msg: q.why[f] }; }));
+      return choice(r, "func:" + q.f, q.want + "。使う関数は？", opts, q.f + " を使います。");
+    }, now);
+  };
+
+  /* 式のコピー（相対参照） */
+  function colName(i) { return String.fromCharCode(65 + i); }
+  G.copyRef = function (rng, now) {
+    return draw(rng, function (r) {
+      var fn = pick(r, ["AVERAGE", "MEDIAN", "MAX", "STDEV.P"]), c = randInt(r, 1, 5), r1 = 2, r2 = pick(r, [31, 41, 48]);
+      var k = pick(r, [1, 2]), dir = pick(r, ["right", "right", "down"]);
+      var src = "=" + fn + "(" + colName(c) + r1 + ":" + colName(c) + r2 + ")";
+      var ok = dir === "right" ? "=" + fn + "(" + colName(c + k) + r1 + ":" + colName(c + k) + r2 + ")" : "=" + fn + "(" + colName(c) + (r1 + k) + ":" + colName(c) + (r2 + k) + ")";
+      var wrong = dir === "right" ? "=" + fn + "(" + colName(c) + (r1 + k) + ":" + colName(c) + (r2 + k) + ")" : "=" + fn + "(" + colName(c + k) + r1 + ":" + colName(c + k) + r2 + ")";
+      var where = dir === "right" ? "右へ " + k + " つ" : "下へ " + k + " つ";
+      return choice(r, "copy:" + src + dir + k, "セルの式 <span class=\"num\">" + src + "</span> を、" + where + "となりのセルへコピーすると、式はどうなる？", [
+        { text: "<span class=\"num\">" + ok + "</span>", ok: true },
+        { text: "<span class=\"num\">" + src + "</span>（変わらない）", msg: "$ を付けていない参照は、コピーした方向へ一緒にずれます（相対参照）。" },
+        { text: "<span class=\"num\">" + wrong + "</span>", msg: dir === "right" ? "右へコピーすると、ずれるのは列（アルファベット）です。行の番号は変わりません。" : "下へコピーすると、ずれるのは行の番号です。列は変わりません。" }
+      ], (dir === "right" ? "右へ " + k + " つ → 列が " + k + " つずれる。" : "下へ " + k + " つ → 行が " + k + " つずれる。") + " 答えは " + ok + "。");
+    }, now);
+  };
+
+  var api = {
+    sum: sum, mean: mean, sorted: sorted, median: median, mode: mode, varP: varP, sdP: sdP, sdS: sdS, mad: mad, countRange: countRange,
+    round: round, fmt: fmt, toNum: toNum, near: near, hash: hash, setBlock: setBlock, isBlocked: isBlocked,
+    mulberry32: mulberry32, randInt: randInt, pick: pick, shuffle: shuffle, choice: choice,
+    SHAPES: SHAPES, fromCounts: fromCounts, histSvg: histSvg, SD_PAIRS: SD_PAIRS, PS: PS, FUNCS: FUNCS, gen: G
+  };
+  root.CA = root.CA || {};
+  root.CA.stats = api;
+  if (typeof module !== "undefined" && module.exports) module.exports = api;
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+<script>CA.stats.setBlock({"perm":[],"temp":[]});</script>
+<script>
+/* 共通の部品：保存、ステップ再生、ドリル・確認問題、進み具合のランプ、抽象レベルの地図 */
+(function (root) {
+  "use strict";
+  var CA = root.CA = root.CA || {};
+
+  /* ---------- 小さな道具 ---------- */
+  function h(tag, attrs) {
+    var el = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (attrs[k] == null || attrs[k] === false) continue;
+      if (k === "html") el.innerHTML = attrs[k];
+      else if (k === "text") el.textContent = attrs[k];
+      else if (k === "class") el.className = attrs[k];
+      else if (k.slice(0, 2) === "on") el.addEventListener(k.slice(2), attrs[k]);
+      else el.setAttribute(k, attrs[k] === true ? "" : attrs[k]);
+    }
+    for (var i = 2; i < arguments.length; i++) {
+      var c = arguments[i];
+      if (c == null) continue;
+      if (Array.isArray(c)) c.forEach(function (x) { if (x != null) el.appendChild(typeof x === "string" ? document.createTextNode(x) : x); });
+      else el.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+    }
+    return el;
+  }
+  CA.h = h;
+  var uid = 0;
+  CA.uid = function (p) { uid += 1; return (p || "u") + uid; };
+
+  /* ---------- 保存（ブラウザの中だけ。使えなくても動く） ---------- */
+  var PAGE = root.CA_PAGE || "page";
+  var PREFIX = "dp2026." + PAGE + ".";
+  CA.store = {
+    get: function (k, d) {
+      try { var v = localStorage.getItem(PREFIX + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; }
+    },
+    set: function (k, v) {
+      try { localStorage.setItem(PREFIX + k, JSON.stringify(v)); } catch (e) { /* 保存できない環境 */ }
+    }
+  };
+
+  /* ---------- 進み具合（最低限の項目ごとのランプ） ---------- */
+  var progress = { items: [], done: {}, listeners: [] };
+  CA.progress = {
+    init: function (items) {
+      progress.items = items;
+      progress.done = CA.store.get("done", {}) || {};
+      this.render();
+    },
+    mark: function (id) {
+      if (progress.done[id]) return;
+      progress.done[id] = true;
+      CA.store.set("done", progress.done);
+      this.render();
+    },
+    isDone: function (id) { return !!progress.done[id]; },
+    count: function () { return progress.items.filter(function (it) { return progress.done[it.id]; }).length; },
+    onChange: function (fn) { progress.listeners.push(fn); },
+    render: function () {
+      var n = this.count(), total = progress.items.length;
+      document.querySelectorAll("[data-lamps]").forEach(function (box) {
+        box.innerHTML = "";
+        box.appendChild(h("span", { class: "label", text: "最低限 " + n + " / " + total }));
+        progress.items.forEach(function (it, i) {
+          box.appendChild(h("a", {
+            class: "lamp" + (progress.done[it.id] ? " on" : ""), href: "#" + it.id,
+            title: (i + 1) + ". " + it.title + (progress.done[it.id] ? "（確認問題に正解）" : "（まだ）"),
+            "aria-label": (i + 1) + "番 " + it.title + (progress.done[it.id] ? " 正解済み" : " まだ")
+          }, String(i + 1)));
+        });
+      });
+      document.querySelectorAll("[data-item-state]").forEach(function (el) {
+        var id = el.getAttribute("data-item-state");
+        el.textContent = progress.done[id] ? "確認問題に正解しました" : "";
+      });
+      progress.listeners.forEach(function (fn) { fn(n, total); });
+    }
+  };
+
+  /* ---------- ステップ再生 ----------
+     frames: [{ caption, render(stageEl) }] */
+  CA.stepper = function (mount, opts) {
+    var frames = opts.frames, i = 0, timer = null;
+    var stage = h("div", { class: "stage", "aria-hidden": "false" });
+    var cap = h("p", { class: "caption", "aria-live": "polite" });
+    var rid = CA.uid("rng");
+    var range = h("input", { type: "range", min: 0, max: frames.length - 1, value: 0, id: rid, "aria-label": "場面" });
+    var count = h("span", { class: "count" });
+    var bFirst = h("button", { type: "button", text: "最初から" });
+    var bPrev = h("button", { type: "button", text: "◀ 前へ" });
+    var bNext = h("button", { type: "button", class: "primary", text: "次へ ▶" });
+    var bPlay = h("button", { type: "button", text: "自動で再生" });
+    function stop() { if (timer) { clearInterval(timer); timer = null; bPlay.textContent = "自動で再生"; } }
+    function show(k) {
+      i = Math.max(0, Math.min(frames.length - 1, k));
+      stage.innerHTML = "";
+      frames[i].render(stage);
+      cap.innerHTML = frames[i].caption;
+      range.value = i;
+      count.textContent = (i + 1) + " / " + frames.length;
+      bPrev.disabled = i === 0; bFirst.disabled = i === 0;
+      bNext.disabled = i === frames.length - 1;
+      if (i === frames.length - 1 && opts.onEnd) opts.onEnd();
+    }
+    bFirst.onclick = function () { stop(); show(0); };
+    bPrev.onclick = function () { stop(); show(i - 1); };
+    bNext.onclick = function () { stop(); show(i + 1); };
+    range.oninput = function () { stop(); show(+range.value); };
+    bPlay.onclick = function () {
+      if (timer) { stop(); return; }
+      if (i === frames.length - 1) show(0);
+      bPlay.textContent = "止める";
+      timer = setInterval(function () {
+        if (i >= frames.length - 1) { stop(); return; }
+        show(i + 1);
+      }, opts.interval || 2600);
+    };
+    var box = h("div", { class: "stepper" }, stage, cap,
+      h("div", { class: "ctrl" }, bFirst, bPrev, bNext, range, count, bPlay));
+    box.addEventListener("keydown", function (e) {
+      if (e.target === range) return;
+      if (e.key === "ArrowRight") { stop(); show(i + 1); }
+      if (e.key === "ArrowLeft") { stop(); show(i - 1); }
+    });
+    mount.appendChild(box);
+    show(0);
+    return { show: show };
+  };
+
+  /* ---------- ドリル・確認問題 ----------
+     opts.mode: "drill"（何問でも） / "check"（1問、正解で項目のランプが点く） / "seq"（決まった問題を順に）
+     opts.make(): 問題を返す。問題は { prompt, inputLabel, check(x)->{ok,msg}, solution, type, choices } */
+  CA.quiz = function (mount, opts) {
+    var mode = opts.mode || "drill";
+    var stats = CA.store.get("q." + opts.id, { ok: 0, tried: 0 }) || { ok: 0, tried: 0 };
+    var p = null, answered = false, wrongs = 0, seqIndex = 0, seqOk = 0;
+    var kind = h("div", { class: "kind" });
+    var prompt = h("div", { class: "prompt" });
+    var area = h("div");
+    var fb = h("div", { class: "feedback", role: "status", "aria-live": "polite" });
+    var sol = h("details", { class: "solution" }, h("summary", { text: "解き方を見る" }), h("div"));
+    var bNext = h("button", { type: "button", text: mode === "seq" ? "次の問題へ" : "別の問題を出す" });
+    var foot = h("div", { class: "row" });
+    if (mode !== "check") foot.appendChild(bNext);
+    var box = h("div", { class: "quiz" + (mode === "check" ? " check-quiz" : "") }, kind, prompt, area, fb, sol, foot);
+    if (mode === "check" && opts.itemId && CA.progress.isDone(opts.itemId)) box.classList.add("done");
+
+    function label() {
+      kind.innerHTML = "";
+      var title = mode === "check" ? "確認問題" : mode === "seq" ? (opts.title || "仕上げ") + "　" + (seqIndex + 1) + " / " + opts.seq.length : (opts.title || "練習");
+      kind.appendChild(h("b", { text: title }));
+      if (mode === "drill") kind.appendChild(h("span", { class: "score", text: "正解 " + stats.ok + " / " + stats.tried }));
+      if (mode === "check") kind.appendChild(h("span", { class: "score", "data-item-state": opts.itemId }));
+      if (mode === "seq") kind.appendChild(h("span", { class: "score", text: "正解 " + seqOk }));
+    }
+    function judge(res, picked) {
+      if (answered && mode !== "check") return;
+      if (mode !== "check" || !answered) { stats.tried += 1; }
+      if (res.ok) {
+        answered = true;
+        stats.ok += 1;
+        if (mode === "seq") seqOk += 1;
+        fb.className = "feedback ok";
+        fb.innerHTML = "<span class=\"head\">正解</span>" + (opts.okNote ? "　" + opts.okNote : "");
+        if (mode === "check") { box.classList.add("done"); if (opts.itemId) CA.progress.mark(opts.itemId); }
+        sol.open = false;
+        if (opts.onCorrect) opts.onCorrect();
+      } else {
+        wrongs += 1;
+        if (mode === "seq") answered = true;
+        fb.className = "feedback ng";
+        fb.innerHTML = "<span class=\"head\">" + (mode === "seq" ? "ちがいます" : "もう一度") + "</span>　" + (res.msg || (wrongs >= 2 || mode === "seq" ? "「解き方を見る」で手順を確かめましょう。" : "手順を一つずつ確かめてみましょう。"));
+        if (wrongs >= 2 || mode === "seq") sol.open = true;
+      }
+      CA.store.set("q." + opts.id, stats);
+      label();
+      if (mode === "seq") { bNext.disabled = false; if (seqIndex === opts.seq.length - 1) bNext.textContent = "結果を見る"; }
+    }
+    function load() {
+      answered = false; wrongs = 0;
+      p = mode === "seq" ? opts.seq[seqIndex]() : opts.make();
+      prompt.innerHTML = p.prompt;
+      sol.lastChild.innerHTML = p.solution;
+      sol.open = false;
+      fb.className = "feedback"; fb.innerHTML = "";
+      area.innerHTML = "";
+      if (p.type === "choice") {
+        var list = h("div", { class: "choices" });
+        p.choices.forEach(function (c, k) {
+          var b = h("button", { type: "button", html: c });
+          b.onclick = function () {
+            if (answered) return;
+            var res = p.check(k);
+            list.querySelectorAll("button").forEach(function (x) { x.classList.remove("picked-ng"); });
+            b.classList.add(res.ok ? "picked-ok" : "picked-ng");
+            judge(res, k);
+          };
+          list.appendChild(b);
+        });
+        area.appendChild(list);
+      } else {
+        var iid = CA.uid("ans");
+        var inp = h("input", { type: "text", id: iid, autocomplete: "off", autocapitalize: "off", spellcheck: "false", inputmode: p.inputMode || "text" });
+        var go = h("button", { type: "button", class: "primary", text: "答え合わせ" });
+        go.onclick = function () {
+          if (!inp.value.trim()) { fb.className = "feedback ng"; fb.innerHTML = "答えを入力してください。"; return; }
+          judge(p.check(inp.value));
+        };
+        inp.addEventListener("keydown", function (e) { if (e.key === "Enter") go.onclick(); });
+        area.appendChild(h("div", { class: "answer-row" }, h("label", { for: iid, text: p.inputLabel || "答え" }), inp, go));
+      }
+      if (mode === "seq") bNext.disabled = true;
+      label();
+      CA.progress.render();
+    }
+    bNext.onclick = function () {
+      if (mode === "seq") {
+        if (seqIndex === opts.seq.length - 1) { if (opts.onFinish) opts.onFinish(seqOk, opts.seq.length, box); return; }
+        seqIndex += 1;
+      }
+      load();
+    };
+    box.restart = function () { seqIndex = 0; seqOk = 0; bNext.textContent = "次の問題へ"; load(); };
+    mount.appendChild(box);
+    load();
+    return box;
+  };
+
+  /* ---------- 抽象レベルの地図（第3回スライド2の9層） ---------- */
+  var LEVELS = [
+    ["アプリケーションソフトウェア", "プログラム"],
+    ["OS", "デバイスドライバ"],
+    ["アーキテクチャ", "命令とレジスタ"],
+    ["マイクロアーキテクチャ", "データパス、コントローラ"],
+    ["論理", "加算器、メモリ"],
+    ["ディジタル回路", "ANDゲート、NOTゲート"],
+    ["アナログ回路", "増幅器、フィルタ"],
+    ["デバイス（素子）", "トランジスタ、ダイオード"],
+    ["物理", "電子"]
+  ];
+  CA.levels = function (mount, here, note) {
+    var ol = h("ol");
+    LEVELS.forEach(function (lv, k) {
+      var mark = here[k];
+      ol.appendChild(h("li", { class: mark ? "here" : "" }, h("span", { text: lv[0] }), h("span", { class: "ex", text: mark ? mark : lv[1] })));
+    });
+    var d = h("details", { class: "levels" }, h("summary", { text: note }), ol);
+    mount.appendChild(d);
+  };
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+<script>
+/* 部品① の画面：ステップ再生（CA.steps.*）、数直線の実験台、グラフの切り替え、グラフ選びのゲーム */
+(function (root) {
+  "use strict";
+  var CA = root.CA, h = CA.h, S = CA.stats;
+  CA.steps = CA.steps || {};
+
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function svg(w, hh, inner, label) {
+    return "<svg viewBox=\"0 0 " + w + " " + hh + "\" class=\"fig\" role=\"img\" aria-label=\"" + esc(label || "") + "\">" + inner + "</svg>";
+  }
+  function T(x, y, s, o) {
+    o = o || {};
+    return "<text x=\"" + x + "\" y=\"" + y + "\" font-size=\"" + (o.size || 20) + "\" text-anchor=\"" + (o.anchor || "middle") + "\"" +
+      (o.weight ? " font-weight=\"" + o.weight + "\"" : "") + " class=\"" + (o.mono ? "fm " : "ft ") + (o.cls || "k-ink") + "\">" + esc(s) + "</text>";
+  }
+  function L(x1, y1, x2, y2, cls, sw, dash) {
+    return "<line x1=\"" + x1 + "\" y1=\"" + y1 + "\" x2=\"" + x2 + "\" y2=\"" + y2 + "\" class=\"" + (cls || "s-mut") + "\" stroke-width=\"" + (sw || 2) + "\"" + (dash ? " stroke-dasharray=\"" + dash + "\"" : "") + " stroke-linecap=\"round\"/>";
+  }
+  function C(cx, cy, r, cls, sw) { return "<circle cx=\"" + cx + "\" cy=\"" + cy + "\" r=\"" + r + "\" class=\"" + cls + "\" stroke-width=\"" + (sw || 2) + "\"/>"; }
+  function R(x, y, w, hh, cls, rx) { return "<rect x=\"" + x + "\" y=\"" + y + "\" width=\"" + w + "\" height=\"" + hh + "\" rx=\"" + (rx == null ? 4 : rx) + "\" class=\"" + cls + "\" stroke-width=\"1.5\"/>"; }
+
+  /* ---------- 数直線（点・平均・中央値・±標準偏差） ----------
+     o: { min, max, step, unit, hot: [index], mean, median, sd, ghost: {i, v}, note } */
+  function numberLine(vals, o) {
+    var W = 760, H = o.sd ? 250 : 230, x0 = 40, x1 = W - 40, base = 150;
+    function X(v) { return x0 + (x1 - x0) * (v - o.min) / (o.max - o.min); }
+    var s = "";
+    if (o.sd) {
+      var m = S.mean(vals), a = X(m - S.sdP(vals)), b = X(m + S.sdP(vals));
+      s += R(Math.max(x0, a), base - 92, Math.min(x1, b) - Math.max(x0, a), 92, "k-wiresoft s-none", 0);
+      s += R(x0, H - 20, 26, 16, "k-wiresoft s-wire", 2) + T(x0 + 34, H - 6, "の帯：平均 ± 標準偏差", { size: 16, anchor: "start", cls: "k-wire" });
+    }
+    s += L(x0, base, x1, base, "s-ink", 2);
+    for (var v = o.min; v <= o.max + 1e-9; v += o.step) {
+      s += L(X(v), base, X(v), base + 8, "s-mut", 2) + T(X(v), base + 36, S.fmt(v, 2), { size: 16, cls: "k-mut" });
+    }
+    if (o.unit) s += T(x1, base + 58, "（" + o.unit + "）", { size: 16, anchor: "end", cls: "k-mut" });
+    /* 平均と中央値が近いときは、ラベルを左右に振り分ける */
+    var close = o.mean != null && o.median != null && Math.abs(X(o.mean) - X(o.median)) < 150;
+    var right = close && o.mean >= o.median;
+    /* 同じ値は上へ積む */
+    var seen = {};
+    if (o.ghost) s += C(X(o.ghost.v), base - 14, 11, "k-none s-mut", 2) ;
+    vals.forEach(function (v, i) {
+      var k = seen[v] = (seen[v] || 0) + 1;
+      var hot = o.hot && o.hot.indexOf(i) >= 0;
+      s += C(X(v), base - 14 - (k - 1) * 26, hot ? 13 : 11, hot ? "k-lamp s-lamp" : "k-acc s-panel", 2);
+    });
+    if (o.median != null) {
+      s += L(X(o.median), base - 120, X(o.median), base, "s-ink", 3, "7 5");
+      s += T(X(o.median) + (close ? (right ? -8 : 8) : 0), base - 126, "中央値 " + S.fmt(o.median, 1), { size: 18, weight: 700, anchor: close ? (right ? "end" : "start") : "middle" });
+    }
+    if (o.mean != null) {
+      var mx = X(o.mean);
+      s += "<path d=\"M" + mx + "," + (base + 3) + " l-8,13 h16 z\" class=\"k-lamp s-lamp\"/>";
+      s += L(mx, base - 64, mx, base, "s-lamp", 4);
+      s += T(mx + (close ? (right ? 8 : -8) : 0), base - 72, "平均 " + S.fmt(o.mean, 1), { size: 18, weight: 700, cls: "k-lampdark", anchor: close ? (right ? "start" : "end") : "middle" });
+    }
+    return svg(W, H, s, o.label || "数直線");
+  }
+  CA.numberLine = numberLine;
+
+  /* 値を札で並べる（hl: 強調する位置、mark: 位置ごとの小さな注記） */
+  function chips(vals, o) {
+    o = o || {};
+    var row = h("div", { class: "chips" });
+    vals.forEach(function (v, i) {
+      row.appendChild(h("span", { class: "chip" + (o.hl && o.hl.indexOf(i) >= 0 ? " hl" : "") + (o.dim && o.dim.indexOf(i) >= 0 ? " dim" : "") },
+        o.idx ? h("small", { text: (i + 1) + "番目" }) : null, h("b", { text: S.fmt(v, 2) })));
+    });
+    return row;
+  }
+  function html(s) { var d = h("div"); d.innerHTML = s; return d; }
+
+  /* ---------- 1. 平均・中央値・最頻値 ---------- */
+  CA.steps.center = function (mount, vals, unit) {
+    var s = S.sorted(vals), n = vals.length, m = S.mean(vals), md = S.median(vals), mo = S.mode(vals);
+    var lo = Math.floor(Math.min.apply(null, vals) / 2000) * 2000, hi = Math.ceil(Math.max.apply(null, vals) / 2000) * 2000;
+    var opt = { min: Math.min(0, lo), max: hi, step: (hi - Math.min(0, lo)) / 7, unit: unit };
+    var mid = (n - 1) / 2;
+    CA.stepper(mount, { frames: [
+      { caption: n + " 人の 1 か月のおこづかい。まず数直線に並べます。", render: function (st) { st.appendChild(chips(vals)); st.appendChild(html(numberLine(vals, opt))); } },
+      { caption: "<b>中央値</b>：小さい順に並べて、真ん中（" + (mid + 1) + " 番目）の値。ここでは <b>" + S.fmt(md, 0) + " " + unit + "</b>。", render: function (st) {
+        st.appendChild(chips(s, { idx: true, hl: [mid] })); st.appendChild(html(numberLine(s, Object.assign({ median: md, hot: [mid] }, opt)))); } },
+      { caption: "<b>平均</b>：全部足して、個数で割る。" + s.map(function (x) { return S.fmt(x, 0); }).join(" + ") + " = " + S.fmt(S.sum(vals), 0) + "、÷ " + n + " = <b>" + S.fmt(m, 0) + " " + unit + "</b>。", render: function (st) {
+        st.appendChild(chips(s)); st.appendChild(html(numberLine(s, Object.assign({ median: md, mean: m }, opt)))); } },
+      { caption: "<b>最頻値</b>：いちばん多く出てくる値。" + S.fmt(mo, 0) + " " + unit + " が 2 人で、最頻値は <b>" + S.fmt(mo, 0) + " " + unit + "</b>。", render: function (st) {
+        var hl = []; s.forEach(function (x, i) { if (x === mo) hl.push(i); });
+        st.appendChild(chips(s, { hl: hl })); st.appendChild(html(numberLine(s, Object.assign({ hot: hl, median: md, mean: m }, opt)))); } },
+      { caption: "3 つは別の場所を指します。平均がいちばん右なのは、" + S.fmt(s[n - 1], 0) + " 円の 1 人に引っぱられているから。どれを使うかは「何を知りたいか」で決めます。", render: function (st) {
+        st.appendChild(html(numberLine(s, Object.assign({ median: md, mean: m, hot: [n - 1] }, opt)))); } }
+    ] });
+  };
+
+  /* ---------- 2. 外れ値：平均だけが動く ---------- */
+  CA.steps.outlier = function (mount, vals, to, unit, what, max, step) {
+    var a = S.sorted(vals), n = a.length, b = a.slice(); b[n - 1] = to;
+    var opt = { min: 0, max: max, step: step, unit: unit };
+    var m0 = S.mean(a), m1 = S.mean(b), md = S.median(a);
+    CA.stepper(mount, { frames: [
+      { caption: n + " 人の" + what + "。平均は " + S.fmt(m0, 1) + "、中央値は " + S.fmt(md, 1) + " " + unit + "。", render: function (st) { st.appendChild(html(numberLine(a, Object.assign({ mean: m0, median: md }, opt)))); } },
+      { caption: "いちばん長い " + a[n - 1] + " " + unit + " の人が引っ越して、" + to + " " + unit + " になりました。平均と中央値はどうなるでしょう？", render: function (st) {
+        st.appendChild(html(numberLine(a, Object.assign({ mean: m0, median: md, hot: [n - 1] }, opt)))); } },
+      { caption: "点が右へ動きました。<b>平均は " + S.fmt(m0, 1) + " → " + S.fmt(m1, 1) + "</b> に上がります。", render: function (st) {
+        st.appendChild(html(numberLine(b, Object.assign({ mean: m1, hot: [n - 1], ghost: { v: a[n - 1] } }, opt)))); } },
+      { caption: "<b>中央値は " + S.fmt(md, 1) + " のまま</b>。真ん中（" + ((n + 1) / 2) + " 番目）の人は変わっていないからです。", render: function (st) {
+        st.appendChild(html(numberLine(b, Object.assign({ mean: m1, median: md, hot: [(n - 1) / 2], ghost: { v: a[n - 1] } }, opt)))); } },
+      { caption: "平均は全員の値を足すので、大きく外れた値（外れ値）1 つに引っぱられる。中央値は順番しか使わないので、ほとんど動かない。", render: function (st) {
+        st.appendChild(html(numberLine(b, Object.assign({ mean: m1, median: md }, opt)))); } }
+    ] });
+  };
+
+  /* ---------- 3. ヒストグラム：区切って数え、棒をくっつける ---------- */
+  function histFig(counts, edges, o) {
+    o = o || {};
+    var W = 760, H = 270, x0 = 60, x1 = W - 20, y0 = 220, nb = counts.length, bw = (x1 - x0) / nb;
+    var mx = o.ymax || Math.max.apply(null, counts), s = "";
+    for (var k = 0; k <= mx; k += (mx > 8 ? 2 : 1)) {
+      var yy = y0 - (y0 - 30) * k / mx;
+      s += L(x0, yy, x1, yy, "s-rule", 1) + T(x0 - 10, yy + 6, String(k), { size: 16, anchor: "end", cls: "k-mut" });
+    }
+    counts.forEach(function (c, i) {
+      if (o.show != null && i > o.show) return;
+      var hh = (y0 - 30) * c / mx, gap = o.gap ? bw * 0.18 : 0;
+      var hot = o.hot === i;
+      if (c) s += R(x0 + i * bw + gap, y0 - hh, bw - 2 * gap, hh, hot ? "k-lamp s-panel" : "k-acc s-panel", 0);
+      if (o.countLabels) s += T(x0 + i * bw + bw / 2, y0 - hh - 8, String(c), { size: 18, weight: 700, cls: hot ? "k-lampdark" : "k-ink" });
+    });
+    edges.forEach(function (e, i) { s += T(x0 + i * bw, y0 + 24, String(e), { size: 16, cls: "k-mut" }); });
+    s += L(x0, y0, x1, y0, "s-ink", 2);
+    s += T(x0 - 44, 22, o.ylab || "人数", { size: 16, anchor: "start", cls: "k-mut" });
+    s += T(x1, y0 + 46, o.xlab || "", { size: 16, anchor: "end", cls: "k-mut" });
+    if (o.lines) o.lines.forEach(function (ln) {
+      var x = x0 + (x1 - x0) * (ln.v - edges[0]) / (edges[edges.length - 1] - edges[0]);
+      s += L(x, 24, x, y0, ln.cls, ln.sw || 3, ln.dash) + T(x + (ln.dx || 0), ln.y || 20, ln.text, { size: 17, weight: 700, cls: ln.tcls || "k-ink", anchor: ln.anchor || "middle" });
+    });
+    return svg(W, H, s, o.label || "ヒストグラム");
+  }
+  CA.histFig = histFig;
+  CA.steps.histogram = function (mount, vals, lo, w, nb) {
+    var edges = [], counts = [];
+    for (var i = 0; i <= nb; i++) edges.push(lo + i * w);
+    for (var j = 0; j < nb; j++) counts.push(S.countRange(vals, edges[j], edges[j + 1]));
+    var first = []; vals.forEach(function (v, k) { if (v >= edges[0] && v < edges[1]) first.push(k); });
+    var tbl = function (upto, hot) {
+      var t = "<div class=\"tbl-wrap\"><table class=\"ref\"><tr><th>区切り（階級）</th>";
+      for (var k = 0; k < nb; k++) t += "<td" + (k === hot ? " class=\"hot\"" : "") + ">" + edges[k] + " 以上<br>" + edges[k + 1] + " 未満</td>";
+      t += "</tr><tr><th>人数（度数）</th>";
+      for (var q = 0; q < nb; q++) t += "<td" + (q === hot ? " class=\"hot\"" : "") + ">" + (q <= upto ? counts[q] : "") + "</td>";
+      return html(t + "</tr></table></div>");
+    };
+    var opt = { xlab: "点", ylab: "人数" };
+    CA.stepper(mount, { frames: [
+      { caption: vals.length + " 人の小テストの点。数字を眺めるだけでは、形が分かりません。", render: function (st) { st.appendChild(chips(vals)); } },
+      { caption: w + " 点ずつに区切ります。区切りは「" + edges[0] + " 以上 " + edges[1] + " 未満」のように、<b>下は入れて、上は入れない</b>。", render: function (st) { st.appendChild(tbl(-1)); } },
+      { caption: "最初の区切りに入る人を数えます。ちょうど " + edges[1] + " 点の人は、次の区切りに入ります。", render: function (st) {
+        st.appendChild(chips(vals, { hl: first })); st.appendChild(tbl(0, 0)); } },
+      { caption: "全部の区切りを数えた表が<b>度数分布表</b>。合計が " + vals.length + " 人になれば数え漏れなし。", render: function (st) { st.appendChild(tbl(nb - 1)); } },
+      { caption: "度数を棒にします。", render: function (st) { st.appendChild(html(histFig(counts, edges, Object.assign({ gap: true, countLabels: true }, opt)))); } },
+      { caption: "棒のすき間をなくすと<b>ヒストグラム</b>。横軸が続いた数であることを表します。山の位置と裾の長さ（データの形）が見えます。", render: function (st) {
+        st.appendChild(html(histFig(counts, edges, Object.assign({ countLabels: true }, opt)))); } },
+      { caption: "Excel では、区切りごとに COUNTIFS で数えます。<span class=\"num\">=COUNTIFS(範囲,\"&gt;=\"&amp;下の端, 範囲,\"&lt;\"&amp;上の端)</span>。「以上」は &gt;=、「未満」は &lt;。", render: function (st) {
+        st.appendChild(html("<p class=\"formula\"><span class=\"num\">=COUNTIFS(<b>E2:E48</b>,\"&gt;=\"&amp;<b>B4</b>, <b>E2:E48</b>,\"&lt;\"&amp;<b>C4</b>)</span></p><p class=\"small\">B4 に区切りの下の端、C4 に上の端が入っているとき（授業スライド 34 と同じ形）。</p>")); } }
+    ] });
+  };
+
+  /* ---------- 4. 形と代表値 ---------- */
+  CA.steps.shape = function (mount) {
+    var R1 = [2, 8, 9, 5, 3, 2, 1, 0, 0, 1], Y = [1, 3, 6, 9, 6, 3, 1];
+    function lines(c) {
+      var a = S.fromCounts(c);
+      return { mean: S.mean(a), median: S.median(a) };
+    }
+    var e1 = [], e2 = [];
+    for (var i = 0; i <= R1.length; i++) e1.push(i * 10);
+    for (var j = 0; j <= Y.length; j++) e2.push(j * 10);
+    var l1 = lines(R1), l2 = lines(Y);
+    function sc(x) { return x * 10; }
+    var opt = { xlab: "値", ylab: "人数" };
+    function L1(c, ll, edges, both) {
+      var out = [{ v: sc(ll.median), cls: "s-ink", dash: "7 5", text: "中央値", dx: both ? -8 : 0, anchor: both ? "end" : "middle" }];
+      if (both !== false) out.push({ v: sc(ll.mean), cls: "s-lamp", sw: 4, text: "平均", tcls: "k-lampdark", dx: both ? 8 : 0, anchor: both ? "start" : "middle", y: 44 });
+      return histFig(c, edges, Object.assign({ lines: out }, opt));
+    }
+    CA.stepper(mount, { frames: [
+      { caption: "山が左にあり、右へ長い裾がのびた形（<b>右に裾が長い</b>）。人口・貯蓄・年収などがこの形になりやすい。", render: function (st) { st.appendChild(html(histFig(R1, e1, opt))); } },
+      { caption: "中央値は、人数をちょうど半分に分ける位置。", render: function (st) { st.appendChild(html(L1(R1, l1, e1, false))); } },
+      { caption: "平均は、右の裾の大きな値に引っぱられて、中央値より右に来ます。<b>右に裾が長い → 平均 ＞ 中央値</b>。", render: function (st) { st.appendChild(html(L1(R1, l1, e1, true))); } },
+      { caption: "左右がほぼ対称な山なら、平均と中央値はほぼ同じ場所に来ます。", render: function (st) { st.appendChild(html(L1(Y, l2, e2, true))); } },
+      { caption: "まずヒストグラムで形を見る。裾が長いときは、平均だけでなく中央値も一緒に見る。", render: function (st) {
+        var g = h("div", { class: "two" }); g.appendChild(html(L1(R1, l1, e1, true))); g.appendChild(html(L1(Y, l2, e2, true))); st.appendChild(g); } }
+    ] });
+  };
+
+  /* ---------- 5. 標準偏差：差 → 2乗 → 平均 → √ ---------- */
+  CA.steps.sd = function (mount, vals, unit) {
+    var n = vals.length, m = S.mean(vals), d = vals.map(function (x) { return x - m; }), sq = d.map(function (x) { return x * x; }), v = S.varP(vals), sd = S.sdP(vals);
+    function sg(x) { return x > 0 ? "+" + x : x < 0 ? "−" + (-x) : "0"; }
+    function table(cols, foot) {
+      var heads = ["値（" + unit + "）", "平均との差（" + unit + "）", "差の2乗（" + unit + "²）"];
+      var t = "<div class=\"tbl-wrap\"><table class=\"ref calc-t\"><tr>";
+      for (var c = 0; c < cols; c++) t += "<th>" + heads[c] + "</th>";
+      t += "</tr>";
+      vals.forEach(function (x, i) {
+        t += "<tr><td>" + x + "</td>" + (cols > 1 ? "<td>" + sg(d[i]) + "</td>" : "") + (cols > 2 ? "<td>" + sq[i] + "</td>" : "") + "</tr>";
+      });
+      if (foot) t += "<tr class=\"foot\">" + foot + "</tr>";
+      return html(t + "</table></div>");
+    }
+    var opt = { min: m - 30, max: m + 30, step: 10, unit: unit };
+    CA.stepper(mount, { frames: [
+      { caption: n + " 人の小テストの点。平均は " + m + " " + unit + "。ばらつきを 1 つの数で表したい。", render: function (st) { st.appendChild(html(numberLine(vals, Object.assign({ mean: m }, opt)))); } },
+      { caption: "① 平均との差を出す。", render: function (st) { st.appendChild(table(2)); } },
+      { caption: "差をそのまま足すと <b>0</b>。プラスとマイナスが打ち消し合うので、これでは平均できません。", render: function (st) { st.appendChild(table(2, "<td>合計</td><td><b>" + 0 + "</b></td>")); } },
+      { caption: "② 差を 2 乗すると、全部プラスになります。ただし単位も 2 乗（" + unit + "²）になります。", render: function (st) { st.appendChild(table(3)); } },
+      { caption: "③ 2 乗の平均：" + sq.join(" + ") + " = " + S.sum(sq) + "、÷ " + n + " = <b>" + v + " " + unit + "²</b>。これを<b>分散</b>といいます。", render: function (st) {
+        st.appendChild(table(3, "<td>平均</td><td></td><td><b>" + v + "</b></td>")); } },
+      { caption: "④ √ をとって単位を " + unit + " に戻す：√" + v + " = <b>" + S.fmt(sd, 1) + " " + unit + "</b>。これが<b>標準偏差</b>（STDEV.P と同じ）。", render: function (st) {
+        st.appendChild(html("<p class=\"formula\"><span class=\"num\">√" + v + " " + unit + "² = " + S.fmt(sd, 1) + " " + unit + "</span></p>")); } },
+      { caption: "意味：平均の " + m + " " + unit + " から、だいたい " + S.fmt(sd, 1) + " " + unit + " くらい離れている。青い帯が 平均 ± 標準偏差。", render: function (st) {
+        st.appendChild(html(numberLine(vals, Object.assign({ mean: m, sd: true }, opt)))); } }
+    ] });
+  };
+
+  /* ---------- 6. STDEV.P と STDEV.S ---------- */
+  CA.steps.ps = function (mount, vals, unit) {
+    var n = vals.length, m = S.mean(vals), ss = S.sum(vals.map(function (x) { return (x - m) * (x - m); }));
+    CA.stepper(mount, { frames: [
+      { caption: "同じ " + n + " 個のデータ（" + vals.join("・") + " " + unit + "）。差の 2 乗の合計は " + ss + "。", render: function (st) { st.appendChild(chips(vals)); } },
+      { caption: "<b>STDEV.P</b>：個数 " + n + " で割る。" + ss + " ÷ " + n + " = " + S.fmt(ss / n, 1) + "、√ で <b>" + S.fmt(Math.sqrt(ss / n), 1) + " " + unit + "</b>。全部のデータがそろっているとき（P は population＝全体）。", render: function (st) {
+        st.appendChild(html("<p class=\"formula\"><span class=\"num\">√(" + ss + " ÷ " + n + ") = " + S.fmt(Math.sqrt(ss / n), 1) + "</span></p>")); } },
+      { caption: "<b>STDEV.S</b>：個数 − 1 = " + (n - 1) + " で割る。" + ss + " ÷ " + (n - 1) + " = " + S.fmt(ss / (n - 1), 1) + "、√ で <b>" + S.fmt(Math.sqrt(ss / (n - 1)), 1) + " " + unit + "</b>。一部（標本）から全体を推測するとき（S は sample）。", render: function (st) {
+        st.appendChild(html("<p class=\"formula\"><span class=\"num\">√(" + ss + " ÷ " + (n - 1) + ") = " + S.fmt(Math.sqrt(ss / (n - 1)), 1) + "</span></p>")); } },
+      { caption: "2 つは少しだけちがい、S のほうが少し大きい。47 都道府県のように全部そろっていれば STDEV.P、アンケートの一部から全体を推測するなら STDEV.S。", render: function (st) {
+        st.appendChild(html("<div class=\"tbl-wrap\"><table class=\"ref\"><tr><th>知りたいもの</th><th>関数</th></tr><tr><td>全部そろったデータのばらつき</td><td class=\"mono\">STDEV.P</td></tr><tr><td>一部から推測する全体のばらつき</td><td class=\"mono\">STDEV.S</td></tr></table></div>")); } }
+    ] });
+  };
+
+  /* ---------- 7. Excel：関数と式のコピー ---------- */
+  function grid(rows, hot) {
+    var t = "<div class=\"tbl-wrap\"><table class=\"sheet\"><tr><th></th><th>A</th><th>B</th><th>C</th></tr>";
+    rows.forEach(function (r, i) {
+      t += "<tr><th>" + (i + 4) + "</th>";
+      r.forEach(function (c, j) { t += "<td" + (hot && hot[0] === i && hot[1] === j ? " class=\"hot\"" : "") + ">" + c + "</td>"; });
+      t += "</tr>";
+    });
+    return html(t + "</table></div>");
+  }
+  CA.steps.excel = function (mount) {
+    var rows0 = [["", "人口", "65歳以上割合"], ["件数", "", ""], ["平均", "", ""]];
+    CA.stepper(mount, { frames: [
+      { caption: "シート「要約」の形（授業の必須課題 1 と同じ並び）。B 列が人口、C 列が割合です。", render: function (st) { st.appendChild(grid(rows0)); } },
+      { caption: "B6 に <span class=\"num\">=AVERAGE(データ!E2:E48)</span>。シート「データ」の E2〜E48（人口の列）の平均です。", render: function (st) {
+        st.appendChild(grid([rows0[0], rows0[1], ["平均", "=AVERAGE(データ!E2:E48)", ""]], [2, 1])); } },
+      { caption: "B6 を右の C6 へコピーすると、式の中の <b>E が F に 1 つずれます</b>（相対参照）。F 列は割合の列なので、そのまま割合の平均になります。", render: function (st) {
+        st.appendChild(grid([rows0[0], rows0[1], ["平均", "=AVERAGE(データ!E2:E48)", "=AVERAGE(データ!<b>F</b>2:<b>F</b>48)"]], [2, 2])); } },
+      { caption: "件数・中央値・最頻値・最大・最小・標準偏差も、同じ範囲で関数だけを変えて作り、右へコピーします。", render: function (st) {
+        st.appendChild(html("<div class=\"tbl-wrap\"><table class=\"ref\"><tr><th>やりたいこと</th><th>関数</th></tr>" +
+          [["件数", "COUNT"], ["平均", "AVERAGE"], ["中央値", "MEDIAN"], ["最頻値", "MODE.SNGL"], ["最大・最小", "MAX・MIN"], ["標準偏差", "STDEV.P"], ["区切りごとの個数", "COUNTIFS"]]
+            .map(function (r) { return "<tr><td>" + r[0] + "</td><td class=\"mono\">" + r[1] + "</td></tr>"; }).join("") + "</table></div>")); } }
+    ] });
+  };
+
+  /* ---------- 実験台：点を動かして、平均・中央値・標準偏差を見る ---------- */
+  CA.dotLab = function (mount, o) {
+    var init = o.values.slice(), vals = init.slice(), sel = vals.length - 1;
+    var fig = h("div", { class: "fig-wrap" });
+    var pick = h("div", { class: "chips pick", role: "group", "aria-label": "動かす点を選ぶ" });
+    var rid = CA.uid("dot");
+    var lab = h("label", { for: rid, class: "small" });
+    var range = h("input", { type: "range", id: rid, min: o.min, max: o.max, step: o.step || 1 });
+    var minus = h("button", { type: "button", text: "−" + (o.step || 1), "aria-label": "小さくする" });
+    var plus = h("button", { type: "button", text: "+" + (o.step || 1), "aria-label": "大きくする" });
+    var reset = h("button", { type: "button", text: "元に戻す" });
+    var out = h("dl", { class: "readout", "aria-live": "polite" });
+    function draw() {
+      fig.innerHTML = numberLine(vals, { min: o.min, max: o.max, step: o.tick || 20, unit: o.unit, mean: S.mean(vals), median: S.median(vals), sd: true, hot: [sel], label: "点の位置と平均・中央値" });
+      pick.innerHTML = "";
+      vals.forEach(function (v, i) {
+        pick.appendChild(h("button", { type: "button", class: "chip" + (i === sel ? " hl" : ""), "aria-pressed": i === sel ? "true" : "false",
+          onclick: function () { sel = i; draw(); range.focus(); } }, h("small", { text: (i + 1) + "人目" }), h("b", { text: String(v) })));
+      });
+      lab.textContent = (sel + 1) + " 人目の値（" + o.unit + "）";
+      range.value = vals[sel];
+      out.innerHTML = "<dt>平均</dt><dd>" + S.fmt(S.mean(vals), 1) + " " + o.unit + "</dd><dt>中央値</dt><dd>" + S.fmt(S.median(vals), 1) + " " + o.unit + "</dd><dt>標準偏差</dt><dd>" + S.fmt(S.sdP(vals), 1) + " " + o.unit + "</dd>";
+    }
+    function set(v) { vals[sel] = Math.max(o.min, Math.min(o.max, v)); draw(); }
+    range.oninput = function () { set(+range.value); };
+    minus.onclick = function () { set(vals[sel] - (o.step || 1)); };
+    plus.onclick = function () { set(vals[sel] + (o.step || 1)); };
+    reset.onclick = function () { vals = init.slice(); draw(); };
+    mount.appendChild(fig);
+    mount.appendChild(pick);
+    mount.appendChild(h("div", { class: "row slider-row" }, lab, minus, range, plus, reset));
+    mount.appendChild(out);
+    draw();
+  };
+
+  /* ---------- 予習：同じデータを 3 つのグラフで ---------- */
+  var MENU = { items: ["カレー", "A定食", "B定食", "麺類"], months: ["10月", "11月", "12月"],
+    v: { "カレー": [900, 950, 1010], "A定食": [820, 760, 700], "B定食": [540, 600, 650], "麺類": [400, 520, 640] } };
+  var PAL = ["k-acc", "k-lamp", "k-wire", "k-mut"], PALS = ["s-acc", "s-lamp", "s-wire", "s-mut"];
+  function barChart() {
+    var W = 760, H = 300, x0 = 80, y0 = 250, s = "", tot = MENU.items.map(function (k) { return S.sum(MENU.v[k]); }), mx = 3500;
+    for (var k = 0; k <= 3000; k += 1000) { var y = y0 - (y0 - 50) * k / mx; s += L(x0, y, W - 20, y, "s-rule", 1) + T(x0 - 10, y + 6, S.fmt(k, 0), { size: 16, anchor: "end", cls: "k-mut" }); }
+    tot.forEach(function (t, i) {
+      var bw = 110, x = x0 + 40 + i * 160, hh = (y0 - 50) * t / mx;
+      s += R(x, y0 - hh, bw, hh, "k-acc s-none", 0) + T(x + bw / 2, y0 - hh - 8, S.fmt(t, 0), { size: 17, weight: 700 }) + T(x + bw / 2, y0 + 26, MENU.items[i], { size: 18 });
+    });
+    s += L(x0, y0, W - 20, y0, "s-ink", 2) + T(x0 - 70, 20, "注文数（10〜12月の合計）", { size: 16, anchor: "start", cls: "k-mut" });
+    return svg(W, H, s, "棒グラフ：メニューごとの注文数の合計");
+  }
+  function lineChart() {
+    var W = 760, H = 300, x0 = 80, y0 = 250, s = "", mx = 1200;
+    for (var k = 0; k <= mx; k += 300) { var y = y0 - (y0 - 50) * k / mx; s += L(x0, y, W - 160, y, "s-rule", 1) + T(x0 - 10, y + 6, S.fmt(k, 0), { size: 16, anchor: "end", cls: "k-mut" }); }
+    function X(i) { return x0 + 60 + i * 200; }
+    MENU.months.forEach(function (m, i) { s += T(X(i), y0 + 26, m, { size: 18 }); });
+    MENU.items.forEach(function (it, j) {
+      var pts = MENU.v[it].map(function (v, i) { return X(i) + "," + (y0 - (y0 - 50) * v / mx); });
+      s += "<polyline points=\"" + pts.join(" ") + "\" fill=\"none\" class=\"" + PALS[j] + "\" stroke-width=\"4\" stroke-dasharray=\"" + ["", "10 6", "3 6", "14 4 3 4"][j] + "\"/>";
+      MENU.v[it].forEach(function (v, i) { s += C(X(i), y0 - (y0 - 50) * v / mx, 6, PAL[j] + " " + PALS[j]); });
+      s += T(X(2) + 16, y0 - (y0 - 50) * MENU.v[it][2] / mx + 6 + [0, 0, -4, 6][j], it, { size: 17, anchor: "start", weight: 700 });
+    });
+    s += L(x0, y0, W - 160, y0, "s-ink", 2) + T(x0 - 70, 20, "注文数", { size: 16, anchor: "start", cls: "k-mut" });
+    return svg(W, H, s, "折れ線グラフ：メニューごとの月別の注文数");
+  }
+  function pieChart() {
+    var W = 760, H = 300, cx = 230, cy = 150, r = 120, tot = MENU.items.map(function (k) { return S.sum(MENU.v[k]); }), all = S.sum(tot), a0 = -Math.PI / 2, s = "";
+    tot.forEach(function (t, i) {
+      var a1 = a0 + 2 * Math.PI * t / all, big = a1 - a0 > Math.PI ? 1 : 0;
+      s += "<path d=\"M" + cx + "," + cy + " L" + (cx + r * Math.cos(a0)) + "," + (cy + r * Math.sin(a0)) + " A" + r + "," + r + " 0 " + big + " 1 " + (cx + r * Math.cos(a1)) + "," + (cy + r * Math.sin(a1)) + " Z\" class=\"" + PAL[i] + " s-panel\" stroke-width=\"3\"/>";
+      var am = (a0 + a1) / 2;
+      s += L(cx + r * Math.cos(am), cy + r * Math.sin(am), 420, 70 + i * 52, "s-mut", 1.5);
+      s += T(430, 76 + i * 52, MENU.items[i] + "　" + S.fmt(100 * t / all, 1) + "%", { size: 19, anchor: "start", weight: 700 });
+      a0 = a1;
+    });
+    return svg(W, H, s, "円グラフ：注文数の割合");
+  }
+  CA.chartLab = function (mount, onUse) {
+    var used = {};
+    var VIEWS = [
+      { id: "bar", label: "棒グラフ", draw: barChart, note: "どのメニューがいちばん多いか、大小がすぐ比べられます。" },
+      { id: "line", label: "折れ線グラフ", draw: lineChart, note: "月ごとに増えたか減ったか、変化の向きが見えます。麺類が伸び、A定食が減っています。" },
+      { id: "pie", label: "円グラフ", draw: pieChart, note: "全体の中でどれくらいの割合かが見えます。カレーが約 3 分の 1。" }
+    ];
+    var fig = h("div", { class: "fig-wrap" });
+    var note = h("p", { class: "caption", "aria-live": "polite" });
+    var tabs = h("div", { class: "row", role: "group", "aria-label": "グラフの種類" });
+    function show(v) {
+      fig.innerHTML = v.draw(); note.textContent = v.note; used[v.id] = true;
+      tabs.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-id") === v.id ? "true" : "false"); });
+      if (onUse && Object.keys(used).length === VIEWS.length) onUse();
+    }
+    VIEWS.forEach(function (v) { tabs.appendChild(h("button", { type: "button", "data-id": v.id, class: "tab", text: v.label, onclick: function () { show(v); } })); });
+    var raw = "<div class=\"tbl-wrap\"><table class=\"ref\"><tr><th>メニュー</th>" + MENU.months.map(function (m) { return "<th>" + m + "</th>"; }).join("") + "</tr>" +
+      MENU.items.map(function (it) { return "<tr><td>" + it + "</td>" + MENU.v[it].map(function (v) { return "<td>" + S.fmt(v, 0) + "</td>"; }).join("") + "</tr>"; }).join("") + "</table></div>";
+    mount.appendChild(html(raw));
+    mount.appendChild(tabs); mount.appendChild(fig); mount.appendChild(note);
+    show(VIEWS[0]);
+    used = { bar: true };
+  };
+
+  /* ---------- 予習のゲーム：言いたいことに合うグラフは？ ---------- */
+  var ROUNDS = [
+    { q: "5 つのコンビニチェーンの、全国の店舗数を比べたい", a: "bar", why: "大小を比べたいときは棒グラフ。" },
+    { q: "自分の町の人口が、この 20 年でどう移り変わったかを見せたい", a: "line", why: "時間とともにどう変わったかは折れ線グラフ。" },
+    { q: "1 か月の支出のうち、食費・交通費・趣味などがそれぞれ何割かを見せたい", a: "pie", why: "全体を 100% として、中の割合を見せるなら円グラフ。" },
+    { q: "1 週間の、毎日の歩数の増え方・減り方を見たい", a: "line", why: "日を追った変化なので折れ線グラフ。" },
+    { q: "サークルの 4 つの班の、今年の活動回数を比べたい", a: "bar", why: "項目どうしの大小を比べるので棒グラフ。" },
+    { q: "クラス全員の通学手段（電車・バス・自転車・徒歩）の内訳を見せたい", a: "pie", why: "全体の中の内訳（割合）なので円グラフ。" }
+  ];
+  var NAMES = { bar: "棒グラフ", line: "折れ線グラフ", pie: "円グラフ" };
+  var MISS = {
+    bar: { line: "折れ線は、時間を追った変化を見るときに使います。ここは項目どうしの大小です。", pie: "円は全体の中の割合を見せるグラフです。ここは数の大小を比べたい場面です。" },
+    line: { bar: "棒でも描けますが、時間の流れに沿った変化（増え方・減り方）は折れ線のほうが向きがひと目で分かります。", pie: "円は、ある時点の割合を見せるグラフです。時間の変化は表せません。" },
+    pie: { bar: "棒でも描けますが、「全体のうち何割か」を見せたいなら円グラフが向いています。", line: "折れ線は時間を追った変化を見るグラフです。ここは 1 つの全体の内訳です。" }
+  };
+  CA.chartGame = function (mount, opts) {
+    var i = 0, ok = 0, tries = 0;
+    var head = h("div", { class: "kind" }), q = h("p", { class: "game-q" }), row = h("div", { class: "row" }), fb = h("div", { class: "feedback", role: "status", "aria-live": "polite" });
+    var next = h("button", { type: "button", class: "primary", text: "次へ" });
+    var box = h("div", { class: "quiz" }, head, q, row, fb, h("div", { class: "row" }, next));
+    function load() {
+      tries = 0; next.disabled = true; fb.className = "feedback"; fb.innerHTML = "";
+      head.innerHTML = "<b>グラフ選び　" + (i + 1) + " / " + ROUNDS.length + "</b><span class=\"score\">1 回で正解 " + ok + "</span>";
+      q.textContent = ROUNDS[i].q + "。どのグラフ？";
+      row.innerHTML = "";
+      ["bar", "line", "pie"].forEach(function (k) {
+        var b = h("button", { type: "button", text: NAMES[k] });
+        b.onclick = function () {
+          if (!next.disabled) return;
+          tries++;
+          if (k === ROUNDS[i].a) {
+            if (tries === 1) ok++;
+            b.classList.add("picked-ok"); fb.className = "feedback ok"; fb.innerHTML = "<span class=\"head\">正解</span>　" + ROUNDS[i].why;
+            next.disabled = false; next.textContent = i === ROUNDS.length - 1 ? "結果を見る" : "次へ";
+            head.querySelector(".score").textContent = "1 回で正解 " + ok;
+            next.focus();
+          } else {
+            b.classList.add("picked-ng"); fb.className = "feedback ng"; fb.innerHTML = "<span class=\"head\">もう一度</span>　" + MISS[ROUNDS[i].a][k];
+          }
+        };
+        row.appendChild(b);
+      });
+    }
+    next.onclick = function () {
+      if (i === ROUNDS.length - 1) {
+        q.textContent = ROUNDS.length + " 問中 " + ok + " 問を 1 回で正解。授業では「グラフは言いたいことで選ぶ」から始めます。";
+        row.innerHTML = ""; fb.className = "feedback"; next.textContent = "もう一度";
+        if (opts && opts.onFinish) opts.onFinish(ok, ROUNDS.length);
+        i = -1; ok = 0; return;
+      }
+      i++; load();
+    };
+    mount.appendChild(box);
+    load();
+  };
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+<script>
+(function () {
+  var S = CA.stats, h = CA.h;
+  function $(id) { return document.getElementById(id); }
+  var ITEMS = [{ id: "t1", title: "調べてから来よう" }, { id: "t2", title: "前回の確認" }, { id: "t3", title: "ゲーム" }];
+  CA.progress.init(ITEMS);
+
+  function todo() {
+    var ol = $("todo"); ol.innerHTML = "";
+    ITEMS.forEach(function (it, i) {
+      var done = CA.progress.isDone(it.id);
+      ol.appendChild(h("li", { class: done ? "done" : "" }, h("span", { class: "box", "aria-hidden": "true", text: done ? "✓" : "" }), h("a", { href: "#" + it.id, text: (i + 1) + ". " + it.title + (done ? "（済み）" : "") })));
+    });
+  }
+  CA.progress.onChange(todo);
+
+  /* 今日の問い */
+  CA.chartLab($("charts"));
+
+  /* やること 1：調べる */
+  var TASKS = [
+    { id: "pie", title: "円グラフの弱点を1つ", q: "円グラフは便利ですが、「使わないほうがよい」と言われることもあります。どんな弱点があるか、1つ調べてみよう。", kw: "円グラフ 弱点、円グラフ 使い方 注意", how: "統計やデザインの解説ページを2つ以上見て、共通して書かれていることを選ぶ。", use: "授業の最初の Mentimeter（ワードクラウド）" },
+    { id: "news", title: "ニュースのグラフを1つ見つける", q: "ニュースサイトや新聞で、棒・折れ線・円のどれかのグラフを1つ見つけよう。そのグラフは何を言いたいか、1文で書いてみよう。", kw: "（ニュースサイトで「グラフ」「推移」「割合」などで探す）", how: "グラフの題と、縦軸・横軸に何が書いてあるかを先に読む。", use: "授業の「グラフは言いたいことで選ぶ」" },
+    { id: "sumifs", title: "Excel の SUMIFS は何をする関数？", q: "第3回では COUNTIFS で「条件に合うものの個数」を数えました。SUMIFS は何を計算する関数でしょう。COUNTIFS との違いを1文で。", kw: "SUMIFS 関数 使い方", how: "Microsoft のサポートページで、引数の順番（合計する範囲が最初）を確かめる。", use: "演習の必須課題1（商品×月の表を作る）" }
+  ];
+  var notes = CA.store.get("notes", {}) || {};
+  function countFilled() { return TASKS.filter(function (t) { return (notes[t.id] || "").trim().length >= 2; }).length; }
+  TASKS.forEach(function (t, i) {
+    var tid = "note-" + t.id;
+    var ta = h("textarea", { id: tid, placeholder: "調べたことを1〜2行で" });
+    ta.value = notes[t.id] || "";
+    var saved = h("div", { class: "saved", "aria-live": "polite" });
+    var timer = null;
+    ta.addEventListener("input", function () {
+      notes[t.id] = ta.value;
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        CA.store.set("notes", notes);
+        saved.textContent = "このブラウザに保存しました";
+        if (countFilled() >= 2) CA.progress.mark("t1");
+      }, 400);
+    });
+    $("research").appendChild(h("div", { class: "task" },
+      h("h3", { text: (i + 1) + ". " + t.title }),
+      h("p", { text: t.q }),
+      h("dl", null,
+        h("dt", { text: "検索語の例" }), h("dd", { text: t.kw }),
+        h("dt", { text: "確かめ方" }), h("dd", { text: t.how }),
+        h("dt", { text: "授業で使う場所" }), h("dd", { text: t.use })),
+      h("label", { for: tid, class: "small", text: "メモ" }), ta, saved));
+  });
+
+  /* やること 2：前回の確認 */
+  var seq = [
+    function () { return S.gen.median(Math.random); },
+    function () { return S.gen.outlier(Math.random); },
+    function () { return S.gen.sdCompare(Math.random); }
+  ];
+  CA.quiz($("review"), { mode: "seq", id: "rev", title: "前回の確認", seq: seq, onFinish: function (ok, n, box) {
+    CA.progress.mark("t2");
+    var again = h("button", { type: "button", text: "別の数でもう一度" });
+    var msg = h("div", { class: "feedback " + (ok === n ? "ok" : "ng"), html: "<span class=\"head\">" + n + " 問中 " + ok + " 問正解</span>　" + (ok === n ? "第3回の内容は大丈夫です。" : "間違えた問題は、第3回の復習ページで確かめておきましょう。") });
+    again.onclick = function () { msg.remove(); box.restart(); };
+    msg.appendChild(h("div", { class: "row", style: "margin-top:8px" }, again));
+    box.appendChild(msg);
+  } });
+
+  /* やること 3：ゲーム */
+  CA.chartGame($("game"), { onFinish: function () { CA.progress.mark("t3"); } });
+
+  todo();
+  CA.progress.render();
+})();
+</script>
+
+</body>
+</html>
