@@ -12,13 +12,13 @@
 |---|---|---|---|
 | 第3回 | 復習 | データ集計の基本（動画あり） | [開く](https://brightwaltz.github.io/DataProcessing/w03-review.html) |
 | 第4回 | 予習 | データの可視化 | [開く](https://brightwaltz.github.io/DataProcessing/w04-preview.html) |
+| 第4回 | 復習 | データの可視化（動画あり） | [開く](https://brightwaltz.github.io/DataProcessing/w04-review.html) |
+| 第5回 | 予習 | 社会におけるデータの重要性と利活用（動画あり） | [開く](https://brightwaltz.github.io/DataProcessing/w05-preview.html) |
 
 ## これから公開するページ
 
 | 回 | 種類 | 内容 | 公開日 |
 |---|---|---|---|
-| 第4回 | 復習 | データの可視化 | 10/23（金） |
-| 第5回 | 予習 | 社会におけるデータの重要性と利活用 | 10/23（金） |
 | 第5回 | 復習 | 社会におけるデータの重要性と利活用 | 10/30（金） |
 | 第6回 | 予習 | データ分析の基礎 | 10/30（金） |
 | 第6回 | 復習 | データ分析の基礎 | 11/13（金） |
