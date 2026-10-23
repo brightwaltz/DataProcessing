@@ -419,6 +419,14 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
 .explain-tabs .lbl { font-size: var(--fs-small); font-weight: 700; color: var(--muted); margin-right: 4px; }
 .explain .keyline:not([data-lv="normal"]) { font-weight: 400; }
 .to-explain { font-size: var(--fs-small); justify-self: start; }
+/* 問題ごとの解説（「解説を読む」を開くと出る） */
+.explain-q > div { padding-top: 8px; }
+.explain-q .explain { max-width: none; }
+.explain-q .ex-body { line-height: 1.75; }
+.explain-q .ex-body > :first-child { margin-top: 0; }
+.explain-q .ex-body > :last-child { margin-bottom: 0; }
+.explain-q .ex-body ol, .explain-q .ex-body ul { margin: 6px 0; padding-left: 1.4em; }
+.explain-q .ex-body table.ref { margin: 6px 0; }
 
 </style>
 <header class="mast">
@@ -431,7 +439,7 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
   </div>
 </header>
 
-<aside class="sidenav" id="sidenav" aria-label="メニュー"><div class="side-sec"><div class="side-h">ページ</div><a href="./">トップ（日程と一覧）</a><a href="w03-review.html?v=202610230824" aria-current="page">第3回 復習</a><a href="w04-preview.html?v=202610230824">第4回 予習</a><a href="w04-review.html?v=202610230824">第4回 復習</a><a href="w05-preview.html?v=202610230824">第5回 予習</a></div><div class="side-sec"><div class="side-h">このページ</div><a href="#i1" data-item="i1"><span class="n">1</span>平均・中央値・最頻値</a><a href="#i2" data-item="i2"><span class="n">2</span>外れ値</a><a href="#i3" data-item="i3"><span class="n">3</span>ヒストグラム</a><a href="#i4" data-item="i4"><span class="n">4</span>形と代表値</a><a href="#i5" data-item="i5"><span class="n">5</span>標準偏差</a><a href="#i6" data-item="i6"><span class="n">6</span>STDEV.P と S</a><a href="#i7" data-item="i7"><span class="n">7</span>Excel の関数</a><a href="#pit" data-item="pit">つまずき</a><a href="#final" data-item="final">仕上げ</a></div><div class="side-sec"><div class="side-h">解説の詳しさ</div><div class="lv-btns" role="group" aria-label="解説の詳しさ"><button type="button" data-set-level="easy" aria-pressed="false">簡単</button><button type="button" data-set-level="normal" aria-pressed="true">通常</button><button type="button" data-set-level="detail" aria-pressed="false">詳細</button><button type="button" data-set-level="adv" aria-pressed="false">発展</button></div><p class="side-note">各項目の「解説」が、選んだ詳しさで出ます。</p></div></aside>
+<aside class="sidenav" id="sidenav" aria-label="メニュー"><div class="side-sec"><div class="side-h">ページ</div><a href="./">トップ（日程と一覧）</a><a href="w03-review.html?v=202610231036" aria-current="page">第3回 復習</a><a href="w04-preview.html?v=202610231036">第4回 予習</a><a href="w04-review.html?v=202610231036">第4回 復習</a><a href="w05-preview.html?v=202610231036">第5回 予習</a></div><div class="side-sec"><div class="side-h">このページ</div><a href="#i1" data-item="i1"><span class="n">1</span>平均・中央値・最頻値</a><a href="#i2" data-item="i2"><span class="n">2</span>外れ値</a><a href="#i3" data-item="i3"><span class="n">3</span>ヒストグラム</a><a href="#i4" data-item="i4"><span class="n">4</span>形と代表値</a><a href="#i5" data-item="i5"><span class="n">5</span>標準偏差</a><a href="#i6" data-item="i6"><span class="n">6</span>STDEV.P と S</a><a href="#i7" data-item="i7"><span class="n">7</span>Excel の関数</a><a href="#pit" data-item="pit">つまずき</a><a href="#final" data-item="final">仕上げ</a></div><div class="side-sec"><div class="side-h">解説の詳しさ</div><div class="lv-btns" role="group" aria-label="解説の詳しさ"><button type="button" data-set-level="easy" aria-pressed="false">簡単</button><button type="button" data-set-level="normal" aria-pressed="true">通常</button><button type="button" data-set-level="detail" aria-pressed="false">詳細</button><button type="button" data-set-level="adv" aria-pressed="false">発展</button></div><p class="side-note">各項目の「解説」と、問題の「解説を読む」が、選んだ詳しさで出ます。</p></div></aside>
 <main class="page">
   <section class="intro">
     <h1>第3回 復習<span class="sub">データ集計の基本（10/16 の授業）</span></h1>
@@ -607,7 +615,7 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
     <h2>仕上げの5問</h2>
     <p class="prose">項目1・2・3・5・6から1問ずつ出します。間違えたら、その項目に戻って確認問題と練習をもう一度。</p>
     <div id="fin"></div>
-    <div class="done-banner" id="banner" role="status">7項目すべての確認問題に正解しました。次回（10/23）は「データの可視化」です。<a href="w04-preview.html?v=202610230824">第4回 予習ページ</a>も見ておきましょう。</div>
+    <div class="done-banner" id="banner" role="status">7項目すべての確認問題に正解しました。次回（10/23）は「データの可視化」です。<a href="w04-preview.html?v=202610231036">第4回 予習ページ</a>も見ておきましょう。</div>
   </section>
 
   <footer>
@@ -1814,14 +1822,17 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
     var area = h("div");
     var fb = h("div", { class: "feedback", role: "status", "aria-live": "polite" });
     var sol = h("details", { class: "solution" }, h("summary", { text: "解き方を見る" }), h("div"));
-    // 項目に解説（簡単・通常・詳細・発展）があれば、そこへ戻る案内を「解き方」の下に置く
+    // この問題の解説（簡単・通常・詳細・発展）。問題を出すたびに作り直す。解説のない問題では隠す
+    var exq = h("details", { class: "solution explain-q" }, h("summary", { text: "解説を読む（簡単・通常・詳細・発展）" }), h("div"));
+    // 項目に解説があれば、そこへ戻る案内を「解き方」の下に置く
     var sec = mount.closest ? mount.closest("section.item") : null;
-    var ex = sec ? sec.querySelector("[data-explain]") : null;
+    var ex = sec ? sec.querySelector('[data-explain]:not([data-explain="q"])') : null;
     var toEx = ex ? h("a", { class: "to-explain", href: "#" + ex.id, text: "この項目の解説を読む（簡単・通常・詳細・発展）" }) : null;
     var bNext = h("button", { type: "button", text: mode === "seq" ? "次の問題へ" : "別の問題を出す" });
     var foot = h("div", { class: "row" });
     if (mode !== "check") foot.appendChild(bNext);
-    var box = h("div", { class: "quiz" + (mode === "check" ? " check-quiz" : "") }, kind, prompt, area, fb, sol, toEx, foot);
+    var box = h("div", { class: "quiz" + (mode === "check" ? " check-quiz" : ""), "data-q": opts.id }, kind, prompt, area, fb, sol, exq, toEx, foot);
+    (CA._quizzes = CA._quizzes || []).push({ mode: mode, opts: opts });
     if (mode === "check" && opts.itemId && CA.progress.isDone(opts.itemId)) box.classList.add("done");
 
     function label() {
@@ -1861,6 +1872,10 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
       prompt.innerHTML = p.prompt;
       sol.lastChild.innerHTML = p.solution;
       sol.open = false;
+      var qid = mode === "seq" ? opts.id + (seqIndex + 1) : opts.id;
+      var lv = CA.EXP.forQuestion(p, qid);
+      exq.lastChild.innerHTML = ""; exq.open = false; exq.hidden = !lv;
+      if (lv) exq.lastChild.appendChild(CA.explainBox(lv, "exq-" + qid));
       fb.className = "feedback"; fb.innerHTML = "";
       area.innerHTML = "";
       if (p.type === "choice") {
@@ -1928,9 +1943,46 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
   };
 
   /* ---------- 解説の詳しさ（簡単・通常・詳細・発展） ----------
-     ページには <div class="explain" data-explain> の中に data-lv="easy|normal|detail|adv" の段落を書く。
-     選んだ詳しさはサイト全体で共通（どのページでも同じ詳しさで開く）。スクリプトが動かなくても「通常」は読める。 */
+     項目の解説：ページに <div class="explain" data-explain> の中に data-lv="easy|normal|detail|adv" の段落を書く。
+     問題の解説：{ easy, normal, detail, adv }（HTML の文字列）を、次の順に探す。
+       1. 問題そのものの p.explain
+       2. ページごとの手書き CA.EXP_Q.<ページ>[問題 id]（src/exp-<ページ>.js。seq の問題 id は id＋番号、例 filmq1）
+       3. 自動で作る問題の key の頭（mean: など）で引く CA.EXP.byKey（src/explain-wNN.js）
+     選んだ詳しさはサイト全体で共通（どのページでも同じ詳しさで開く）。スクリプトが動かなくても項目の「通常」は読める。 */
   var LV = [["easy", "簡単"], ["normal", "通常"], ["detail", "詳細"], ["adv", "発展"]];
+  var EXP = CA.EXP = CA.EXP || {};
+  EXP.byKey = EXP.byKey || {};
+  CA.EXP_Q = CA.EXP_Q || {};
+  EXP.forQuestion = function (p, qid) {
+    if (!p) return null;
+    if (p.explain) return p.explain;
+    var mine = CA.EXP_Q[root.CA_PAGE] || {};
+    if (qid && mine[qid]) return mine[qid];
+    var key = p.key || "", i = key.indexOf(":");
+    var fn = i > 0 ? EXP.byKey[key.slice(0, i)] : null;
+    if (!fn) return null;
+    try { return fn(p, key.slice(i + 1)) || null; } catch (e) { return null; }
+  };
+  /* 検査用：このページの問題すべてに 4 段の解説があるか（tests/explain_probe.mjs が呼ぶ） */
+  EXP.audit = function (n) {
+    n = n || 120;
+    var miss = {}, short = {}, used = {};
+    function txt(s) { return String(s == null ? "" : s).replace(/<[^>]+>/g, "").trim(); }
+    function one(p, qid) {
+      used[qid] = true;
+      var lv = EXP.forQuestion(p, qid);
+      var tag = qid + " " + (p.key || txt(p.prompt).slice(0, 24));
+      if (!lv) { miss[tag] = true; return; }
+      LV.forEach(function (x) { if (txt(lv[x[0]]).length < 12 || /undefined|NaN/.test(lv[x[0]])) short[tag + " " + x[0]] = true; });
+    }
+    (CA._quizzes || []).forEach(function (q) {
+      var o = q.opts;
+      if (q.mode === "seq") o.seq.forEach(function (f, k) { for (var t = 0; t < 30; t++) one(f(), o.id + (k + 1)); });
+      else for (var t = 0; t < (q.mode === "drill" ? n : 30); t++) one(o.make(), o.id);
+    });
+    var stale = Object.keys(CA.EXP_Q[root.CA_PAGE] || {}).filter(function (k) { return !used[k]; });
+    return { quizzes: (CA._quizzes || []).length, miss: Object.keys(miss), short: Object.keys(short), stale: stale };
+  };
   var LV_KEY = "dp2026.explain-level";
   var level = "normal";
   function savedLevel() {
@@ -1938,13 +1990,7 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
   }
   function applyLevel(v) {
     level = v;
-    document.querySelectorAll("[data-explain]").forEach(function (box) {
-      box.querySelectorAll("[data-lv]").forEach(function (p) { p.hidden = p.getAttribute("data-lv") !== v; });
-      box.querySelectorAll("[data-pick]").forEach(function (b) {
-        var on = b.getAttribute("data-pick") === v;
-        b.setAttribute("aria-selected", on ? "true" : "false"); b.tabIndex = on ? 0 : -1;
-      });
-    });
+    document.querySelectorAll("[data-explain]").forEach(function (box) { showLevel(box, v); });
     document.querySelectorAll("[data-set-level]").forEach(function (b) {
       b.setAttribute("aria-pressed", b.getAttribute("data-set-level") === v ? "true" : "false");
     });
@@ -1952,26 +1998,46 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
   function setLevel(v) { applyLevel(v); try { localStorage.setItem(LV_KEY, v); } catch (e) { /* 保存できない環境 */ } }
   CA.explain = { level: function () { return level; }, set: setLevel };
 
-  function initExplain() {
-    document.querySelectorAll("[data-explain]").forEach(function (box) {
-      var sec = box.closest("section");
-      if (!box.id) box.id = "ex-" + (sec && sec.id ? sec.id : CA.uid("x"));
-      var tabs = h("div", { class: "explain-tabs", role: "tablist", "aria-label": "解説の詳しさ" }, h("span", { class: "lbl", text: "解説" }));
-      LV.forEach(function (x) {
-        var panel = box.querySelector('[data-lv="' + x[0] + '"]');
-        if (!panel) return;
-        panel.id = box.id + "-" + x[0]; panel.setAttribute("role", "tabpanel");
-        tabs.appendChild(h("button", { type: "button", role: "tab", "data-pick": x[0], "aria-controls": panel.id, text: x[1], onclick: function () { setLevel(x[0]); } }));
-      });
-      tabs.addEventListener("keydown", function (e) {
-        if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-        var bs = Array.prototype.slice.call(tabs.querySelectorAll("[data-pick]"));
-        var k = bs.indexOf(document.activeElement); if (k < 0) return;
-        var nb = bs[(k + (e.key === "ArrowRight" ? 1 : bs.length - 1)) % bs.length];
-        setLevel(nb.getAttribute("data-pick")); nb.focus(); e.preventDefault();
-      });
-      box.insertBefore(tabs, box.firstChild);
+  /* 解説の箱に「簡単・通常・詳細・発展」のタブを付ける。タブを押すと、サイト全体の詳しさが変わる */
+  function decorate(box) {
+    var sec = box.closest ? box.closest("section") : null;
+    if (!box.id) box.id = "ex-" + (sec && sec.id ? sec.id : CA.uid("x"));
+    var tabs = h("div", { class: "explain-tabs", role: "tablist", "aria-label": "解説の詳しさ" }, h("span", { class: "lbl", text: "解説" }));
+    LV.forEach(function (x) {
+      var panel = box.querySelector('[data-lv="' + x[0] + '"]');
+      if (!panel) return;
+      panel.id = box.id + "-" + x[0]; panel.setAttribute("role", "tabpanel");
+      tabs.appendChild(h("button", { type: "button", role: "tab", "data-pick": x[0], "aria-controls": panel.id, text: x[1], onclick: function () { setLevel(x[0]); } }));
     });
+    tabs.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      var bs = Array.prototype.slice.call(tabs.querySelectorAll("[data-pick]"));
+      var k = bs.indexOf(document.activeElement); if (k < 0) return;
+      var nb = bs[(k + (e.key === "ArrowRight" ? 1 : bs.length - 1)) % bs.length];
+      setLevel(nb.getAttribute("data-pick")); nb.focus(); e.preventDefault();
+    });
+    box.insertBefore(tabs, box.firstChild);
+  }
+  function showLevel(box, v) {
+    box.querySelectorAll("[data-lv]").forEach(function (p) { p.hidden = p.getAttribute("data-lv") !== v; });
+    box.querySelectorAll("[data-pick]").forEach(function (b) {
+      var on = b.getAttribute("data-pick") === v;
+      b.setAttribute("aria-selected", on ? "true" : "false"); b.tabIndex = on ? 0 : -1;
+    });
+  }
+  /* 問題の解説の箱を作る。levels は { easy, normal, detail, adv }（HTML の文字列） */
+  var boxNo = 0;
+  CA.explainBox = function (levels, id) {
+    boxNo += 1;
+    var box = h("div", { class: "explain", "data-explain": "q", id: (id || "exq") + "-" + boxNo });
+    LV.forEach(function (x) { box.appendChild(h("div", { class: "ex-body", "data-lv": x[0], html: levels[x[0]] || "" })); });
+    decorate(box);
+    showLevel(box, level);
+    return box;
+  };
+
+  function initExplain() {
+    document.querySelectorAll("[data-explain]").forEach(decorate);
     document.querySelectorAll("[data-set-level]").forEach(function (b) {
       b.addEventListener("click", function () { setLevel(b.getAttribute("data-set-level")); });
     });
@@ -3653,6 +3719,338 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
     ]
   };
   CA.films.mean.data = { okozukai: OK, times: TIMES, counts: COUNTS };
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+<script>
+/* 第3回の練習問題（自動で作る問題）の解説。
+   問題の key の頭（mean・median・mode・outlier・outmean・shape・bin・sd・sdcmp・ps・func・copy）ごとに、4 段 { easy, normal, detail, adv }（HTML の文字列）を返す関数を CA.EXP.byKey に登録する。
+   関数は (p, rest) を受け取る。p は問題（key・prompt・choices・answer・solution）、rest は key の「頭:」より後ろ。
+   読み込むページ：第3回 復習（練習・仕上げ）、第4回 予習（前回の確認）。
+   書かないこと：締切前の課題の答え（blocklist.json）、次の回の授業の種明かし（予習ページでも出るため）。 */
+(function (root) {
+  "use strict";
+  var CA = root.CA = root.CA || {};
+  var EXP = CA.EXP = CA.EXP || {};
+  var K = EXP.byKey = EXP.byKey || {};
+  var S = CA.stats;
+  function nums(t) { return t.split(",").map(Number); }
+  function sum(a) { return a.reduce(function (x, y) { return x + y; }, 0); }
+  /* 単位は、数の並び（span）の直後の（ ）。sd の問題文は後ろにも（ ）があるので、末尾からは取らない */
+  function unitOf(p) { var m = /<\/span>（([^（）]+)）。/.exec(p.prompt || ""); return m ? m[1] : ""; }
+  /* 問題文に書かれた順の値（並べ替える前） */
+  function shown(p) { var m = /<span class="num">([^<]+)<\/span>/.exec(p.prompt || ""); return m ? m[1].replace(/,/g, "").split("、").map(Number) : []; }
+  function f2(x) { return S.fmt(x, 2); }
+  function signed(d) { return d > 0 ? "+" + f2(d) : d < 0 ? "−" + f2(-d) : "0"; }
+
+  /* 平均（key は mean:小さい順の値） */
+  K.mean = function (p, rest) {
+    var a = nums(rest), n = a.length, s = sum(a), m = s / n, u = unitOf(p);
+    return {
+      easy: "平均は、全員の分をいったん全部集めて、同じ量ずつ配り直したら 1 人いくつになるか、という数。",
+      normal: "平均 ＝ 合計 ÷ 個数。合計は " + S.fmt(s, 0) + "、個数は " + n + " なので、" + S.fmt(s, 0) + " ÷ " + n + " ＝ " + S.fmt(m, 2) + " " + u + "。",
+      detail: "<ol><li>全部足す：" + a.join(" ＋ ") + " ＝ " + S.fmt(s, 0) + "。</li><li>個数を数える：" + n + " 個。</li><li>合計を個数で割る：" + S.fmt(s, 0) + " ÷ " + n + " ＝ " + S.fmt(m, 2) + "。</li></ol>" +
+        "よくある間違いは、合計で止めてしまうことと、小さい順の真ん中（中央値 " + S.fmt(S.median(a), 2) + "）を答えること。平均 × 個数 が合計に戻るか（" + S.fmt(m, 2) + " × " + n + " ＝ " + S.fmt(s, 0) + "）で確かめられる。",
+      adv: "Excel では =AVERAGE(範囲)。=SUM(範囲)/COUNT(範囲) と同じ計算になる。空のセルは個数に入らないが、0 と入れたセルは個数に入るので、まだ分からない値を 0 と書くと平均が下がる。分からない値は空けておく。"
+    };
+  };
+
+  /* 中央値（key は median:小さい順の値） */
+  K.median = function (p, rest) {
+    var a = nums(rest), n = a.length, even = n % 2 === 0, md = S.median(a), u = unitOf(p);
+    var b = shown(p), mid = b.length === n ? (even ? (b[n / 2 - 1] + b[n / 2]) / 2 : b[(n - 1) / 2]) : null;
+    var pos = even ? (n / 2) + " 番目の " + a[n / 2 - 1] + " と " + (n / 2 + 1) + " 番目の " + a[n / 2] : ((n + 1) / 2) + " 番目の " + md;
+    var next = n + 1, nextPos = next % 2 ? ((next + 1) / 2) + " 番目の 1 つ" : (next / 2) + " 番目と " + (next / 2 + 1) + " 番目の 2 つ";
+    return {
+      easy: "中央値は、全員を小さい順に一列に並べたとき、ちょうど真ん中に立つ人の値。" + (even ? "人数が偶数だと真ん中が 2 人になるので、その 2 人のちょうど間をとる。" : "人数が奇数なら、真ん中の人は 1 人に決まる。"),
+      normal: "小さい順に並べると " + a.join("、") + "。" + n + " 個（" + (even ? "偶数" : "奇数") + "）なので、真ん中は " + pos + "。" +
+        (even ? "その平均（" + a[n / 2 - 1] + " ＋ " + a[n / 2] + "）÷ 2 ＝ " + f2(md) : "中央値は " + md) + " " + u + "。",
+      detail: "<ol><li>小さい順に並べ替える：" + a.join("、") + "。</li><li>個数を数える：" + n + " 個。真ん中の位置は（" + n + " ＋ 1）÷ 2 ＝ " + f2((n + 1) / 2) + " 番目。</li><li>" +
+        (even ? "位置が半端なので、" + (n / 2) + " 番目と " + (n / 2 + 1) + " 番目の平均をとる：（" + a[n / 2 - 1] + " ＋ " + a[n / 2] + "）÷ 2 ＝ " + f2(md) + "。" : (n + 1) / 2 + " 番目の値を読む：" + md + "。") + "</li></ol>" +
+        "よくある間違いは、並べ替えずに書かれた順のまま真ん中を取ること" + (mid !== null ? "（" + f2(mid) + " になってしまう）" : "") + "と、平均（" + f2(S.mean(a)) + "）を答えること。中央値は値の大きさではなく、順番だけで決まる。",
+      adv: "Excel では =MEDIAN(範囲) で、並べ替えなくても正しく出る。範囲の中の空のセルや文字のセルは数えない。真ん中の位置は個数で変わる。いまは " + n + " 個だが、もう 1 人増えて " + next + " 個になると、真ん中は " + nextPos + "になる。データを足したり消したりしたら、中央値は出し直す。"
+    };
+  };
+
+  /* 最頻値（key は mode:小さい順の値） */
+  K.mode = function (p, rest) {
+    var a = nums(rest), n = a.length, top = S.mode(a), u = unitOf(p);
+    var others = a.filter(function (x) { return x !== top; });
+    return {
+      easy: "最頻値は、いちばん多くの人がそろった値。人気投票でいちばん票を集めた答えを選ぶのと同じ。",
+      normal: "最頻値は、いちばん多く出てくる値。数えると " + top + " が 3 回、ほかの値（" + others.join("、") + "）は 1 回ずつなので、最頻値は " + top + " " + u + "。",
+      detail: "<ol><li>小さい順に並べると、同じ値がとなり合って数えやすい：" + a.join("、") + "。</li><li>値ごとに回数を数える：" + top + " が 3 回、残りの " + others.length + " 個は 1 回ずつ。</li><li>いちばん回数の多い値を答える：" + top + "。</li></ol>" +
+        "よくある間違いは、回数の「3」を答えること。答えるのは回数ではなく、出てきた値のほう。中央値（" + f2(S.median(a)) + "）や平均（" + f2(S.mean(a)) + "）とは別の数になる。",
+      adv: "Excel では =MODE.SNGL(範囲)。いちばん多い値が 2 つ以上あると、範囲の中で先に出てくる 1 つだけを返し、どの値も 1 回ずつだとエラーになる。全部を知りたいときは MODE.MULT を使う。値がばらばらな量（時間やお金）では、区切りごとに数えて、いちばん度数の多い区切り（ヒストグラムの山）を見る方が役に立つ。"
+    };
+  };
+
+  /* 外れ値で平均と中央値はどう動くか（key は outlier:小さい順の値>変わった後の値） */
+  K.outlier = function (p, rest) {
+    var t = rest.split(">"), a = nums(t[0]), to = Number(t[1]), n = a.length, u = unitOf(p);
+    var up = to > a[n - 1], from = up ? a[n - 1] : a[0], b = a.slice();
+    if (up) b[n - 1] = to; else b[0] = to;
+    var s0 = sum(a), s1 = sum(b), m0 = s0 / n, m1 = s1 / n, md = S.median(a), c = (n + 1) / 2, d = to - from;
+    var dir = up ? "上がる" : "下がる", ans = "平均だけが" + dir + "。中央値は変わらない";
+    return {
+      easy: up ? "1 人だけとても大きな値になると、全員で分け直した量はその分ふくらむ。でも、並んだ列の真ん中に立つ人は同じなので、真ん中の人の値は変わらない。"
+        : "1 人だけとても小さな値になると、全員で分け直した量はその分へる。でも、並んだ列の真ん中に立つ人は同じなので、真ん中の人の値は変わらない。",
+      normal: "平均は全員の値を足して割るので、1 人の値が変われば必ず動く（" + f2(m0) + " → " + f2(m1) + "）。中央値は小さい順の真ん中（" + c + " 番目）の " + f2(md) + " で、端の値が動いても真ん中は同じ。答えは「" + ans + "」。",
+      detail: "<ol><li>変わる前：合計 " + S.fmt(s0, 0) + "、平均 " + S.fmt(s0, 0) + " ÷ " + n + " ＝ " + f2(m0) + "。中央値は " + c + " 番目の " + f2(md) + "。</li>" +
+        "<li>変わった後：小さい順に " + b.slice().sort(function (x, y) { return x - y; }).join("、") + "。" + (up ? "いちばん大きい値がもっと大きくなっただけ" : "いちばん小さい値がもっと小さくなっただけ") + "なので、並び順は同じ。</li>" +
+        "<li>合計は " + signed(d) + " で " + S.fmt(s1, 0) + "、平均は " + S.fmt(s1, 0) + " ÷ " + n + " ＝ " + f2(m1) + "。" + c + " 番目は " + f2(md) + " のまま。</li></ol>" +
+        "よくある間違いは「平均も中央値も" + dir + "」。中央値は順番だけを使うので、端の値がいくら動いても、真ん中の順番の人が入れ替わらなければ変わらない。",
+      adv: "平均の動きは、変わった量 ÷ 人数 で決まる。ここでは " + f2(Math.abs(d)) + " ÷ " + n + " ＝ " + f2(Math.abs(d) / n) + " " + u + "動いた。同じ変化でも 50 人なら " + f2(Math.abs(d) / 50) + " " + u + "しか動かない。中央値は、" + (up ? "真ん中より下" : "真ん中より上") + "にいた人が" + (up ? "真ん中より上" : "真ん中より下") + "へ移って、真ん中の順番の人が入れ替わったときに初めて動く。このため、少数の極端な値に左右されにくい。"
+    };
+  };
+
+  /* 外れ値が入ったときの新しい平均（key は outmean:小さい順の値>変わった後の値） */
+  K.outmean = function (p, rest) {
+    var t = rest.split(">"), a = nums(t[0]), to = Number(t[1]), n = a.length, u = unitOf(p);
+    var from = a[n - 1], b = a.slice(); b[n - 1] = to;
+    var s0 = sum(a), s1 = sum(b), m1 = s1 / n, md = S.median(b), tm = (b[1] + b[2] + b[3]) / 3;
+    return {
+      easy: "1 人の値が大きくなったら、その人の値を書きかえてから、もう一度全員分を集めて同じに分け直す。1 人が増えた分は、全員で分け合う形になる。",
+      normal: "平均 ＝ 合計 ÷ 個数。" + from + " を " + to + " に入れかえると、合計は " + S.fmt(s1, 0) + "。個数は " + n + " のままなので、" + S.fmt(s1, 0) + " ÷ " + n + " ＝ " + f2(m1) + " " + u + "。",
+      detail: "<ol><li>" + from + " を " + to + " に入れかえる：" + b.join("、") + "。</li><li>全部足す：" + b.join(" ＋ ") + " ＝ " + S.fmt(s1, 0) + "。</li><li>個数で割る：" + S.fmt(s1, 0) + " ÷ " + n + " ＝ " + f2(m1) + "。</li></ol>" +
+        "確かめ：前の合計 " + S.fmt(s0, 0) + " に、増えた分 " + (to - from) + " を足しても " + S.fmt(s1, 0) + " になる。よくある間違いは、入れかえる前の平均（" + f2(s0 / n) + "）を答えることと、変わらない中央値（" + f2(md) + "）を答えること。",
+      adv: "端を除いてから平均する「刈り込み平均」は、Excel の =TRIMMEAN(範囲, 割合) で出せる。この " + n + " 個なら割合を 0.4 にすると、上と下から 1 個ずつ除いた " + b[1] + "、" + b[2] + "、" + b[3] + " の平均 " + f2(tm) + " になる。外れ値の " + to + " は除かれるので、平均 " + f2(m1) + " のようには引っぱられない。平均・中央値・刈り込み平均はそれぞれ別の数になるので、どれを使ったかを必ず書き添える。"
+    };
+  };
+
+  /* 分布の形と、平均・中央値の関係（key は shape:左からの度数） */
+  K.shape = function (p, rest) {
+    var c = nums(rest), N = sum(c), kind = /≒/.test(p.choices[p.answer]) ? "sym" : /＞/.test(p.choices[p.answer]) ? "right" : "left";
+    var v = []; c.forEach(function (k, i) { for (var j = 0; j < k; j++) v.push(i + 1); });
+    var md = S.median(v), m = S.mean(v), peak = c.indexOf(Math.max.apply(null, c)) + 1;
+    var tail = kind === "right" ? "右" : "左";
+    var nums2 = "棒に左から 1、2、3…と番号をふり、その番号を値と見ると、中央値は " + f2(md) + "、平均は " + f2(m) + " になる。";
+    return {
+      easy: kind === "sym" ? "山が真ん中にあって、左右が同じくらいの形。みんなで分け直した量も、真ん中の人の値も、同じあたりに来る。"
+        : kind === "right" ? "ほとんどの人は小さめの値で、ごく少数だけがとても大きい形。その少数に引っぱられて、みんなで分け直した量は、真ん中の人の値より大きくなる。"
+        : "ほとんどの人は大きめの値で、ごく少数だけがとても小さい形。その少数に引っぱられて、みんなで分け直した量は、真ん中の人の値より小さくなる。",
+      normal: kind === "sym" ? "左右がほぼ対称なので、平均は左右どちらにも引っぱられず、中央値とほぼ同じ場所に来る。答えは「平均 ≒ 中央値」。"
+        : "裾が" + tail + "に長くのびている。平均は全員の値を足すので、" + tail + "の裾にある少数の" + (kind === "right" ? "大きな" : "小さな") + "値に引っぱられる。中央値は真ん中の順番の値なので、あまり動かない。答えは「" + p.choices[p.answer] + "」。",
+      detail: "<ol><li>山（いちばん高い棒）の位置を見る：左から " + peak + " 番目" + (kind === "sym" ? "あたりで、左右の棒の高さがほぼそろっている。" : "。") + "</li><li>裾を見る：" + (kind === "sym" ? "どちらにも長くはのびていない。" : tail + "側に、低い棒が長く続いている。") + "</li><li>度数は左から " + c.join("、") + "（合計 " + N + " 個）。" + nums2 + "</li></ol>" +
+        (kind === "sym" ? "よくある間違いは、棒の小さな凸凹を見て、どちらかに偏っていると考えること。左右の棒の高さがほぼそろい、どちらにも長い裾がなければ、平均と中央値は近い。"
+          : "よくある間違いは、山の高い側に平均が寄ると考えること。平均を引っぱるのは山ではなく、裾の先にある少数の" + (kind === "left" ? "小さな" : "大きな") + "値。"),
+      adv: kind === "sym" ? "左右対称な山では、平均・中央値・最頻値（山の頂上）がほぼ重なる。逆に、平均と中央値が大きく離れていたら、形が偏っている合図になる。山が 2 つある形では、3 つが重なっても「ふつうの人」を表さないので、グループに分けて見る。"
+        : kind === "right" ? "右に裾が長い形では、たいてい 最頻値（山の頂上）＜ 中央値 ＜ 平均 の順に並ぶ。平均と中央値の差の向きを見れば、ヒストグラムがなくても偏りの向きの見当がつく。待ち時間や通話時間のように 0 より下がない量は、この形になりやすい。"
+        : "左に裾が長い形では、たいてい 平均 ＜ 中央値 ＜ 最頻値（山の頂上）の順に並ぶ。やさしい小テストで、ほとんどの人が高い点を取り、少数だけ低い点だった、という場面で現れやすい。上に満点という天井がある量は、この形になりやすい。"
+    };
+  };
+
+  /* 度数：「lo 以上 hi 未満」の個数（key は bin:小さい順の値|lo-hi） */
+  K.bin = function (p, rest) {
+    var t = rest.split("|"), a = nums(t[0]), r = t[1].split("-").map(Number), lo = r[0], hi = r[1];
+    var inn = a.filter(function (x) { return x >= lo && x < hi; }), k = inn.length;
+    var atLo = a.filter(function (x) { return x === lo; }).length, atHi = a.filter(function (x) { return x === hi; }).length;
+    var other = a.filter(function (x) { return x > lo && x <= hi; }).length;
+    var edge = [];
+    if (atLo) edge.push("ちょうど " + lo + " 点の " + atLo + " 人は「以上」なので入れる（" + k + " 人のうちに入っている）");
+    if (atHi) edge.push("ちょうど " + hi + " 点の " + atHi + " 人は「未満」なので入れない（次の区切りに入る）");
+    var miss = [];
+    if (atHi) miss.push(hi + " 点の人まで入れて " + (k + atHi) + " 人にすること");
+    if (atLo) miss.push(lo + " 点の人を外して " + (k - atLo) + " 人にすること");
+    return {
+      easy: "「" + lo + " から " + hi + " の手前まで」と書いた箱に、点を 1 人ずつ入れていく感じ。ちょうど " + lo + " の人はこの箱に入り、ちょうど " + hi + " の人はとなりの箱へ行く。",
+      normal: "「" + lo + " 以上」は " + lo + " ちょうどを入れ、「" + hi + " 未満」は " + hi + " ちょうどを入れない。当てはまるのは " + (inn.join("、") || "なし") + " の " + k + " 人。",
+      detail: "<ol><li>小さい順に並べる：" + a.join("、") + "。</li><li>境目を確かめる：" + (edge.length ? edge.join("。") + "。" : "ちょうど " + lo + " や " + hi + " の人はいない。") + "</li><li>" + lo + " 以上 " + hi + " 未満を数える：" + (inn.join("、") || "なし") + " の " + k + " 人。</li></ol>" +
+        (miss.length ? "よくある間違いは、" + miss.join("と、") + "。" : "境目ちょうどの値がない問題でも、並べてから数えると数え落としが減る。") + "どの値も、ちょうど 1 つの区切りに入るように決めてある。",
+      adv: "Excel では =COUNTIFS(範囲,\"&gt;=" + lo + "\",範囲,\"&lt;" + hi + "\") で数える。区切りを「" + lo + " より大きく " + hi + " 以下」と決めると、このデータでは " + other + " 人になり、区切りの決め方で度数が変わる。どちらの決め方でもよいが、表の見出しに書いておき、全部の区切りで同じ決め方にそろえる。"
+    };
+  };
+
+  /* 標準偏差（key は sd:小さい順の値） */
+  K.sd = function (p, rest) {
+    var a = nums(rest), n = a.length, m = S.mean(a), u = unitOf(p);
+    var d = a.map(function (x) { return x - m; }), q = d.map(function (x) { return x * x; });
+    var sq = sum(q), v = sq / n, sd = Math.sqrt(v), ss = Math.sqrt(sq / (n - 1)), md = S.mad(a);
+    var row = function (h, xs) { return "<tr><th>" + h + "</th>" + xs.map(function (x) { return "<td>" + x + "</td>"; }).join("") + "</tr>"; };
+    var tbl = "<table class=\"ref\">" + row("値", a.map(f2)) + row("差（値 − " + f2(m) + "）", d.map(signed)) + row("差の2乗", q.map(f2)) + "</table>";
+    return {
+      easy: "標準偏差は、みんなが平均から「ふつうどれくらい」離れているかを 1 つの数にしたもの。この 4 人なら、だいたい " + f2(sd) + " " + u + "ずつ平均から離れている。",
+      normal: "差 → 2乗 → 平均 → √ の順。平均 " + f2(m) + " からの差は " + d.map(signed).join("、") + "。2乗は " + q.map(f2).join("、") + "。その平均は " + f2(v) + "（" + u + "²）で、√" + f2(v) + " ＝ " + f2(sd) + " " + u + "。",
+      detail: tbl + "<ol><li>平均：" + a.join(" ＋ ") + " ＝ " + f2(sum(a)) + "、÷ " + n + " で " + f2(m) + "。</li><li>差の2乗を足す：" + q.map(f2).join(" ＋ ") + " ＝ " + f2(sq) + "。</li><li>個数で割る：" + f2(sq) + " ÷ " + n + " ＝ " + f2(v) + "（" + u + "²）。</li><li>√ で単位を戻す：√" + f2(v) + " ＝ " + f2(sd) + " " + u + "。</li></ol>" +
+        "よくある間違いは、√ をとらずに " + f2(v) + " で止めることと、" + (n - 1) + " で割ること（√（" + f2(sq) + " ÷ " + (n - 1) + "）≒ " + f2(ss) + "）。差をそのまま足すと 0 になるので、2乗してから足す。",
+      adv: "同じ 4 個を STDEV.S で計算すると、" + (n - 1) + " で割るので約 " + f2(ss) + " と少し大きくなる。標準偏差は、偏差値の物差しにもなる。偏差値 ＝ 50 ＋ 10 ×（値 − 平均）÷ 標準偏差 なので、このデータで " + f2(a[n - 1]) + " の人は 50 ＋ 10 × " + f2(a[n - 1] - m) + " ÷ " + f2(sd) + " ＝ " + f2(50 + 10 * (a[n - 1] - m) / sd) + "。" +
+        (Math.abs(md - sd) > 1e-9 ? "差の大きさをそのまま平均した " + f2(md) + " とは別の数になる。" : "")
+    };
+  };
+
+  /* 標準偏差を計算しないで比べる（key は sdcmp:A の小さい順|B の小さい順） */
+  K.sdcmp = function (p, rest) {
+    var t = rest.split("|"), A = nums(t[0]), B = nums(t[1]), mA = S.mean(A), mB = S.mean(B);
+    var dA = A.map(function (x) { return x - mA; }), dB = B.map(function (x) { return x - mB; });
+    var eq = function (x, y) { return x.length === y.length && x.every(function (v, i) { return Math.abs(v - y[i]) < 1e-9; }); };
+    var abs = function (x) { return x.map(Math.abs).sort(function (p1, p2) { return p1 - p2; }); };
+    var neg = dA.map(function (x) { return -x; }).reverse();
+    var kind = eq(dA, dB) ? "shift" : eq(neg, dB) ? "mirror" : "wide";
+    var big = kind === "wide" ? (S.sdP(A) > S.sdP(B) ? "A" : "B") : "same", small = big === "A" ? "B" : "A";
+    var k = kind === "wide" ? Math.round(Math.max(abs(dA)[3], abs(dB)[3]) / Math.min(abs(dA)[3], abs(dB)[3])) : 1;
+    var dl = function (d) { return d.map(signed).join("、"); };
+    var reason = kind === "shift" ? (mB > mA ? "B" : "A") + " は " + (mB > mA ? "A" : "B") + " の全員に " + f2(Math.abs(mB - mA)) + " を足しただけ。平均も同じだけ動くので、平均からの差は変わらない。"
+      : kind === "mirror" ? "B は A を、平均を中心に左右を反対にした形。差の向き（＋と−）が入れかわるだけで、離れ方の大きさは同じ。"
+      : big + " の差は、" + small + " の差をちょうど " + k + " 倍した形。離れ方が " + k + " 倍なので、標準偏差も " + k + " 倍になる。";
+    return {
+      easy: kind === "wide" ? "どちらが、みんなの真ん中から遠くまで散らばっているかを見る。" + big + " の方が真ん中から遠くに広がっている。数の大きさそのものは関係ない。"
+        : "どちらが、みんなの真ん中から遠くまで散らばっているかを見る。真ん中の位置がちがっても、散らばり方が同じなら答えは「同じ」。",
+      normal: "標準偏差は、値の大きさではなく平均からの離れ方で決まる。A は平均 " + f2(mA) + " からの差が " + dl(dA) + "、B は平均 " + f2(mB) + " からの差が " + dl(dB) + "。" + reason,
+      detail: "<ol><li>それぞれの真ん中（平均）をつかむ：A は " + f2(mA) + "、B は " + f2(mB) + "。</li><li>平均からの差を並べる：A は " + dl(dA) + "、B は " + dl(dB) + "。</li><li>差の大きさを比べる：" + reason + "</li></ol>" +
+        "√ まで計算しなくても、差の並びを比べれば決まる（A は " + f2(S.sdP(A)) + "、B は " + f2(S.sdP(B)) + "）。よくある間違いは、値の大きい方や、平均の大きい方を選ぶこと。",
+      adv: (kind === "wide" ? "全員の差を " + k + " 倍すると、2乗の平均は " + (k * k) + " 倍、√ をとって標準偏差は " + k + " 倍に戻る。"
+        : "全員に同じ数を足しても、平均からの差の向きを入れかえても、標準偏差は変わらない。") +
+        "平均の大きさがちがう 2 つのばらつきを比べるときは、標準偏差 ÷ 平均（変動係数）で、平均に対して何割くらい散らばっているかを比べることもある。"
+    };
+  };
+
+  /* STDEV.P と STDEV.S（key は ps:場面の文） */
+  var PS_N = { "クラス 40 人全員の": 40, "1 か月 30 日分": 30, "1 年間 365 日": 365, "100 人を選んで": 100, "30 本を抜き出して": 30, "50 世帯を選んで": 50 };
+  K.ps = function (p, rest) {
+    var q = S.PS.filter(function (x) { return x.s === rest; })[0] || { s: rest, p: /STDEV\.P/.test(p.choices[p.answer]) };
+    var n = 0; Object.keys(PS_N).forEach(function (k) { if (rest.indexOf(k) >= 0) n = PS_N[k]; });
+    var r = n > 1 ? Math.sqrt(n / (n - 1)) : 0;
+    return {
+      easy: q.p ? "知りたい相手の全員分の記録が手元にそろっている場面。見積もる必要はなく、そろった記録のばらつきをそのまま出せばよい。"
+        : "全員には聞けないので、一部の人の答えから全体の様子を見積もる場面。一部だけでは全体のばらつきを小さめに見てしまいやすいので、少し大きめに出る計算を使う。",
+      normal: q.p ? "知りたい相手のデータが全部そろっているので STDEV.P（P は population、全体）。差の2乗の合計を個数" + (n ? "（" + n + "）" : "") + "で割る。"
+        : "手元のデータは一部（標本）で、知りたいのは全体のばらつきなので STDEV.S（S は sample、標本）。差の2乗の合計を「個数 − 1」" + (n ? "（" + (n - 1) + "）" : "") + "で割る。",
+      detail: "<ol><li>知りたい相手（全体）はだれ・何かを決める。</li><li>手元のデータが、その全体と同じか、一部かを比べる：" + (q.p ? "同じ（全部そろっている）。" : "一部だけ（選んだ分だけ）。") + "</li><li>" + (q.p ? "同じなら STDEV.P。" : "一部から全体を推測するなら STDEV.S。") + "</li></ol>" +
+        "よくある間違いは、人数や件数が多いか少ないかで決めること。" + (n ? n + " という数ではなく、" : "") + "それが知りたい相手の全部かどうかで決める。",
+      adv: (n ? "同じデータで計算すると、STDEV.S は STDEV.P の √（" + n + " ÷ " + (n - 1) + "）≒ " + S.fmt(r, 3) + " 倍になる。個数が多いほど 2 つの差は小さい。" : "個数が多いほど、STDEV.S と STDEV.P の差は小さくなる。") +
+        "一部から全体を推測するときは、選び方も大事になる。かたよった選び方（たとえば答えてくれた人だけ）では、どちらの関数を使っても全体の姿にはならない。"
+    };
+  };
+
+  /* やりたいこと → 関数（key は func:関数名） */
+  var FUNC_EASY = {
+    COUNT: "何人分の記録があるかを、1 つずつ指で数えるのと同じ。値の大きさは見ないで、数が入っているところの数だけを数える。",
+    AVERAGE: "全員の分を集めて、同じ量ずつ配り直したら 1 人いくつになるか。それを一度で出してくれる道具を選ぶ。",
+    MEDIAN: "全員を小さい順に一列に並べて、ちょうど真ん中に立つ人の値を読む。並べる手間ごと引き受けてくれる道具を選ぶ。",
+    "MODE.SNGL": "人気投票で、いちばん票の多かった答えを選ぶのと同じ。何回出たかではなく、いちばん多く出た値そのものを出す道具を選ぶ。",
+    "STDEV.P": "全員分の記録がそろっていて、みんなが平均からふつうどれくらい離れているかを知りたい。その「離れ方」を出す道具を選ぶ。",
+    COUNTIFS: "「20 から 30 の手前まで」と書いた箱に入る人だけを数える。条件を付けて数える道具を選ぶ。"
+  };
+  var FUNC_ADV = {
+    COUNT: "COUNT は数の入ったセルだけを数え、文字のセルは数えない。空でないセルを全部数えるなら COUNTA、条件に合うものだけなら COUNTIFS。AVERAGE は SUM ÷ COUNT と同じ計算なので、COUNT で件数を確かめておくと範囲の取り違えに気づける。",
+    AVERAGE: "AVERAGE は =SUM(範囲)/COUNT(範囲) と同じ計算で、空のセルは個数に入らないが、0 と入れたセルは入る。端の値を除いて平均したいときは TRIMMEAN、条件に合う行だけの平均は AVERAGEIFS を使う。",
+    MEDIAN: "MEDIAN は並べ替えなくても真ん中を出す。四分位数（下から 4 分の 1、4 分の 3 の位置）は QUARTILE.INC で出せ、中央値と合わせると箱ひげ図の「箱」になる。外れ値に左右されにくいので、平均と並べて書くとデータの偏りが伝わる。",
+    "MODE.SNGL": "いちばん多い値が 2 つ以上あると、MODE.SNGL は先に出てくる 1 つだけを返す。全部を出すなら MODE.MULT。どの値も 1 回ずつだとエラーになるので、値がばらばらな量では区切りごとの度数で山を見る方がよい。",
+    "STDEV.P": "STDEV.P は全体がそろっているとき、STDEV.S は一部から全体を推測するときに使う。2乗する前の「分散」は VAR.P・VAR.S で出せる。分散は単位も2乗になるので、ふだんの報告では標準偏差を使う。",
+    COUNTIFS: "条件は「範囲, 条件」の組をいくつでも並べられ、全部に当てはまるものだけを数える。区切りのセルを使って =COUNTIFS($E$2:$E$31,\"&gt;=\"&amp;B4,$E$2:$E$31,\"&lt;\"&amp;C4) のように書くと、下へコピーするだけで全部の区切りの度数がそろう。"
+  };
+  /* stats.js の誤答メッセージ（です・ます）を、解説の常体に直す */
+  function plain(t) {
+    return String(t || "").replace(/ではありません。/g, "ではない。").replace(/割りません。/g, "割らない。").replace(/です。/g, "。")
+      .replace(/使います。/g, "使う。").replace(/数えます。/g, "数える。").replace(/返します。/g, "返す。").replace(/足し合わせます。/g, "足し合わせる。").replace(/足します。/g, "足す。");
+  }
+  K.func = function (p, rest) {
+    var q = S.FUNCS.filter(function (x) { return x.f === rest; })[0];
+    var ng = q ? q.near : [];
+    return {
+      easy: FUNC_EASY[rest] || "やりたいことを言葉にしてから、それをしてくれる道具を選ぶ。名前が似ていても、している計算がちがうことがある。",
+      normal: (q ? "「" + q.want.replace(/「/g, "『").replace(/」/g, "』") + "」には " + q.f + " を使う。" : rest + " を使う。") + "まぎらわしいのは " + ng.join("・") + "。" + (ng.length ? plain(q.why[ng[0]]) : ""),
+      detail: "<ol><li>やりたいことを、計算の言葉に直す" + (q ? "：「" + q.want + "」。" : "。") + "</li><li>選択肢の関数が、それぞれ何をするかを確かめる。</li><li>やりたいことと同じ計算をする関数を選ぶ：" + rest + "。</li></ol>" +
+        "ほかの選択肢がちがう理由：" + ng.map(function (f) { return plain(q.why[f]); }).join("") + "名前や見た目が似ていても、している計算がちがえば答えも変わる。",
+      adv: FUNC_ADV[rest] || "関数に迷ったら、数式タブの「関数の挿入」で、やりたいことを言葉で探せる。"
+    };
+  };
+
+  /* 式のコピーと参照のずれ（key は copy:元の式＋方向＋数、例 copy:=MAX(B2:B41)down2） */
+  K.copy = function (p, rest) {
+    var m = /^=([\w.]+)\(([A-Z])(\d+):([A-Z])(\d+)\)(right|down)(\d+)$/.exec(rest);
+    var fn = m[1], c = m[2], r1 = +m[3], r2 = +m[5], dir = m[6], k = +m[7];
+    var col = function (ch, d) { return String.fromCharCode(ch.charCodeAt(0) + d); };
+    var right = dir === "right", c2 = right ? col(c, k) : c, s1 = right ? r1 : r1 + k, s2 = right ? r2 : r2 + k;
+    var src = "=" + fn + "(" + c + r1 + ":" + c + r2 + ")", ok = "=" + fn + "(" + c2 + s1 + ":" + c2 + s2 + ")";
+    var fixed = "=" + fn + "($" + c + "$" + r1 + ":$" + c + "$" + r2 + ")";
+    return {
+      easy: right ? "式をとなりへ写すと、式の中の「どこを見るか」も一緒に横へずれる。右へ " + k + " つ動かせば、見る場所も右へ " + k + " つ動く。上下はそのまま。"
+        : "式を下へ写すと、式の中の「どこを見るか」も一緒に下へずれる。下へ " + k + " つ動かせば、見る場所も下へ " + k + " つ動く。左右はそのまま。",
+      normal: "$ の付いていない参照は、コピーした方向へ同じ数だけずれる（相対参照）。" + (right ? "右へ " + k + " つなので、列が " + c + " → " + c2 + " にずれ、行の番号は変わらない。" : "下へ " + k + " つなので、行の番号が " + r1 + " → " + s1 + "、" + r2 + " → " + s2 + " にずれ、列は変わらない。") + "答えは " + ok + "。",
+      detail: "<ol><li>コピーの向きと数を読む：" + (right ? "右" : "下") + "へ " + k + " つ。</li><li>" + (right ? "右へ動くと列（アルファベット）だけがずれる：" + c + " → " + c2 + "。" : "下へ動くと行の番号だけがずれる：" + r1 + " → " + s1 + "、" + r2 + " → " + s2 + "。") + "範囲の始まり（" + c + r1 + "）と終わり（" + c + r2 + "）の両方がずれる。</li><li>組み立てる：" + ok + "。</li></ol>" +
+        "よくある間違いは、向きを取り違えて" + (right ? "行の番号をずらすこと" : "列をずらすこと") + "と、式がそのまま写ると考えること。ずらしたくないなら " + fixed + " のように $ を付ける。",
+      adv: right ? "右へのコピーは、となりの列にある別の項目について同じ計算をしたいときに便利で、ずれるのがちょうどよい。逆に、どこへコピーしても同じ範囲を見たいときは " + fixed + " と $ を付ける。行だけ固定する " + c + "$" + r1 + ":" + c + "$" + r2 + " なら、右へは列がずれ、下へはずれない。"
+        : "下へのコピーでは、範囲の行がずれて、データの一部が抜けたり空の行が入ったりする（" + c + s1 + ":" + c + s2 + " は始めの " + k + " 行を見なくなる）。同じ範囲を見続けたいなら " + fixed + " と $ を付ける。" + c + "$" + r1 + ":" + c + "$" + r2 + " のように行だけに $ を付けると、下へはずれず、右へは列がずれる。"
+    };
+  };
+
+  if (typeof module !== "undefined" && module.exports) module.exports = K;
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+<script>
+/* 第3回 復習ページ（w03r）の、決まった問題（確認問題・動画の確認）の解説。
+   CA.EXP_Q.w03r の問題 id（確認問題は c1 など、seq の問題は id＋番号で filmq1 など）ごとに、
+   4 段 { easy, normal, detail, adv }（HTML の文字列）を書く。自動で作る問題は src/explain-wNN.js。
+   書かないこと：締切前の課題の答え（blocklist.json）。 */
+(function (root) {
+  "use strict";
+  var CA = root.CA = root.CA || {};
+  CA.EXP_Q = CA.EXP_Q || {};
+  CA.EXP_Q.w03r = {
+    c1: {
+      easy: "中央値は、みんなを小さい順に一列に並べたときの、ちょうど真ん中の人の値。6 人のように偶数だと真ん中が 2 人になるので、その 2 人のちょうど間をとる。",
+      normal: "小さい順に並べると 3、5、8、9、12、20。6 個（偶数）なので、真ん中は 3 番目の 8 と 4 番目の 9 の 2 つ。その平均（8 ＋ 9）÷ 2 ＝ 8.5 時間が中央値。",
+      detail: "<ol><li>小さい順に並べ替える：3、5、8、9、12、20。</li><li>個数を数える：6 個。偶数なので、真ん中は 6 ÷ 2 ＝ 3 番目と、その次の 4 番目。</li><li>2 つの平均をとる：（8 ＋ 9）÷ 2 ＝ 8.5。</li></ol>よくある間違いは、書かれた順のまま真ん中（8 と 20）を取ること（答えが 14 になる）と、8 か 9 の片方だけを答えること。中央値は、データにない値（8.5）になってもよい。",
+      adv: "Excel の MEDIAN は、並べ替えなくても正しく中央値を出す。真ん中の位置は（個数 ＋ 1）÷ 2 番目と考えられ、6 個なら 3.5 番目、つまり 3 番目と 4 番目のちょうど間になる。中央値で上下半分に分け、それぞれの真ん中をさらにとると四分位数になり、箱ひげ図の「箱」になる。"
+    },
+    c2: {
+      easy: "いちばん遠い人だけがもっと遠くなっても、並んだときの真ん中の人は同じ人のまま。全員の分をならした値だけが大きくなる。",
+      normal: "平均は全員の値を足すので、1人が 30 → 90分になると合計が 60 増え、平均は 20 → 32分に上がる。中央値は並べた3番目の 20分のままで変わらない。だから「平均だけが上がる」。",
+      detail: "<ol><li>前：合計 10 ＋ 15 ＋ 20 ＋ 25 ＋ 30 ＝ 100、平均 100 ÷ 5 ＝ 20分。中央値は3番目の 20分。</li><li>後：10、15、20、25、90。合計 160、平均 160 ÷ 5 ＝ 32分。</li><li>90分の人はもともと最後で、最後のまま。3番目は 20分で変わらない。</li></ol>増えた 60分を5人で分けた 12分だけ、平均が上がる。よくある間違いは「平均も中央値も上がる」。中央値は順番だけを使うので、真ん中の人が入れ替わらない限り動かない。",
+      adv: "中央値が動くのは、変わった値が真ん中をまたぐときだけ。たとえば 20分以下の人が 90分になると、並びが入れ替わって中央値は 25分に上がる。通学時間や待ち時間のように、大きい側へ長くのびやすい量を報告するときは、平均と中央値を両方書くと誤解が少ない。"
+    },
+    c3: {
+      easy: "点数を「50点台」の箱に分けて数える。50点ちょうどの人はこの箱に入れ、60点ちょうどの人は次の「60点台」の箱に入れる。",
+      normal: "「50 以上 60 未満」は、50 を含み、60 を含まない。当てはまるのは 52、59、50 の 3人。60点の2人は「未満」なので入らず、次の区切り（60 以上 70 未満）に入る。",
+      detail: "<ol><li>小さい順に並べる：38、45、50、52、59、60、60、61、66、70。</li><li>50 以上を探す：50 から先。</li><li>60 未満で止める：59 まで。60 は入らない。</li><li>数える：50、52、59 の 3人。</li></ol>よくある間違いは、60点の2人を入れて 5人にすることと、50点を外して 2人にすること。30点台から70点台まで全部の区切りを数えると 1、1、3、4、1 で、合計が 10人に戻るかで確かめられる。",
+      adv: "Excel では <span class=\"num\">=COUNTIFS(範囲,\"&gt;=50\",範囲,\"&lt;60\")</span> と書く。FREQUENCY という関数でも度数を数えられるが、こちらは区切りの上限を「以下」で数える。50〜60 の区切りに 60点が入ってしまうので、COUNTIFS の「未満」とは境目の扱いが逆になる。どちらで数えたかを表に書いておく。"
+    },
+    c4: {
+      easy: "ほとんどの人は同じくらいなのに、ほんの数人だけとても多い。全員の分をならすと、その数人に引っぱられて、ふつうの人より大きな数が出る。",
+      normal: "ほんの数人だけ 2,000万円をこえるのは、右（大きい側）に裾が長い形。平均は全員の値を足すので、少数の大きな値に引っぱられて上がる。中央値は真ん中の人の値なので、ほとんど動かない。だから 平均 ＞ 中央値。",
+      detail: "<ol><li>架空の 5人で考える：300、400、450、500、2,350（万円）。</li><li>中央値は3番目の 450万円。</li><li>平均は 合計 4,000 ÷ 5 ＝ 800万円。</li><li>800万円は、5人のうち 4人より多い。平均 ＞ 中央値になる。</li></ol>よくある間違いは「ほとんどの人が 300〜600万円だから 平均 ≒ 中央値」と考えること。数人でも、とても大きい値は合計を大きく変えるので、平均だけが大きい側へずれる。",
+      adv: "所得の統計では、平均と中央値を並べて公表することが多い。2つの差が大きいほど、少数の大きな値の影響が大きい目安になる。さらに、下から 10%、25%、75%、90% の位置の値（分位数）を並べると、上の方だけがのびているのか、全体が広がっているのかまで分かる。"
+    },
+    c5: {
+      easy: "4人の点をならすと 70点。そこから、みんながだいたい何点ずつ離れているかを1つの数にする。この4人は 1〜7点離れていて、まとめると 5点になる。",
+      normal: "平均は 70点。差は −7、−1、+1、+7。2乗すると 49、1、1、49 で、その平均は 100 ÷ 4 ＝ 25（点²）。√25 ＝ 5 なので、標準偏差は 5点。全員そろっているので 4 で割る（STDEV.P）。",
+      detail: "<ol><li>平均：（63 ＋ 69 ＋ 71 ＋ 77）÷ 4 ＝ 280 ÷ 4 ＝ 70。</li><li>差：−7、−1、+1、+7（足すと 0）。</li><li>2乗：49、1、1、49。合計 100。</li><li>2乗の平均：100 ÷ 4 ＝ 25（点²）。</li><li>√ をとる：√25 ＝ 5点。</li></ol>よくある間違いは、25 で止めること（単位が点²のまま）、3 で割って約 5.77 にすること（それは STDEV.S）、差の大きさをそのまま平均して 4 にすること。",
+      adv: "差の大きさをそのまま平均した 4点（平均偏差）も、離れ具合の表し方の一つ。標準偏差は2乗するので、大きく離れた値を重く数え、平均偏差と同じか大きくなる。それでも2乗を使うのは、計算の性質がよく、正規分布や偏差値の考え方にそのままつながるから。"
+    },
+    c6: {
+      easy: "知りたいのはこの授業の受講生全員で、その全員の点が手元にある。一部から全体を当てる必要はないので、そろった全員の分をそのまま計算する方を使う。",
+      normal: "知りたい相手（受講生全員）のデータが全部そろっているので、STDEV.P（P は母集団）を使う。STDEV.S は、一部の人（標本）のデータから、もっと大きな全体のばらつきを推測するときに使う。",
+      detail: "<ol><li>知りたい相手は誰か：この授業の受講生全員。</li><li>その全員のデータはあるか：ある（全員の小テストの点）。</li><li>全部そろっている → STDEV.P。差の2乗の合計を個数で割る。</li></ol>たとえば 4人の点 63、69、71、77 なら、差の2乗の合計は 100。STDEV.P は √（100 ÷ 4）＝ 5、STDEV.S は √（100 ÷ 3）≒ 5.77。よくある間違いは「受講生は大学生の一部だから S」と考えること。何の一部かではなく、知りたい相手が誰かで決める。",
+      adv: "同じ点でも、問いが変わると選ぶ関数が変わる。「この授業の点から、大学1年生全体のばらつきを推測したい」なら、受講生は全体の一部なので STDEV.S になる。ただし、受講生が全体から偏りなく選ばれていないと、その推測は当たらない。世論調査が千人ほどで全体を推測できるのも、無作為に選ぶからである。"
+    },
+    c7: {
+      easy: "式を右のマスへ写すと、式の中で指している場所も同じだけ右へずれる。上下には動かしていないので、何行目かは変わらない。",
+      normal: "$ の付いていない参照（相対参照）は、コピーした方向へずれる。B10 → C10 は右へ 1 つなので、列が E → F に 1 つずれ、行の番号 2 と 48 はそのまま。答えは <span class=\"num\">=STDEV.P(データ!F2:F48)</span>。",
+      detail: "<ol><li>どちらへ何個動いたか：B10 → C10 は、列が B → C の右へ 1 つ、行は 10 のまま。</li><li>参照も同じだけずらす：E2 → F2、E48 → F48。</li><li>シート名「データ!」と関数名 STDEV.P は変わらない。</li></ol>よくある間違いは、「変わらない」と思うこと（それは $E$2:$E$48 と $ で固定したとき）と、行をずらして E3:E49 にすること（それは下へ 1 つコピーしたとき）。",
+      adv: "ずれ方の決まりは「元のセルから見て、何列右・何行下か」という相対的な位置を保つこと。B10 から見た E2 は「3列右・8行上」なので、C10 から同じだけ動くと F2 になる。コピーのあとは、セルを選んで数式バーで範囲を確かめるか、Windows なら F2 キーで参照先の色付きの枠を出して、目でも確かめる。"
+    },
+    filmq1: {
+      easy: "7人を少ない順に並べて、ちょうど真ん中の4番目の人を見る。いちばん端の人がどれだけ増えても、4番目の人は同じなので、真ん中は変わらない。",
+      normal: "中央値は並べた真ん中、7個なら4番目の値。1、2、2、3、4、5、6 の4番目は 3冊。6冊の人が 30冊になっても、並びは 1、2、2、3、4、5、30 で、4番目は 3冊のまま。上がるのは平均だけ（動画の場面3）。",
+      detail: "<ol><li>前：4番目は 3冊。平均は 23 ÷ 7 ≒ 3.3冊。</li><li>6冊 → 30冊：いちばん多い人がもっと多くなるだけで、並び順は変わらない。</li><li>後：1、2、2、3、4、5、30。4番目は 3冊。平均は 47 ÷ 7 ≒ 6.7冊。</li></ol>よくある間違いは「上がる」。合計が増えるので上がるのは平均で、中央値は値の大きさではなく順番だけを使う。「下がる」も、値が大きくなっただけなので起こらない。",
+      adv: "この7人なら、上の3人（4、5、6冊）が 3冊以上である限り、何冊になっても中央値は 3冊のまま。平均は1人の値をいくらでも大きくできるので、上限なく動く。どれだけの値がでたらめになっても耐えられるかを「崩壊点」といい、中央値はおよそ半分、平均は 0 になる。"
+    },
+    filmq2: {
+      easy: "とても長い人が少しいると、ならした値は長い側へずれる。だから、その値より短い人のほうが多くなる。",
+      normal: "右に裾が長いと、平均は大きい側へ引っぱられて 平均 ＞ 中央値 になる。中央値より小さい人がちょうど半分。平均はその中央値より大きいので、平均より小さい人は半分より多い。動画では平均 36分、中央値 30分で、平均より短い人は 40人中 25人（場面5）。",
+      detail: "<ol><li>中央値（30分）は、40人をちょうど半分ずつに分ける位置。</li><li>平均（36分）は、右の裾に引っぱられて中央値より右にある。</li><li>平均より短い人は、中央値より短い半分に、中央値と平均の間にいる人を足した数になる。</li><li>動画では 25人。25 ÷ 40 ＝ 62.5% で、半分より多い。</li></ol>よくある間違いは「ちょうど半分」。半分に分けるのは中央値で、平均ではない。",
+      adv: "架空の 5人で 10、20、30、40、150分なら、平均は 250 ÷ 5 ＝ 50分で、平均より短い人は 5人中 4人。裾が長いほど、平均より下の人の割合は大きくなる。給料や待ち時間のように右に裾が長い量では、平均より下の人が多いのはふつうに起こることで、おかしなことではない。"
+    },
+    filmq3: {
+      easy: "クラスに1人だけ大金持ちがいると、全員のお金をならした額は大きくなる。でも、ほとんどの人はその額よりずっと少ない。ならした額は「ふつうの人」とは限らない。",
+      normal: "年収は、少数のとても高い人がいる、右に裾が長い形になりやすい。平均はその少数に引っぱられて上がるので、600万円より低い人のほうが多いかもしれない。「ほとんどが 600万円くらい」「ちょうど半分が上」は、平均からは言えない（半分に分けるのは中央値）。",
+      detail: "<ol><li>架空の 5人：350、400、450、500、1,300（万円）。</li><li>平均：合計 3,000 ÷ 5 ＝ 600万円。</li><li>600万円より低い人は 5人中 4人。600万円くらいの人は1人もいない。</li><li>中央値は 450万円。</li></ol>答えが「かもしれない」なのは、平均だけでは形が分からないから。左右対称なら、低い人と高い人は同じくらいになる。よくある間違いは、平均を「ちょうど半分の境目」や「多くの人の値」と読むこと。",
+      adv: "会社の説明や求人の数字を読むときは、平均のほかに中央値や、年齢・職種で分けた値を探す。一方で、平均は 合計 ÷ 人数 なので、平均 × 人数 で人件費の総額を見積もれる。中央値ではこれができない。どちらが正しいかではなく、何を知りたいかで使い分ける。"
+    }
+  };
+  if (typeof module !== "undefined" && module.exports) module.exports = CA.EXP_Q.w03r;
 })(typeof window !== "undefined" ? window : globalThis);
 
 </script>

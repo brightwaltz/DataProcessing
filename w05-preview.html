@@ -419,6 +419,14 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
 .explain-tabs .lbl { font-size: var(--fs-small); font-weight: 700; color: var(--muted); margin-right: 4px; }
 .explain .keyline:not([data-lv="normal"]) { font-weight: 400; }
 .to-explain { font-size: var(--fs-small); justify-self: start; }
+/* 問題ごとの解説（「解説を読む」を開くと出る） */
+.explain-q > div { padding-top: 8px; }
+.explain-q .explain { max-width: none; }
+.explain-q .ex-body { line-height: 1.75; }
+.explain-q .ex-body > :first-child { margin-top: 0; }
+.explain-q .ex-body > :last-child { margin-bottom: 0; }
+.explain-q .ex-body ol, .explain-q .ex-body ul { margin: 6px 0; padding-left: 1.4em; }
+.explain-q .ex-body table.ref { margin: 6px 0; }
 
 </style>
 <header class="mast">
@@ -431,7 +439,7 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
   </div>
 </header>
 
-<aside class="sidenav" id="sidenav" aria-label="メニュー"><div class="side-sec"><div class="side-h">ページ</div><a href="./">トップ（日程と一覧）</a><a href="w03-review.html?v=202610230824">第3回 復習</a><a href="w04-preview.html?v=202610230824">第4回 予習</a><a href="w04-review.html?v=202610230824">第4回 復習</a><a href="w05-preview.html?v=202610230824" aria-current="page">第5回 予習</a></div><div class="side-sec"><div class="side-h">このページ</div><a href="#movie" data-item="movie">動画：ピラミッドの形から、町が見える</a><a href="#t1" data-item="t1">調べてから来よう（2つ）</a><a href="#t2" data-item="t2">前回の確認（3問）</a><a href="#t3" data-item="t3">ゲーム：ピラミッドの形から町を当てる</a></div></aside>
+<aside class="sidenav" id="sidenav" aria-label="メニュー"><div class="side-sec"><div class="side-h">ページ</div><a href="./">トップ（日程と一覧）</a><a href="w03-review.html?v=202610231036">第3回 復習</a><a href="w04-preview.html?v=202610231036">第4回 予習</a><a href="w04-review.html?v=202610231036">第4回 復習</a><a href="w05-preview.html?v=202610231036" aria-current="page">第5回 予習</a></div><div class="side-sec"><div class="side-h">このページ</div><a href="#movie" data-item="movie">動画：ピラミッドの形から、町が見える</a><a href="#t1" data-item="t1">調べてから来よう（2つ）</a><a href="#t2" data-item="t2">前回の確認（3問）</a><a href="#t3" data-item="t3">ゲーム：ピラミッドの形から町を当てる</a></div><div class="side-sec"><div class="side-h">解説の詳しさ</div><div class="lv-btns" role="group" aria-label="解説の詳しさ"><button type="button" data-set-level="easy" aria-pressed="false">簡単</button><button type="button" data-set-level="normal" aria-pressed="true">通常</button><button type="button" data-set-level="detail" aria-pressed="false">詳細</button><button type="button" data-set-level="adv" aria-pressed="false">発展</button></div><p class="side-note">問題の「解説を読む」が、選んだ詳しさで出ます。</p></div></aside>
 <main class="page">
   <section class="intro">
     <h1>第5回 予習<span class="sub">社会におけるデータの重要性と利活用（10/30 の授業の前に）</span></h1>
@@ -470,7 +478,7 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
       <h2>前回の確認（3問）</h2>
       <span class="slides">第4回 データの可視化</span>
     </div>
-    <p class="prose">第5回でも、グラフを描いて読み取ります。解けなかったら、<a href="w04-review.html?v=202610230824">第4回 復習ページ</a>で確かめてから授業に来てください。</p>
+    <p class="prose">第5回でも、グラフを描いて読み取ります。解けなかったら、<a href="w04-review.html?v=202610231036">第4回 復習ページ</a>で確かめてから授業に来てください。</p>
     <div id="review"></div>
   </section>
 
@@ -1697,14 +1705,17 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
     var area = h("div");
     var fb = h("div", { class: "feedback", role: "status", "aria-live": "polite" });
     var sol = h("details", { class: "solution" }, h("summary", { text: "解き方を見る" }), h("div"));
-    // 項目に解説（簡単・通常・詳細・発展）があれば、そこへ戻る案内を「解き方」の下に置く
+    // この問題の解説（簡単・通常・詳細・発展）。問題を出すたびに作り直す。解説のない問題では隠す
+    var exq = h("details", { class: "solution explain-q" }, h("summary", { text: "解説を読む（簡単・通常・詳細・発展）" }), h("div"));
+    // 項目に解説があれば、そこへ戻る案内を「解き方」の下に置く
     var sec = mount.closest ? mount.closest("section.item") : null;
-    var ex = sec ? sec.querySelector("[data-explain]") : null;
+    var ex = sec ? sec.querySelector('[data-explain]:not([data-explain="q"])') : null;
     var toEx = ex ? h("a", { class: "to-explain", href: "#" + ex.id, text: "この項目の解説を読む（簡単・通常・詳細・発展）" }) : null;
     var bNext = h("button", { type: "button", text: mode === "seq" ? "次の問題へ" : "別の問題を出す" });
     var foot = h("div", { class: "row" });
     if (mode !== "check") foot.appendChild(bNext);
-    var box = h("div", { class: "quiz" + (mode === "check" ? " check-quiz" : "") }, kind, prompt, area, fb, sol, toEx, foot);
+    var box = h("div", { class: "quiz" + (mode === "check" ? " check-quiz" : ""), "data-q": opts.id }, kind, prompt, area, fb, sol, exq, toEx, foot);
+    (CA._quizzes = CA._quizzes || []).push({ mode: mode, opts: opts });
     if (mode === "check" && opts.itemId && CA.progress.isDone(opts.itemId)) box.classList.add("done");
 
     function label() {
@@ -1744,6 +1755,10 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
       prompt.innerHTML = p.prompt;
       sol.lastChild.innerHTML = p.solution;
       sol.open = false;
+      var qid = mode === "seq" ? opts.id + (seqIndex + 1) : opts.id;
+      var lv = CA.EXP.forQuestion(p, qid);
+      exq.lastChild.innerHTML = ""; exq.open = false; exq.hidden = !lv;
+      if (lv) exq.lastChild.appendChild(CA.explainBox(lv, "exq-" + qid));
       fb.className = "feedback"; fb.innerHTML = "";
       area.innerHTML = "";
       if (p.type === "choice") {
@@ -1811,9 +1826,46 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
   };
 
   /* ---------- 解説の詳しさ（簡単・通常・詳細・発展） ----------
-     ページには <div class="explain" data-explain> の中に data-lv="easy|normal|detail|adv" の段落を書く。
-     選んだ詳しさはサイト全体で共通（どのページでも同じ詳しさで開く）。スクリプトが動かなくても「通常」は読める。 */
+     項目の解説：ページに <div class="explain" data-explain> の中に data-lv="easy|normal|detail|adv" の段落を書く。
+     問題の解説：{ easy, normal, detail, adv }（HTML の文字列）を、次の順に探す。
+       1. 問題そのものの p.explain
+       2. ページごとの手書き CA.EXP_Q.<ページ>[問題 id]（src/exp-<ページ>.js。seq の問題 id は id＋番号、例 filmq1）
+       3. 自動で作る問題の key の頭（mean: など）で引く CA.EXP.byKey（src/explain-wNN.js）
+     選んだ詳しさはサイト全体で共通（どのページでも同じ詳しさで開く）。スクリプトが動かなくても項目の「通常」は読める。 */
   var LV = [["easy", "簡単"], ["normal", "通常"], ["detail", "詳細"], ["adv", "発展"]];
+  var EXP = CA.EXP = CA.EXP || {};
+  EXP.byKey = EXP.byKey || {};
+  CA.EXP_Q = CA.EXP_Q || {};
+  EXP.forQuestion = function (p, qid) {
+    if (!p) return null;
+    if (p.explain) return p.explain;
+    var mine = CA.EXP_Q[root.CA_PAGE] || {};
+    if (qid && mine[qid]) return mine[qid];
+    var key = p.key || "", i = key.indexOf(":");
+    var fn = i > 0 ? EXP.byKey[key.slice(0, i)] : null;
+    if (!fn) return null;
+    try { return fn(p, key.slice(i + 1)) || null; } catch (e) { return null; }
+  };
+  /* 検査用：このページの問題すべてに 4 段の解説があるか（tests/explain_probe.mjs が呼ぶ） */
+  EXP.audit = function (n) {
+    n = n || 120;
+    var miss = {}, short = {}, used = {};
+    function txt(s) { return String(s == null ? "" : s).replace(/<[^>]+>/g, "").trim(); }
+    function one(p, qid) {
+      used[qid] = true;
+      var lv = EXP.forQuestion(p, qid);
+      var tag = qid + " " + (p.key || txt(p.prompt).slice(0, 24));
+      if (!lv) { miss[tag] = true; return; }
+      LV.forEach(function (x) { if (txt(lv[x[0]]).length < 12 || /undefined|NaN/.test(lv[x[0]])) short[tag + " " + x[0]] = true; });
+    }
+    (CA._quizzes || []).forEach(function (q) {
+      var o = q.opts;
+      if (q.mode === "seq") o.seq.forEach(function (f, k) { for (var t = 0; t < 30; t++) one(f(), o.id + (k + 1)); });
+      else for (var t = 0; t < (q.mode === "drill" ? n : 30); t++) one(o.make(), o.id);
+    });
+    var stale = Object.keys(CA.EXP_Q[root.CA_PAGE] || {}).filter(function (k) { return !used[k]; });
+    return { quizzes: (CA._quizzes || []).length, miss: Object.keys(miss), short: Object.keys(short), stale: stale };
+  };
   var LV_KEY = "dp2026.explain-level";
   var level = "normal";
   function savedLevel() {
@@ -1821,13 +1873,7 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
   }
   function applyLevel(v) {
     level = v;
-    document.querySelectorAll("[data-explain]").forEach(function (box) {
-      box.querySelectorAll("[data-lv]").forEach(function (p) { p.hidden = p.getAttribute("data-lv") !== v; });
-      box.querySelectorAll("[data-pick]").forEach(function (b) {
-        var on = b.getAttribute("data-pick") === v;
-        b.setAttribute("aria-selected", on ? "true" : "false"); b.tabIndex = on ? 0 : -1;
-      });
-    });
+    document.querySelectorAll("[data-explain]").forEach(function (box) { showLevel(box, v); });
     document.querySelectorAll("[data-set-level]").forEach(function (b) {
       b.setAttribute("aria-pressed", b.getAttribute("data-set-level") === v ? "true" : "false");
     });
@@ -1835,26 +1881,46 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
   function setLevel(v) { applyLevel(v); try { localStorage.setItem(LV_KEY, v); } catch (e) { /* 保存できない環境 */ } }
   CA.explain = { level: function () { return level; }, set: setLevel };
 
-  function initExplain() {
-    document.querySelectorAll("[data-explain]").forEach(function (box) {
-      var sec = box.closest("section");
-      if (!box.id) box.id = "ex-" + (sec && sec.id ? sec.id : CA.uid("x"));
-      var tabs = h("div", { class: "explain-tabs", role: "tablist", "aria-label": "解説の詳しさ" }, h("span", { class: "lbl", text: "解説" }));
-      LV.forEach(function (x) {
-        var panel = box.querySelector('[data-lv="' + x[0] + '"]');
-        if (!panel) return;
-        panel.id = box.id + "-" + x[0]; panel.setAttribute("role", "tabpanel");
-        tabs.appendChild(h("button", { type: "button", role: "tab", "data-pick": x[0], "aria-controls": panel.id, text: x[1], onclick: function () { setLevel(x[0]); } }));
-      });
-      tabs.addEventListener("keydown", function (e) {
-        if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-        var bs = Array.prototype.slice.call(tabs.querySelectorAll("[data-pick]"));
-        var k = bs.indexOf(document.activeElement); if (k < 0) return;
-        var nb = bs[(k + (e.key === "ArrowRight" ? 1 : bs.length - 1)) % bs.length];
-        setLevel(nb.getAttribute("data-pick")); nb.focus(); e.preventDefault();
-      });
-      box.insertBefore(tabs, box.firstChild);
+  /* 解説の箱に「簡単・通常・詳細・発展」のタブを付ける。タブを押すと、サイト全体の詳しさが変わる */
+  function decorate(box) {
+    var sec = box.closest ? box.closest("section") : null;
+    if (!box.id) box.id = "ex-" + (sec && sec.id ? sec.id : CA.uid("x"));
+    var tabs = h("div", { class: "explain-tabs", role: "tablist", "aria-label": "解説の詳しさ" }, h("span", { class: "lbl", text: "解説" }));
+    LV.forEach(function (x) {
+      var panel = box.querySelector('[data-lv="' + x[0] + '"]');
+      if (!panel) return;
+      panel.id = box.id + "-" + x[0]; panel.setAttribute("role", "tabpanel");
+      tabs.appendChild(h("button", { type: "button", role: "tab", "data-pick": x[0], "aria-controls": panel.id, text: x[1], onclick: function () { setLevel(x[0]); } }));
     });
+    tabs.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      var bs = Array.prototype.slice.call(tabs.querySelectorAll("[data-pick]"));
+      var k = bs.indexOf(document.activeElement); if (k < 0) return;
+      var nb = bs[(k + (e.key === "ArrowRight" ? 1 : bs.length - 1)) % bs.length];
+      setLevel(nb.getAttribute("data-pick")); nb.focus(); e.preventDefault();
+    });
+    box.insertBefore(tabs, box.firstChild);
+  }
+  function showLevel(box, v) {
+    box.querySelectorAll("[data-lv]").forEach(function (p) { p.hidden = p.getAttribute("data-lv") !== v; });
+    box.querySelectorAll("[data-pick]").forEach(function (b) {
+      var on = b.getAttribute("data-pick") === v;
+      b.setAttribute("aria-selected", on ? "true" : "false"); b.tabIndex = on ? 0 : -1;
+    });
+  }
+  /* 問題の解説の箱を作る。levels は { easy, normal, detail, adv }（HTML の文字列） */
+  var boxNo = 0;
+  CA.explainBox = function (levels, id) {
+    boxNo += 1;
+    var box = h("div", { class: "explain", "data-explain": "q", id: (id || "exq") + "-" + boxNo });
+    LV.forEach(function (x) { box.appendChild(h("div", { class: "ex-body", "data-lv": x[0], html: levels[x[0]] || "" })); });
+    decorate(box);
+    showLevel(box, level);
+    return box;
+  };
+
+  function initExplain() {
+    document.querySelectorAll("[data-explain]").forEach(decorate);
     document.querySelectorAll("[data-set-level]").forEach(function (b) {
       b.addEventListener("click", function () { setLevel(b.getAttribute("data-set-level")); });
     });
@@ -3467,6 +3533,265 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
 
 </script>
 <script>
+/* 第4回の練習問題（自動で作る問題）の解説。
+   問題の key の頭（chart・pie・trunc・perday・see・mixed・ops）ごとに、4 段 { easy, normal, detail, adv }（HTML の文字列）を返す関数を CA.EXP.byKey に登録する。
+   関数は (p, rest) を受け取る。p は問題（key・prompt・choices・answer・solution）、rest は key の「頭:」より後ろ。
+   読み込むページ：第4回 復習（練習・仕上げ）、第5回 予習（前回の確認）。
+   書かないこと：締切前の課題の答え（blocklist.json）、次の回の授業の種明かし（予習ページでも出るため）。 */
+(function (root) {
+  "use strict";
+  var CA = root.CA = root.CA || {};
+  var EXP = CA.EXP = CA.EXP || {};
+  var K = EXP.byKey = EXP.byKey || {};
+  var S = CA.stats;
+  function nums(t) { return t.split(",").map(Number); }
+  function num(s) { return "<span class=\"num\">" + s + "</span>"; }
+  function eq(x, d) { return Math.abs(S.round(x, d) - x) < 1e-9 ? "＝" : "≒"; }
+  function answerText(p) { return String((p.choices || [])[p.answer] || "").replace(/<[^>]+>/g, ""); }
+
+  /* グラフの選び方（key は chart:問題文。問題文は stats.js の CHARTS と同じ） */
+  var CHART_SCENE = {
+    "4 つのクラスの、文化祭の来場者数を比べたい": ["bar", "4 つのクラスは別々の項目で、その大小を比べたい"],
+    "都道府県ごとの図書館の数を、多い順に並べて見せたい": ["bar", "項目ごとの数を多い順に並べて、大小を見せたい"],
+    "3 つの店の、今月の売上を比べたい": ["bar", "同じ月の 3 つの店の大小を比べたい"],
+    "ある駅の乗降客数が、この 10 年でどう変わったかを見せたい": ["line", "10 年という時間の流れで、増えたか減ったかを見せたい"],
+    "1 年間の、月ごとの電気代の移り変わりを見せたい": ["line", "月を追って、電気代がどう移り変わるかを見せたい"],
+    "自分の体重の、半年間の変化を見たい": ["line", "半年の時間の流れで、体重の変化を見たい"],
+    "学食の注文のうち、カレー・定食・麺類がそれぞれ何割かを見せたい": ["pie", "注文全体を 100% として、その内訳を見せたい"],
+    "1 日 24 時間のうち、睡眠・授業・アルバイトなどが何割かを見せたい": ["pie", "24 時間という全体を、何に使ったかで分けて見せたい"],
+    "サークルの予算の使いみち（合宿・道具・飲食など）の内訳を見せたい": ["pie", "予算全体を 100% として、使いみちの内訳を見せたい"]
+  };
+  var CHART_TXT = {
+    bar: {
+      name: "棒グラフ",
+      easy: "背比べと同じで、横に並べた長さを見比べると、どれがいちばん大きいかがすぐ分かる。",
+      rule: "大小を比べる → 棒グラフ。棒の長さが値を表すので、長さを並べて比べられる。",
+      miss: "折れ線を選ぶのは、横軸に時間が並んでいないのに点を線でつなぐ間違い。線でつなぐと「前から後へ変わった」ように見えてしまう。円を選ぶと、比べたいのは数の大小なのに、全体の何割かを見せることになる。",
+      adv: "項目の名前が長いときや項目が多いときは、横棒にすると名前が読みやすい。多い順に並べ替えてから描くと、順位もひと目で分かる。棒は長さで比べるので、縦軸は 0 から始める（最低限 3）。Excel では、離れた 2 列を Ctrl で選んでから 挿入 → 集合縦棒 で描ける（最低限 7）。"
+    },
+    line: {
+      name: "折れ線グラフ",
+      easy: "山道と同じで、上り坂なら増えている、下り坂なら減っている、と線の向きで変わり方が分かる。",
+      rule: "時間で変わる様子 → 折れ線グラフ。横軸に時間を順に並べ、線の傾きで増え方・減り方を見せる。",
+      miss: "棒でも描けるが、時間を追った増え方・減り方は、線の傾きのほうがひと目で分かる。円は、ある 1 つの時点の割合を見せるグラフなので、時間の変化は表せない。",
+      adv: "折れ線は傾きを見るので、縦軸は 0 から始めなくてもよい（最低限 3）。いくつかの項目を 1 枚に描くときは、線の色を項目ごとに決めて変えない。Excel で横軸が月にならないときは「行/列の切り替え」を使う（最低限 7）。"
+    },
+    pie: {
+      name: "円グラフ",
+      easy: "1 枚のピザを切り分けるように、全部を 1 つとして、それぞれがどのくらいの大きさの一切れかを見せる。",
+      rule: "全体の中の割合 → 円グラフ。全体を 100% とし、扇形の大きさで内訳を見せる（100% 積み上げ棒でもよい）。",
+      miss: "棒は数の大小を比べるには向くが、「全体のうち何割か」は 1 本ずつ見ても分からない。折れ線は時間を追った変化を見るグラフで、1 つの全体の内訳には使わない。",
+      adv: "円グラフは項目を 5 つくらいまでにし、大きい順に 12 時から時計回りに並べる。2 つの時点の内訳を比べたいときは、円を 2 つ並べずに 100% 積み上げ棒にする（最低限 2）。円グラフにする前に、内訳を足すと全体（100%）になるかを確かめる。"
+    }
+  };
+  K.chart = function (p, rest) {
+    var sc = CHART_SCENE[rest], kind = sc ? sc[0] : ({ "棒グラフ": "bar", "折れ線グラフ": "line", "円グラフ": "pie" })[answerText(p)] || "bar";
+    var t = CHART_TXT[kind], why = sc ? sc[1] : "言いたいことが何かを先に決めたい";
+    return {
+      easy: t.easy,
+      normal: t.rule + "この問題は「" + why + "」場面なので、" + t.name + "が向いている。",
+      detail: "<ol><li>言いたいことを 1 文にする：" + why + "。</li><li>それが「大小」「時間の変化」「全体の中の割合」のどれかを決める。</li><li>決まったら、" + t.name + "を選ぶ。</li></ol>" + t.miss,
+      adv: t.adv
+    };
+  };
+
+  /* 円グラフの使い方（key は pie:問題文。問題文は stats.js の PIE と同じ） */
+  var PIE_TXT = {
+    "アンケートの答えが 12 種類ある。円グラフにするなら？": {
+      easy: "ピザを 12 切れにすると、細い切れ端ばかりで大きさの違いが分からない。小さい切れはまとめて 1 切れにする。",
+      normal: "円グラフの項目は 5 つくらいまで。12 種類あるときは、少ないものを「その他」にまとめて 5 つくらいにする。細い扇形が並ぶと、大きさが読み取れないからである。",
+      detail: "<ol><li>答えの多い順に並べる。</li><li>上から 4 つくらいを残し、残りを足して「その他」にする。</li><li>大きい順に 12 時から時計回りに並べ、「その他」は最後に置く。</li></ol>よくある間違いは、色を 12 色に増やせば読めると考えること。色で見分けられても、細い扇形の角度の差は目では読めない。色の数が増えるほど、どの色がどの項目かを凡例と見比べる手間も増える。",
+      adv: "12 種類すべての数を見せたいときは、円をやめて多い順の横棒にする。棒なら 12 本でも長さで比べられる。「その他」にまとめた中身は、表やグラフの下の注で補う。「その他」がいちばん大きくなるなら、まとめすぎなので残す項目を見直す。"
+    },
+    "円グラフの扇形の並べ方として、授業で決めたのは？": {
+      easy: "時計の 12 の位置から、大きい切れから順に右回りに並べると、どれが大きいかを目が自然に追える。",
+      normal: "扇形は、大きい順に 12 時の位置から時計回りに並べる。いちばん大きい項目が最初に目に入り、あとは小さくなる順に読めるからである。「その他」は大きさに関係なく最後に置く。",
+      detail: "<ol><li>表を割合の大きい順に並べ替える。</li><li>その順のまま円グラフを描くと、Excel では 12 時から時計回りに並ぶ。</li><li>「その他」があれば、大きさに関係なく最後に置く。</li></ol>よくある間違いは、あいうえお順や表に書いた順のまま描くこと。大きさがばらばらに並び、どれが大きいかを探すことになる。並べ方は描く前の表の順で決まるので、先に表を並べ替える。",
+      adv: "Excel の円グラフは、表の上の行から順に 12 時から時計回りに描く。だから描く前に表を並べ替えておけば、並べ方はそろう。アンケートの「とても良い〜とても悪い」のように順番に意味がある項目は、大きい順ではなく、その順を守る。"
+    },
+    "円グラフを立体（3D）にすると？": {
+      easy: "斜めから見たお皿は、手前が大きく、奥が小さく見える。立体の円グラフも同じで、手前の切れが大きく見える。",
+      normal: "円グラフを立体にすると、手前の扇形は大きく、奥の扇形は小さく見えて、割合を読み違える。傾けた円は角度も面積もゆがむので、円グラフは平らなまま使う。値そのものを見せたいなら、扇形にデータラベル（%）を付ける。",
+      detail: "<ol><li>立体の円は、円を斜めに倒して描いている。</li><li>倒すと、手前と奥の扇形は縦につぶれ、手前は厚みの側面も見える。</li><li>同じ 25% でも、手前に置くと奥の 25% より大きく見える。</li></ol>よくある間違いは「見た目が変わるだけ」と考えること。読み取る人は面積で判断するので、ゆがみがそのまま誤解になる。「見やすくなった」と感じるのは飾りが増えたからで、読み取りやすさとは別である。",
+      adv: "立体の棒グラフも、棒の奥行きのせいで値の位置が読みにくくなる。グラフの飾り（影・立体・背景の絵）は、値を読む助けにならないなら付けない。Excel のグラフの種類にも立体の形があるので、選ぶときに確かめる。"
+    },
+    "10 月と 12 月で、各メニューの割合がどう変わったかを見せたい。どうする？": {
+      easy: "2 枚のピザの切れを見比べても、どれが大きくなったかは分かりにくい。同じ長さの帯に並べると、境目のずれで分かる。",
+      normal: "割合の変化を比べるなら、100% 積み上げ棒や棒グラフで長さを並べる。円グラフを 2 つ並べても、角度の差はほとんど読めない。円グラフは 1 つの時点の内訳を 1 枚で見せるときに使う。",
+      detail: "<ol><li>10 月と 12 月それぞれで、メニューごとの割合を出す。</li><li>月ごとに 1 本ずつ、100% 積み上げ棒を横に並べる。</li><li>メニューの並びと色を 2 本でそろえ、境目の位置のずれを見る。</li></ol>よくある間違いは、円を 2 つ並べたり重ねたりすること。目は角度の差より、長さの差のほうを正しく読み取れる。2 つの円は大きさや並びもずれやすく、同じメニューを探すだけで手間がかかる。",
+      adv: "メニューが少なければ、メニューごとに 10 月と 12 月の割合を並べた棒グラフにすると、増えた・減ったがさらに読みやすい。月が 3 つ以上あるなら、割合を折れ線にして変わり方を見る方法もある。どの形でも、比べる月どうしでメニューの色をそろえる。"
+    }
+  };
+  K.pie = function (p, rest) {
+    var t = PIE_TXT[rest];
+    if (t) return t;
+    var a = answerText(p);
+    return {
+      easy: "円グラフは 1 枚のピザの切り分けのようなもの。切れの数や見せ方しだいで、大きさの見え方が変わる。",
+      normal: "正しいのは「" + a + "」。円グラフは、ある時点の全体の内訳を 1 枚で見せるときに使う。",
+      detail: "円グラフで決めたことは、項目を 5 つくらいまでにする、大きい順に 12 時から時計回りに並べる、立体にしない、の 3 つ。この問題の答え「" + a + "」も、このどれかにあてはまる。",
+      adv: "割合の変化を比べたいときや項目が多いときは、円グラフをやめて棒グラフや 100% 積み上げ棒にする。グラフは言いたいことに合わせて選び直す。"
+    };
+  };
+
+  /* 縦軸を切った棒グラフ（key は trunc:a,b,m:look または trunc:a,b,m:real） */
+  K.trunc = function (p, rest) {
+    var parts = rest.split(":"), v = nums(parts[0]), ask = parts[1];
+    var a = v[0], b = v[1], m = v[2], d = b - a, g = a - m;
+    var look = (b - m) / g, real = 100 * d / a, blow = a / g;
+    var mu = /（([^（）]+)）。縦軸/.exec(p.prompt || ""), u = mu ? mu[1] : "";
+    var lookTxt = (b - m) + " ÷ " + g + " ＝ " + S.fmt(look, 1) + " 倍";
+    var realTxt = "（" + b + " − " + a + "）÷ " + a + " × 100 ＝ " + S.fmt(real, 1) + "%";
+    return {
+      easy: "棒の下のほうを切り落とすと、残った先っぽだけで背比べをすることになる。少しの差でも、大きな差に見えてしまう。",
+      normal: ask === "look"
+        ? "棒は縦軸の始まりから伸びるので、見た目の長さは「値 − " + m + "」。" + (b - m) + " と " + g + " で、" + lookTxt + "に見える。本当は " + S.fmt(real, 1) + "% 増えただけで、見た目ほどの差はない。"
+        : "本当の増え方は、増えた数をもとの値で割って 100 を掛ける。" + realTxt + "。縦軸が " + m + " から始まっているので、見た目では " + S.fmt(look, 1) + " 倍に見えるが、本当の差はこれだけである。",
+      detail: "<ol><li>見た目の長さ：右は " + b + " − " + m + " ＝ " + (b - m) + "、左は " + a + " − " + m + " ＝ " + g + "。</li><li>見た目の比：" + lookTxt + "。</li><li>本当の比：" + b + " ÷ " + a + " " + eq(b / a, 2) + " " + S.fmt(b / a, 2) + " 倍。増えたのは " + d + " " + u + "で、" + realTxt + "。</li><li>差の見え方：縦軸が 0 からなら、差 " + d + " は左の棒 " + a + " と比べて見える。" + m + " からだと、短くなった左の棒 " + g + " と比べて見えるので、差は " + a + " ÷ " + g + " " + eq(blow, 1) + " " + S.fmt(blow, 1) + " 倍に大きく見える。</li></ol>" +
+        "よくある間違いは、" + (ask === "look" ? "本当の比 " + S.fmt(b / a, 2) + " を答えること。見た目の長さは 0 からではなく " + m + " から測る。" : "見た目の増え方（" + S.fmt(100 * (look - 1), 1) + "%）や、増えた数 " + d + " をそのまま答えること。割合は、もとの " + a + " で割ってから 100 を掛ける。"),
+      adv: "縦軸の始まりが 0 に近いほど、見た目の比は本当の比に近づく。始まりが左の棒の値に近いほど、同じ差でも大きく見える。だから棒グラフは、見る前に縦軸のいちばん下の目盛りを読む。折れ線は傾きで変わり方を見るグラフなので、0 からでなくてもよい。差そのものを見せたいなら、増えた数を別に棒にする方法もある。"
+    };
+  };
+
+  /* 期間をそろえる（key は perday:前の週の合計,最後の週の合計,最後の週の日数） */
+  K.perday = function (p, rest) {
+    var v = nums(rest), full = v[0], last = v[1], days = v[2];
+    var lp = last / days, fp = full / 7, u = /円/.test(p.prompt || "") ? "円" : "食";
+    var diff = S.round(lp, 0) - S.round(fp, 0), rate = 100 * Math.abs(diff) / S.round(fp, 0);
+    var cmp = diff === 0 ? "ほぼ同じ" : (diff > 0 ? S.fmt(diff, 0) + " " + u + "多い（約 " + S.fmt(rate, 0) + "%）" : S.fmt(-diff, 0) + " " + u + "少ない（約 " + S.fmt(rate, 0) + "%）");
+    var drop = 100 * (full - last) / full;
+    return {
+      easy: days + " 日だけ働いた週と、7 日働いた週の稼ぎを、そのまま比べるのは不公平。1 日分ずつにそろえてから比べる。",
+      normal: "日数のちがう期間の合計は、そのまま比べない。1 日あたり ＝ 合計 ÷ 日数 に直す。最後の週は " + days + " 日分なので、" + S.fmt(last, 0) + " ÷ " + days + " ＝ " + S.fmt(lp, 0) + " " + u + "。前の週の 1 日あたり（" + (eq(fp, 0) === "＝" ? "" : "約 ") + S.fmt(fp, 0) + " " + u + "）と並べて比べる。",
+      detail: "<ol><li>最後の週の 1 日あたり：" + S.fmt(last, 0) + " ÷ " + days + " ＝ " + S.fmt(lp, 0) + " " + u + "。</li><li>前の週の 1 日あたり：" + S.fmt(full, 0) + " ÷ 7 " + eq(fp, 0) + " " + S.fmt(fp, 0) + " " + u + "。</li><li>比べる：合計では約 " + S.fmt(drop, 0) + "% 減ったように見えたが、1 日あたりでは最後の週のほうが " + cmp + "。合計の差のほとんどは、日数の差から来ている。</li></ol>" +
+        "よくある間違いは、最後の週も 7 で割ること（" + S.fmt(last, 0) + " ÷ 7 " + eq(last / 7, 0) + " " + S.fmt(last / 7, 0) + "）。データは " + days + " 日分しかないので、" + days + " で割る。",
+      adv: "週の途中で切れた最初や最後の週、28 日の 2 月と 31 日の月など、期間の長さはそろっていないことが多い。合計が急に変わったら、まず日数を確かめる。Excel では日数の列を作り、合計のセルを日数のセルで割る式を下へコピーすると、全部の期間の 1 日あたりがまとめて出る。"
+    };
+  };
+
+  /* 見えたこと・考えたこと（key は see:文。文は stats.js の SEE と同じ） */
+  var SEE_NOTE = {
+    "カレーの注文数は、10 月から 12 月まで毎月増えた": "10 月・11 月・12 月の値を順に読めば、増えたかどうかを確かめられる。",
+    "麺類の 12 月の注文数は、10 月の 1.6 倍だった": "12 月の値を 10 月の値で割れば、何倍かを確かめられる。",
+    "A定食は、10 月から 12 月で 120 食減った": "10 月の値から 12 月の値を引けば、何食減ったかを確かめられる。",
+    "3 か月の合計では、カレーが全体の約 34% でいちばん多い": "カレーの 3 か月の合計を全体の合計で割れば、割合を確かめられる。",
+    "寒くなって、温かい麺類を選ぶ人が増えたのかもしれない": "グラフに出ているのは麺類の注文数だけで、「寒くなったから」という理由はどこにも出ていない。",
+    "A定食が減ったのは、値上げがあったからかもしれない": "グラフには値段が出ていないので、値上げがあったかどうかも、それが理由かどうかも分からない。",
+    "麺類は寒い季節によく売れる": "グラフから言えるのは「麺類が増えた」まで。「寒い季節に売れる」は理由の予想なのに言い切っている。",
+    "学生はカレーが好きだから、カレーがいちばん売れている": "「いちばん売れている」はグラフで言えるが、「好きだから」は理由の予想で、グラフからは分からない。"
+  };
+  K.see = function (p, rest) {
+    var isSee = /^見えたこと/.test(answerText(p)), note = SEE_NOTE[rest] || "";
+    return isSee ? {
+      easy: "見たままを言っているだけの文。だれがグラフを見ても同じことを言えるなら、こちらに入る。",
+      normal: "「" + rest + "」は、グラフの数字から直接言える。だから見えたこと。" + note,
+      detail: "<ol><li>文の中に、理由（〜だから、〜のせいで）が入っているかを見る。この文には入っていない。</li><li>グラフの値で確かめられるかを見る。" + note + "</li><li>確かめられるので、見えたこと。</li></ol>よくある間違いは、数字が入っているかどうかだけで分けること。数字がなくても、増えた・減ったのようにグラフで確かめられる文は見えたことになる。",
+      adv: "見えたことを書いたら、次に「なぜそうなったか」を考えたこととして「かもしれない」で書く。見えたことは何度見直しても変わらないが、考えたことは別のデータで確かめるまでは予想のまま。新聞の記事でも、起きた事実と書き手の意見は分けて書かれている。"
+    } : {
+      easy: "グラフを見て「たぶんこうだから」と想像した文。想像はグラフの外から持ってきたもの。",
+      normal: "「" + rest + "」は、グラフには出ていない理由の予想（仮説）なので、考えたこと。考えたことは言い切らず、「かもしれない」で書く。予想は、別のデータで確かめるまでは言い切れない。",
+      detail: "<ol><li>文の中に、理由や性質の決めつけ（〜だから、〜によく売れる）が入っているかを見る。この文には入っている。</li><li>それがグラフに出ているかを見る。" + note + "</li><li>出ていないので、考えたこと。</li></ol>よくある間違いは、もっともらしい理由を見えたことにすること。どれだけありそうでも、グラフに出ていなければ予想である。",
+      adv: "考えたことは、確かめ方とセットにすると役に立つ。たとえば、気温や値段のデータを集めて、注文数と並べてみる。確かめるまでは「かもしれない」のまま書く。研究の論文でも、結果（見えたこと）と考察（考えたこと）は分けて書く。"
+    };
+  };
+
+  /* SUMIFS の複合参照（key は mixed:コピー先のセル。B5 からコピーする） */
+  K.mixed = function (p, rest) {
+    var col = rest.charAt(0), row = Number(rest.slice(1));
+    var dc = col.charCodeAt(0) - 66, dr = row - 5;
+    var ok = "=SUMIFS(売上, 商品, $A" + row + ", 月, " + col + "$4)";
+    return {
+      easy: "左の見出しの列と、上の見出しの行に鍵をかけておく。どこへ写しても、その行の左端と、その列の上端を見に行く。",
+      normal: "$ は付いた側だけを固定する。$A5 は列 A を固定し、行は動く。B$4 は行 4 を固定し、列は動く。" + rest + " へコピーすると " + num(ok) + " になる。",
+      detail: "<ol><li>B5 から " + rest + " へは、右へ " + dc + " 列、下へ " + dr + " 行動く。</li><li>" + num("$A5") + "：列 A は $ で固定。行は下へ " + dr + " 動いて 5 → " + row + "。" + num("$A" + row) + " になる。</li><li>" + num("B$4") + "：行 4 は $ で固定。列は右へ " + dc + " 動いて B → " + col + "。" + num(col + "$4") + " になる。</li></ol>" +
+        "よくある間違いは、$ が付いていれば全部動かないと考えること。$ は直後の列か行だけを止める。もう 1 つは、片方だけ動かすこと。" + rest + " へは右にも下にも動くので、行と列の両方が変わる。",
+      adv: "$A5 と B$4 のように片方だけ止める書き方を複合参照という。$A$5 と書けば列も行も止まる（絶対参照）。式の中の参照を選んで F4 キーを押すと、A5 → $A$5 → A$5 → $A5 → A5 と切り替わる。こう書いておくと、B5 の式 1 つを表全体へコピーするだけで、商品×月の集計表が埋まる。"
+    };
+  };
+
+  /* Excel のグラフ操作（key は ops:問題文。問題文は stats.js の OPS と同じ） */
+  var OPS_TXT = {
+    "集計表を「合計」の大きい順に並べ替えたい。範囲に合計の行（いちばん下）まで入れると？": {
+      easy: "背の順に並ぶとき、全員の身長を足した値まで列に入れると、それがいちばん前に来てしまう。足した値は列に入れない。",
+      normal: "Excel は合計の行かどうかを区別しない。範囲に入れると合計の行もいっしょに並べ替えられ、いちばん大きいので先頭に来てしまう。範囲は見出しから最後の項目までにする。合計の行は、並べ替えた後もいちばん下に置いたままにする。",
+      detail: "<ol><li>見出しの行から、最後の項目の行までを選ぶ。合計の行は選ばない。</li><li>データ → 並べ替え で、列を「合計」、順序を「大きい順」にする。</li><li>「並べ替えの前に」が出たら「現在選択されている範囲を並べ替える」を選ぶ。</li></ol>よくある間違いは、表の全体を選ぶこと。エラーは出ないので、合計の行が上に来たことに気づかないまま、グラフに合計の棒が入ってしまう。並べ替えの後は、合計の行がいちばん下に残っているかを必ず見る。",
+      adv: "並べ替えは、表全体ではなく「並べたい項目の行だけ」を先に決めてから選ぶ習慣をつけると、合計の行を巻き込まない。並べ替えた後は、合計の値が変わっていないか、合計の行がいちばん下にあるかを確かめる。"
+    },
+    "折れ線グラフを描いたら、横軸が商品名になった。横軸を月にするには？": {
+      easy: "表の縦と横のどちらを時間の流れとして読むかを、Excel が取り違えただけ。向きを入れかえるボタンで直せる。",
+      normal: "グラフを選び、グラフのデザイン →「行/列の切り替え」を押すと、横軸と線（系列）が入れかわり、横軸が月になる。表はそのままでよい。描いた直後に、横軸に月が順に並んでいるかを確かめる。",
+      detail: "<ol><li>折れ線グラフをクリックして選ぶ。</li><li>リボンの「グラフのデザイン」を開く。</li><li>「行/列の切り替え」を押す。横軸が月に、線が商品ごとになる。</li></ol>よくある間違いは、表を作り直して行と列を入れかえること。手間がかかるうえ、写し間違いのもとになる。グラフの種類を変えても、横軸は商品のままである。切り替えた後は、凡例に商品名が出ているかも見る。",
+      adv: "Excel は表の形を見て、どちらを横軸にするかを自分で決める。そのため版や表の形によっては、最初から月になることもある。折れ線では、横軸に時間が並んでいるかを、描いた直後に必ず確かめる。"
+    },
+    "グラフに題と軸ラベルを付けるには？": {
+      easy: "グラフは、見た人が説明なしで分かるように、名札を付けて渡す。名札は自分で付けないと付かない。",
+      normal: "グラフを選び、右上の「＋」（グラフ要素）から、グラフタイトルと軸ラベルにチェックを入れて付ける。セルに書いた文字は、自動ではグラフに入らない。題・軸ラベルがないと、見た人は何のグラフか分からない。",
+      detail: "<ol><li>グラフをクリックして選ぶ。</li><li>右上に出る「＋」を押す。</li><li>「グラフタイトル」と「軸ラベル」にチェックを入れ、出た枠に文字を打つ。</li></ol>よくある間違いは、セルに題を書けばグラフに入ると考えること。グラフとセルは別のものなので、グラフの側に書く。印刷しても、自分で付けていなければ出ない。付けた後は、軸ラベルに単位が入っているかも確かめる。",
+      adv: "題には「何の、いつの、どんな数か」を短く書く。軸ラベルには何の数かと単位を書く。グラフをほかの資料に貼っても意味が通じるように、グラフだけで読める形にしておく。軸ラベルの文字は、グラフの中の枠をクリックすれば後からいつでも直せる。"
+    },
+    "軸ラベルに必ず入れるものは？": {
+      easy: "「12」とだけ書かれても、12 円なのか 12 人なのか分からない。数には、何を数えたかを必ず添える。",
+      normal: "軸ラベルには、何の数かと単位を必ず入れる。例：注文数（食）、売上金額（円）。単位がないと、同じ数でも大きさの意味が読み取れない。何の数かが分からないと、ほかのグラフと比べることもできない。",
+      detail: "<ol><li>縦軸の数が何を数えたものかを決める（注文数、売上金額など）。</li><li>単位を決める（食、円、人など）。</li><li>「注文数（食）」のように、何の数と単位を並べて書く。</li></ol>よくある間違いは、自分の名前やグラフを作った日を書くこと。それは軸の数を読む助けにならない。もう 1 つは、何の数かだけ書いて単位を落とすこと。円なのか千円なのかで、読み方が大きく変わる。",
+      adv: "単位には「千円」「百人」のように桁をまとめたものもある。軸の数が 12 で単位が千円なら 12,000 円なので、桁のまとめ方も単位として書く。横軸にも、月・年など何が並んでいるかを書く。表の見出しに単位を書いておくと、グラフの軸ラベルにも写しやすい。"
+    },
+    "商品名の列と合計の列だけを選んで棒グラフにしたい。離れた 2 か所を選ぶには？": {
+      easy: "離れた席の 2 人だけを呼びたいときは、1 人ずつ名前を呼ぶ。あいだの人までまとめて呼ばない。",
+      normal: "1 か所目を選んだあと、Ctrl を押しながら 2 か所目を選ぶ。Ctrl は離れた範囲を足していく。Shift はあいだの範囲もまとめて選ぶ。2 か所は、同じ行の範囲（見出しから最後の項目まで）にそろえる。",
+      detail: "<ol><li>商品名の列（見出しから最後の商品まで）をドラッグで選ぶ。</li><li>Ctrl を押したまま、合計の列の同じ行の範囲をドラッグで選ぶ。</li><li>挿入 → 集合縦棒 を選ぶ。</li></ol>よくある間違いは、Shift で選ぶこと。あいだの月の列まで入り、棒が月ごとに何本も並んでしまう。2 か所の行の範囲をそろえることも大事。ずれると、商品名と棒の値が 1 行ずつずれて対応してしまう。",
+      adv: "Ctrl で離れた範囲を選ぶ方法は、グラフのほかに、離れたセルの書式をまとめて変えるときにも使える。グラフを描いた後で範囲を変えたいときは、グラフのデザイン →「データの選択」で直せる。選び直すより、範囲だけを直すほうが、題や軸ラベルを付け直さずに済む。"
+    }
+  };
+  K.ops = function (p, rest) {
+    var t = OPS_TXT[rest];
+    if (t) return t;
+    var a = answerText(p);
+    return {
+      easy: "グラフの操作は、表を整えてから描き、描いたあとに名札を付ける、の順で考える。",
+      normal: "正しいのは「" + a + "」。並べ替えは合計の行を入れずに、離れた 2 列は Ctrl で選び、題・軸ラベル（単位）を付ける。",
+      detail: "Excel のグラフ操作は、範囲を選ぶ → 挿入 → 描いた後に整える、の 3 段で考える。この問題の答え「" + a + "」がどの段の操作かを考えると、間違いの選択肢を外しやすい。",
+      adv: "描いたグラフは、題・軸ラベル・横軸の並びを見直してから使う。グラフのデザイン →「データの選択」で、範囲を後から直すこともできる。"
+    };
+  };
+
+  if (typeof module !== "undefined" && module.exports) module.exports = K;
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+<script>
+/* 第5回 予習ページ（w05p）の、決まった問題（確認問題・動画の確認）の解説。
+   CA.EXP_Q.w05p の問題 id（確認問題は c1 など、seq の問題は id＋番号で filmq1 など）ごとに、
+   4 段 { easy, normal, detail, adv }（HTML の文字列）を書く。自動で作る問題は src/explain-wNN.js。
+   書かないこと：締切前の課題の答え（blocklist.json）、授業の種明かし（予習ページなので）。 */
+(function (root) {
+  "use strict";
+  var CA = root.CA = root.CA || {};
+  CA.EXP_Q = CA.EXP_Q || {};
+  CA.EXP_Q.w05p = {
+    filmq1: {
+      easy: "下が若い人、上がお年寄り。下の段が長いほど子どもが多い。上へいくほど短いなら、お年寄りは少ない。",
+      normal: "人口ピラミッドは、下が若い年齢、上が高い年齢で、横棒の長さが人数。下が広く上へいくほど細い三角形なら、子どもが多く、高齢者が少ない町。",
+      detail: "<ol><li>軸を確かめる：下が 0 歳に近い若い年齢、上が高い年齢。横の長さが人数。</li><li>下の段が広い → 子どもが多い。</li><li>上へいくほど細い → 高齢者が少ない。</li></ol>よくある間違いは、上下を逆に読むこと（上を若い年齢と思う）。また、ピラミッドはいつも三角形になると思い込まないこと。動画の B の町のように、上が重いつぼの形の町もある。",
+      adv: "動画の場面2 では、65 歳以上の段に色を付けて、A の町は約 9%、B の町は約 30% と数でも示した。形で見当をつけたら、元の表の人数に戻って確かめると、見た目の思い込みを防げる。全体の形とは別に、でっぱりやへこみにも町の事情が表れる（場面3 の、大学のある町の 20〜24 歳）。"
+    },
+    filmq2: {
+      easy: "10 年たつと、町の人はみんな 10 歳年をとる。人数の少ない世代も、そのまま 10 歳ぶん上の段へ移る。",
+      normal: "10 年たつと全員が 10 歳年をとる。へこみもいっしょに上へ動くので、30〜34 歳のへこみは 30 ＋ 10 ＝ 40、34 ＋ 10 ＝ 44 で、40〜44 歳の段にある。",
+      detail: "<ol><li>たった年数：10 年。</li><li>段の両端に足す：30 ＋ 10 ＝ 40、34 ＋ 10 ＝ 44。</li><li>答え：40〜44 歳の段。</li></ol>よくある間違いは、へこみが同じ段に残ると考えること（その段には、10 年前に 20〜24 歳だった人たちが上がってくる）と、20〜24 歳と下へ動かすこと。年齢は増える一方なので、山もへこみも上へしか動かない。",
+      adv: "へこみは、ある年に生まれた子どもが少なかったり、その年ごろの人が町を出ていったりしてできる。上へ動くあいだも、転入・転出で浅くなったり深くなったりする。ただし、場面3 の大学のある町の 20〜24 歳のでっぱりは、上へ動かずにその段に残り続ける。卒業した人が出ていき、毎年、新しい学生が入ってくるからだ。"
+    },
+    filmq3: {
+      easy: "数にマイナスの印を付けると、棒はまん中の線から反対向き（左）にのびる。男の分だけそうすれば、男女が背中合わせになる。",
+      normal: "横棒グラフは、プラスの値は右へ、マイナスの値は左へのびる。男の人数をマイナスにすると、男の棒が左へのび、女の棒と背中合わせの人口ピラミッドになる。",
+      detail: "<ol><li>表に「男（マイナス）」の列を作り、男の人数に − を付ける。</li><li>年齢・女・男（マイナス）で横棒グラフを描く。男は左、女は右へのびる。</li><li>棒のすき間をなくす（重なり 100%・間隔 0%）と、ピラミッドになる。</li></ol>よくある間違いは、列を右へ移せば向きが変わると思うこと。棒の向きは値のプラス・マイナスで決まり、列の場所では変わらない。グラフ全体を反転すると、女の棒もいっしょに向きが変わってしまう。",
+      adv: "男の人数をマイナスにすると、横軸の目盛りにも「−」が付く。人数にマイナスはないので、授業では目盛りの書き方を変えて「−」を見えなくする。計算に使う値はマイナスのまま、見た目だけを変える。値そのものと、その見せ方を分けて考えるのが、Excel のグラフ作りのこつ。"
+    }
+  };
+  if (typeof module !== "undefined" && module.exports) module.exports = CA.EXP_Q.w05p;
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+<script>
 (function () {
   var S = CA.stats, h = CA.h;
   function $(id) { return document.getElementById(id); }
@@ -3499,7 +3824,7 @@ svg .k-c3 { fill: var(--c3); } svg .s-c3 { stroke: var(--c3); }
       "10年後には全員が10歳年をとるので、へこみは 40〜44歳の段へ上がる。"),
     choiceQ("Excel で人口ピラミッドを描くとき、男の棒を左に出すには？",
       ["男の人数をマイナスにする", "男の列を表の右へ移す", "グラフを左右反転する"], 0,
-      [null, "列の場所を変えても、棒の向きは変わりません。値をマイナスにすると左へのびます（場面1）。", "Excel のグラフに左右反転はありません。男の値をマイナスにします。"],
+      [null, "列の場所を変えても、棒の向きは変わりません。値をマイナスにすると左へのびます（場面1）。", "軸を反転すると、女の棒もいっしょに向きが変わります。男の値だけをマイナスにします。"],
       "男の人数をマイナスにすると、横棒が左へのびる。授業でも同じ手順。")
   ], onFinish: function (ok, n, box) {
     var again = h("button", { type: "button", text: "もう一度" });
