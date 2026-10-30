@@ -21,7 +21,7 @@
 
 | 種類 | 内容 | 開く |
 |---|---|---|
-| オンデマンド教材 | Excel 操作の基礎と応用（フィルター・関数・ピボット）（締切 12/31（木）23:59・提出は WebClass） | [開く](https://brightwaltz.github.io/DataProcessing/od-guide.html) |
+| オンデマンド教材 | Excel 操作の基礎と応用（フィルター・関数・ピボット）（締切 12/31（木）23:59・提出は WebClass・動画 4 本） | [開く](https://brightwaltz.github.io/DataProcessing/od-guide.html) |
 
 ## これから公開するページ
 
